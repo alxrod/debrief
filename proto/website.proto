@@ -1,0 +1,25 @@
+syntax = "proto3";
+package communication;
+option go_package=".;communication";
+
+message WebsiteEntity {
+  string id = 1;
+  string user_id = 2;
+  string raw_link = 3;
+}
+
+message WebsiteByUserQuery {
+  string user_id = 1;
+}
+
+message WebsiteSet {
+  repeated WebsiteEntity websites = 1;
+}
+
+service Summary {
+  rpc Get(WebsiteByUserQuery) returns (WebsiteSet) {};
+}
+
+service Generate {
+  rpc Summarize(WebsiteEntity) returns (WebsiteEntity) {};
+}
