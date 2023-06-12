@@ -66,17 +66,21 @@ export const logout = () => {
         return helpers.authCheck(dispatch).then(
             (creds) => {
                 UserService.logout(creds.access_token);
-                localStorage.removeItem("user");
-                localStorage.removeItem("creds");
-                localStorage.removeItem("contractNubs");
-                sessionStorage.removeItem("user");
-                sessionStorage.removeItem("creds");
-                sessionStorage.removeItem("contractNubs");
                 dispatch({
                     type: userActions.CLEAR_USER,
                 });
             },
             () => {
+                localStorage.removeItem("user");
+                localStorage.removeItem("creds");
+                sessionStorage.removeItem("user");
+                sessionStorage.removeItem("creds");
+                dispatch({
+                    type: userActions.CLEAR_USER,
+                });
+                dispatch({
+                    type: userActions.CLEAR_USER,
+                });
             }
         )
     }
@@ -118,7 +122,7 @@ export const pullUser = () => {
                 );
             },
             () => {
-                return Promise.reject("No credentials in store")
+                return Promise.reject("Auth chekc failed")
             }
         )
     }

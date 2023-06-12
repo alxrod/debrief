@@ -14,7 +14,7 @@ const Register = (props) => {
 
   const onSubmit = (values) => {
     props.register(values.email, values.password).then( () => {
-        router.push("/")
+        router.push("/feed")
     }, err => {
         setServerError(err)
     })

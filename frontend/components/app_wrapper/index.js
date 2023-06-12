@@ -23,6 +23,8 @@ const AppWrapper = (props) => {
   
     "^/forgot-password$": UNAUTH_ROLE,
     "^/reset-password$": UNAUTH_ROLE,
+
+    "^/feed$": STD_ROLE,
     
   }
 
@@ -61,7 +63,6 @@ const AppWrapper = (props) => {
           return true
         },
         () => {
-          props.setRedirect(wholepath)
           router.push("/login")
           return false
         }

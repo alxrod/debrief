@@ -7,21 +7,11 @@ export const authCheck = (dispatch) => {
             return Promise.resolve(creds)
         },
         (err) => {
-            console.log(err.message)
-            bailAuth(dispatch)
             return Promise.reject(err.message)
         },
     )
 }
 
-const bailAuth = (dispatch) => {
-    localStorage.removeItem("creds");
-    sessionStorage.removeItem("creds");
-
-    dispatch({
-        type: LOGOUT,
-    })
-}
 
 export const parseError = (error, dispatch) => {
     const message = 

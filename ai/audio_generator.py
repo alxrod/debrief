@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 
 from google.cloud import texttospeech
 from google.oauth2 import service_account
+from bs4 import BeautifulSoup
 
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_KEY")
@@ -35,6 +36,14 @@ class AudioGenerator:
     def get_html(self, url):
         response = requests.get(url)
         return response.text
+
+    def get_title(self, raw_html):
+        try:
+            soup = BeautifulSoup(raw_html, 'html.parser')
+            return soup.find("title").text
+        except:
+            return "Untitled"
+        
 
     def remove_tags(self, raw_html):
         clean_text = ''
@@ -70,33 +79,35 @@ class AudioGenerator:
 
         return clean_html
 
-    
-    def count_tokens(self, text):
-        response = openai.Completion.create(
-        engine="davinci-codex",
-        prompt=f"Please count the number of tokens in the following text:\n{text}\n\nNumber of tokens:",
-        max_tokens=1,
-        n=1,
-        stop=None,
-        temperature=0.7,
-        )
-        count = response.choices[0].text.strip()
-        return count
 
     def remove_line_breaks(self, raw_html):
         return raw_html.replace("\n", "")
 
 
-    def generate_summary(self, text, messages):
-        prompt = (f"Please summarize the following text in 250 words:\n{text}\n\n")
+ 
+    def remove_non_alphanumeric(self, text):
+        return ''.join(c for c in text if c.isalnum() or c == ',' or c == '.' or c == ' ')
+
+    def generate_summary(self, text, messages, num_chunks=1):
+        prompt = (f"Summarize the following text in {min(150, 750/num_chunks)} words or less. Do not write any sentences over 20 words.\n{text}\n\n")
+        print("Prompt length is: ", len(prompt))
         messages.append({"role": "user", "content": prompt})
         response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        temperature=0.5,
-        messages=messages,
+            model="gpt-3.5-turbo",
+            temperature=0.5,
+            messages=messages,
         )
-        summary = response.choices[0].message.content.strip()
-        return summary
+        resp_body = response.choices[0].message.content.strip()
+        # parts = resp_body.split("_debrief_summary: ")
+        # print(resp_body)
+        # if len(parts) != 2:
+        #     print("Error parsing summary")
+        #     return "Blank title", resp_body
+        
+        # title = self.remove_non_alphanumeric(parts[0].split("_debrief_title: ")[1])
+        # summary = parts[1]
+
+        return resp_body
 
     def num_tokens_from_string(self, string: str, encoding_name: str) -> int:
         """Returns the number of tokens in a text string."""
@@ -113,6 +124,7 @@ class AudioGenerator:
             chunks.append(chunk)
         return chunks
 
+    
     def summarize_text(self, text):
         chunks = self.chunk_text(text)
         summary = ""
@@ -123,20 +135,35 @@ class AudioGenerator:
         elif len(chunks) == 1:
             return self.generate_summary(chunks[0], messages)
 
+        print("Managing ", len(chunks), " chunks")
         for chunk in chunks:
-            summary = self.generate_summary(chunk, messages)
+            summary = self.generate_summary(chunk, messages, len(chunks))
             messages.append({"role": "assistant", "content": summary})
 
-        prompt = (f"Please combine all of your previous summaries in 200 words or less")
+        prompt = (f"Please combine all of your previous summaries in 150 words or less")
+
+        total_tokens = 0
+        for message in messages:
+            total_tokens += self.num_tokens_from_string(message["content"], "cl100k_base")
+        
+        # If the total tokens is greater than 4096, we need to combine the summaries not the entire convo
+        if total_tokens >= 4000:
+            print("Merging due to exceding token limit")
+            messages = []
+            prompt = "Please combine the following summaries into a single paragraph of 150 words or less. Do not write any sentences over 20 words.\n\n"
+            for message in messages:
+                if message["role"] == "assistant":
+                    prompt += message["content"] + "\n\n"
+
         messages.append({"role": "user", "content": prompt})
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             temperature=0.5,
             messages=messages,
         )
-        summary = response.choices[0].message.content.strip()
-
-        return summary
+        final_sum = response.choices[0].message.content.strip()
+        
+        return final_sum
 
     def synthesize_speech(self, text, output_filename):
         # Set the text input
@@ -149,14 +176,25 @@ class AudioGenerator:
             out.write(response.audio_content)
             print(f"Audio content written to '{output_filename}'")
     
+
+    def output_title(self, url):
+        html = self.get_html(url)
+        return self.get_title(html)
+    
+    
     def output_summary(self, url):
         html = self.get_html(url)
+        title = self.get_title(html)
         text = self.remove_js_cs(html)
         text = self.remove_tags(text)
         text = self.remove_line_breaks(text)
         summary = self.summarize_text(text)
         
         output_name = url.replace("https://", "").replace("http://", "").replace("/", "_")
-        self.synthesize_speech(summary, output_name+".mp3")
+        print("Generating audio for: ", output_name)
+        full_descript = ". ".join([title, summary])
+
+        self.synthesize_speech(full_descript, output_name+".mp3")
+        return title, summary, output_name+".mp3"
 
 

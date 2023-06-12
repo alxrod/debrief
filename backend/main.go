@@ -46,7 +46,7 @@ func accessibleRoles() []string {
 
 type BackServer struct {
 	proto.UnimplementedAuthServer
-
+	proto.UnimplementedSummaryServer
 	proto.UnimplementedTestServer
 
 	JwtManager *services.JWTManager
@@ -136,7 +136,7 @@ func NewServer(server_cert, server_key, addr string, dbName ...string) (*BackSer
 	if len(dbName) == 1 {
 		s_dbName = dbName[0]
 	} else {
-		s_dbName = "testing"
+		s_dbName = "debrief"
 	}
 	s := &BackServer{
 		lis:        lis,
@@ -155,6 +155,7 @@ func NewServer(server_cert, server_key, addr string, dbName ...string) (*BackSer
 
 	// Have to add this for every service
 	proto.RegisterAuthServer(grpcServer, s)
+	proto.RegisterSummaryServer(grpcServer, s)
 	proto.RegisterTestServer(grpcServer, s)
 
 	return s, nil

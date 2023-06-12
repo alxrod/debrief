@@ -25,7 +25,7 @@ const NavBar = (props) => {
             <div className="flex justify-between h-16">
               <div className="flex">
                 <div className="flex-shrink-0 flex items-center cursor-pointer" onClick={() => router.push("/")}>
-                  <h1 className="font-medium">Boiler</h1>
+                  <h1 className="font-medium">Debrief</h1>
                 </div>
                 <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                   {/* Current: "border-primary4 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" */}
@@ -39,14 +39,24 @@ const NavBar = (props) => {
 
                 {/* Profile dropdown */}
                 {props.isLoggedIn ? (
-                   <button
-                   href="#"
-                   onClick={() => {
-                     props.logout()
-                   }}
-                   className='text-sm text-gray-700'>
-                   Log out
-                  </button>
+                  <div className="flex px-1 pt-1 font-medium space-x-4">
+                    <Link
+                      href="/feed"
+                      className='text-sm text-gray-700 hover:text-gray-900'
+                    >
+                      My Feed
+                    </Link>
+                    <button
+                      href="#"
+                      onClick={() => {
+                        props.logout()
+                        router.push("/")
+                      }}
+                      className='text-sm text-gray-700 hover:text-gray-900'
+                    >
+                      Log out
+                    </button>
+                 </div>
                 ) : (
                   <div className="flex px-1 pt-1 font-medium space-x-4">
                       <Link
@@ -131,6 +141,7 @@ const NavBar = (props) => {
                     href="#"
                     onClick={() => {
                       props.logout()
+                      router.push("/")
                     }}
                     className={classNames(active ? 'bg-gray-100' : '', 'text-sm text-gray-700')}
                   >

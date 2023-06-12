@@ -418,6 +418,7 @@ module.exports = {
           '"Courier New"',
           'monospace',
         ],
+        "bree-serif": ["Bree Serif", 'ui-serif', 'Georgia', 'Cambria', '"Times New Roman"', 'Times', 'serif'],
       },
       fontSize: {
         xs: ['0.75rem', { lineHeight: '1rem' }],

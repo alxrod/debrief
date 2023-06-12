@@ -20,8 +20,7 @@ type User struct {
 	Email    string             `bson:"email"`
 	Password string             `bson:"password"`
 
-	Active_token string `bson:"-"`
-
+	Active_token string    `bson:"-"`
 	CreationTime time.Time `bson:"creation_time,omitempty"`
 }
 
@@ -33,6 +32,7 @@ func (user *User) Proto() *proto.UserEntity {
 		Id:    user.Id.Hex(),
 		Email: user.Email,
 	}
+
 	return resp
 }
 

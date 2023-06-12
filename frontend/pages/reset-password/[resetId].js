@@ -36,7 +36,7 @@ const ResetPassword = (props) => {
             if (valid) {
               props.changePassword(props.resetId, newPassword).then(
                 () => {
-                  router.push("/")
+                  router.push("/feed")
                 },
                 (error) => {
                   setErrorMsg(error)
@@ -57,7 +57,7 @@ const ResetPassword = (props) => {
   }
   
   if (props.isLoggedIn) {
-    router.push("/")
+    router.push("/feed")
   }
   return (
       <>

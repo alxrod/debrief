@@ -19,12 +19,12 @@ frontend:
 
 .PHONY: proto
 proto:
-	protoc proto/*.proto \
+	protoc debrief_proto/*.proto \
 		--js_out=import_style=commonjs,binary:./frontend\
 		--grpc-web_out=import_style=commonjs,mode=grpcwebtext:./frontend \
 		--go-grpc_out=./backend/proto \
 		--go_out=./backend/proto
-	python -m grpc_tools.protoc -I./debrief_proto --python_out=./ai/debrief_proto --pyi_out=./ai/debrief_proto --grpc_python_out=./ai/debrief_proto ./proto/*.proto
+	python -m grpc_tools.protoc -I./ --python_out=./ai --pyi_out=./ai --grpc_python_out=./ai ./debrief_proto/*.proto
 
 
 .PHONY: start-db

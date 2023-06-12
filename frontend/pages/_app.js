@@ -22,7 +22,7 @@ const App = ({Component, pageProps}) => {
 
         <link rel="manifest" href={"/manifest.json"}/>
 
-        <title>Boiler</title>
+        <title>Debrief</title>
       </Head>
       <Provider store={store}>
         <AppWrapper>

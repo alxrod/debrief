@@ -9,16 +9,18 @@ import (
 	"log"
 	"math/rand"
 	"os"
-	"regexp"
 
 	"time"
 
 	"crypto/tls"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+
+	"mvdan.cc/xurls/v2"
 
 	"github.com/TwiN/go-color"
 	db "github.com/alxrod/boiler/db"
@@ -136,7 +138,6 @@ func (agent *EmailAgent) fetchEmails() error {
 	seqset.AddNum(uids...)
 	section := &imap.BodySectionName{}
 	items := []imap.FetchItem{imap.FetchEnvelope, imap.FetchFlags, imap.FetchInternalDate, section.FetchItem()}
-	log.Println(uids)
 
 	// If no new emails, dont fetch anything
 	if len(uids) == 0 {
@@ -177,6 +178,7 @@ func (agent *EmailAgent) fetchEmails() error {
 
 		user, err := db.ServerUserQuery(msg_sender[0].Address, agent.Database)
 		if err != nil {
+			log.Printf("Error querying user %s", err)
 			continue
 		}
 
@@ -199,28 +201,86 @@ func (agent *EmailAgent) fetchEmails() error {
 				}
 			}
 		}
+
 		b, _ := ioutil.ReadAll(p.Body)
 		urls := agent.parseUrlsFromString(string(b))
 		for _, url := range urls {
-			website, err := db.WebsiteInsert(url, user.Id, agent.Database)
+
+			website, err := db.WebsiteQueryBy(bson.D{{"raw_link", url}}, agent.Database)
+			if err == nil {
+				found := false
+				for _, uid := range website.UserIds {
+					if uid == user.Id {
+						found = true
+					}
+				}
+				if !found {
+					website.UserIds = append(website.UserIds, user.Id)
+					website.Update(bson.D{{"$set", bson.D{
+						{"user_id", website.UserIds},
+					}}}, agent.Database)
+				}
+				continue
+			}
+
+			website, err = db.WebsiteInsert(url, user.Id, agent.Database)
 			if err != nil {
 				log.Printf("Error inserting %s for link %s", err, website)
 				continue
 			}
-			agent.AIClient.Summarize(context.Background(), website.Proto())
-			log.Println(color.Ize(color.Green, fmt.Sprintf("Saved %s's website: %s", user.Email, website.RawLink)))
+			log.Println("Titlign new site")
+			websiteProto, err := agent.AIClient.Title(context.Background(), website.Proto())
+			if err != nil {
+				log.Println("Error titling: ", err)
+				return err
+			}
+			log.Println("Finished new site")
+			website.Update(bson.D{{"$set", bson.D{
+				{"title", websiteProto.Title},
+				{"summary", websiteProto.Summary},
+				{"summary_uploaded", websiteProto.SummaryUploaded},
+			}}}, agent.Database)
+
+			log.Println(color.Ize(color.Green, fmt.Sprintf("Saved %s's website as title: %s", user.Email, website.RawLink)))
+
+			websiteProto, err = agent.AIClient.Summarize(context.Background(), website.Proto())
+			if err != nil {
+				return err
+			}
+			website.Update(bson.D{{"$set", bson.D{
+				{"title", websiteProto.Title},
+				{"summary", websiteProto.Summary},
+				{"summary_uploaded", websiteProto.SummaryUploaded},
+			}}}, agent.Database)
+
+			log.Println(color.Ize(color.Green, fmt.Sprintf("Saved %s's website as summary: %s", user.Email, website.RawLink)))
 		}
 	}
 	return nil
 }
 
-func (agent *EmailAgent) parseUrlsFromString(s string) []string {
-	urls := []string{}
-	r := regexp.MustCompile(`(https?://[^\s]+)`)
-	matches := r.FindAllString(s, -1)
-	for _, match := range matches {
-		urls = append(urls, match)
+func (agent *EmailAgent) removeDuplicateStrings(arr []string) []string {
+	encountered := map[string]bool{}
+	result := []string{}
+
+	for _, v := range arr {
+		if encountered[v] == true {
+			// Do not add duplicate.
+		} else {
+			// Record this element as an encountered element.
+			encountered[v] = true
+			// Append to result slice.
+			result = append(result, v)
+		}
 	}
+	// Return the new slice.
+	return result
+}
+
+func (agent *EmailAgent) parseUrlsFromString(s string) []string {
+	xurlsStrict := xurls.Relaxed()
+	urls := xurlsStrict.FindAllString(s, -1)
+	urls = agent.removeDuplicateStrings(urls)
 	return urls
 }
 

@@ -1,7 +1,7 @@
-import { TestClient } from "../proto/test_grpc_web_pb";
+import { TestClient } from "../debrief_proto/test_grpc_web_pb";
 import { 
   PingRequest,
- } from "../proto/test_pb";
+ } from "../debrief_proto/test_pb";
 
 export const testClient = new TestClient(process.env.NEXT_PUBLIC_API_URL);
 

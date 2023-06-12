@@ -1,4 +1,4 @@
-import { AuthClient } from "../proto/user_grpc_web_pb";
+import { AuthClient } from "../debrief_proto/user_grpc_web_pb";
 import { 
     UserLoginRequest,
     UserRegisterRequest,
@@ -10,7 +10,7 @@ import {
     ResetConfirmRequest,
     ChangePasswordRequest,
 
- } from "../proto/user_pb";
+ } from "../debrief_proto/user_pb";
 
 export const authClient = new AuthClient(process.env.NEXT_PUBLIC_API_URL);
 
@@ -206,7 +206,7 @@ class UserService {
             if (d <= Date.now()) {
                 return new Promise((resolve, reject) => {
                     var loginRequest = new UserLoginRequest();   
-                    loginRequest.setUsernameOrEmail(creds.username);
+                    loginRequest.setEmail(creds.email);
                     loginRequest.setPassword(creds.password);
 
                     authClient.login(loginRequest, null, function(error, response) {
