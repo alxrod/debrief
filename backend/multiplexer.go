@@ -50,6 +50,11 @@ func errorHandler(w http.ResponseWriter, r *http.Request, status int) {
 	}
 }
 
+func testHandler(w http.ResponseWriter, r *http.Request, status int) {
+	w.WriteHeader(status)
+	fmt.Fprint(w, "This is the Debrief API, incoming requests for functionality should be GRPC")
+}
+
 func (m *grpcMultiplexer) Handler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -66,6 +71,13 @@ func (m *grpcMultiplexer) Handler() http.Handler {
 			return
 
 		}
+
+		if r.URL.String() == "/" {
+			fmt.Printf(color.Ize(color.Green, fmt.Sprintf("Test Request for : %s\n", r.URL)))
+			testHandler(w, r, 200)
+			return
+		}
+
 		fmt.Printf(color.Ize(color.Purple, fmt.Sprintf("Bad Request for : %s\n", r.URL)))
 		errorHandler(w, r, 404)
 	})

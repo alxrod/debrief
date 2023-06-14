@@ -9,10 +9,18 @@ gencert:
 run:
 	./api
 
+.PHONY: build-backend
+build-backend:
+	cd backend && go build -o api .
+
+.PHONY: deploy-backend
+deploy-backend:
+	cd backend && ./api
+
 .PHONY: backend
 backend:
 	cd backend && go build -o api . && ./api
-
+	
 .PHONY: frontend
 frontend:
 	npm run dev --prefix frontend/ 

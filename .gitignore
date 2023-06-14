@@ -1,5 +1,5 @@
 backend/proto/*.go
-frontend/proto/*.js
+frontend/debrief_proto/*.js
 
 backend/api
 

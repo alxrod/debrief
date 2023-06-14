@@ -172,7 +172,7 @@ func main() {
 	}
 	// Serve it in a seperate thread
 	go func() {
-		log.Println(color.Ize(color.Cyan, fmt.Sprintf("Starting GRPC server on %s", api_addr)))
+		log.Println(color.Ize(color.Cyan, fmt.Sprintf("Starting GRPC server on %s", grpc_addr)))
 		backend_server.Serve()
 	}()
 
