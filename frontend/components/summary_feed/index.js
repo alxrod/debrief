@@ -198,7 +198,7 @@ const SummaryFeed = (props) => {
           }).length}
           setCurFilter={setCurFilter}
         /> */}
-        <p className="text-red-400">v1.0</p>
+        <p className="text-red-400">v1.1</p>
       </div>
       <div className="w-full">
         <ul role="list" className="divide-y divide-gray-100 min-w-md max-w-md">

@@ -107,8 +107,10 @@ const SummaryEntry = (props) => {
               <button
                 className='p-1'
                 onClick={() => {
-                  audio.src = "https://debrief-summaries.s3.amazonaws.com/"  + props.website.id;
-                  audio.play(); setAudioPlaying(true)
+                  const audio = new Audio("https://debrief-summaries.s3.amazonaws.com/"  + props.website.id)
+                  audio.play()
+                  setAudioPlaying(true)
+                  setAudio(audio)
                 }}
               >
                 <PlayIcon className="h-8 w-8 text-gray-600 hover:text-gray-700" aria-hidden="true" />
