@@ -20,6 +20,10 @@ deploy-backend:
 .PHONY: backend
 backend:
 	cd backend && go build -o api . && ./api
+
+.PHONY: clean
+clean:
+	cd backend && rm api
 	
 .PHONY: frontend
 frontend:
