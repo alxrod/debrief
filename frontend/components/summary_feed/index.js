@@ -148,7 +148,7 @@ const SummaryFeed = (props) => {
       id: website.id,
       audio: curAudio.audio,
     }
-    audio.audio.src = "https://debrief-summaries.s3.amazonaws.com/" + website.id
+    audio.audio.src = "https://debrief-summaries.s3.amazonaws.com/" + website.id + ".mp3"
 
     audio.audio.onended = function() {
       markRead(audio.id, true)

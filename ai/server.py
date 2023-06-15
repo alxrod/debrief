@@ -44,7 +44,7 @@ class Generator(website_pb2_grpc.GenerateServicer):
 
         try:
             sum_recording = open(temp_file,"rb")
-            self.s3.Bucket("debrief-summaries").put_object(Key=request.id, Body=sum_recording)
+            self.s3.Bucket("debrief-summaries").put_object(Key=request.id+".mp3", Body=sum_recording)
             uploaded = True
 
         except:
