@@ -179,12 +179,6 @@ const SummaryFeed = (props) => {
   const [allAudioPlaying, setAllAudioPlaying] = useState(false)
   const [playbackSpeed, setPlaybackSpeed] = useState(1.2)
 
-  const makeAudio = (id) => {
-    const url = "https://debrief-summaries.s3.amazonaws.com/" + id
-    var a = new Audio(url);
-    a.playbackRate=playbackSpeed;
-    return a
-  }
 
   return (
     <div className="flex flex-col items-start w-full">
