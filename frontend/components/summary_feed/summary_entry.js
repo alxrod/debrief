@@ -37,16 +37,6 @@ const SummaryEntry = (props) => {
     return date.toLocaleTimeString([], {timeStyle: 'short'}) + " " + date.toLocaleDateString() 
   }
 
-  const [audio, setAudio] = useState(null)
-  const [audioPlaying, setAudioPlaying] = useState(false)
-  
-  useEffect(() => {
-    if (props.website.id != null) {
-      setAudio(new Audio())
-    }
-  }, [props.website.audio])
-
-
   
   return (
     <li key={props.website.id} className="flex items-start justify-between gap-x-6 py-5" reloadattr={props.websitesChanged.toString()}>
@@ -103,31 +93,39 @@ const SummaryEntry = (props) => {
           </div>
 
           {props.website.summaryUploaded && (<>
-            {!audioPlaying ? (
+            {props.curAudio.id !== props.website.id  ? (
               <button
                 className='p-1'
-                onClick={() => {
-                  const audio = new Audio("https://debrief-summaries.s3.amazonaws.com/"  + props.website.id)
-                  audio.play()
-                  setAudioPlaying(true)
-                  setAudio(audio)
-                }}
+                onClick={() => props.playSingleAudio(props.website)}
               >
                 <PlayIcon className="h-8 w-8 text-gray-600 hover:text-gray-700" aria-hidden="true" />
               </button>
+            ) : (props.curAudio.id === props.website.id && !props.curAudioPlaying) ? (
+              <>
+              <button
+                className='p-1'
+                onClick={() => props.playSingleAudio(props.website)}
+              >
+                <RefreshIcon className="h-8 w-8 text-gray-600 hover:text-gray-700" aria-hidden="true" />
+              </button>
+              <button
+                className='p-1'
+                onClick={() => props.resumeAudio()}
+              >
+                <PlayIcon className="h-8 w-8 text-gray-600 hover:text-gray-700" aria-hidden="true" />
+              </button>
+              </>
             ) : (
               <>
-                {/* <button
+                <button
                   className='p-1'
                   onClick={() => props.playSingleAudio(props.website)}
                 >
                   <RefreshIcon className="h-8 w-8 text-gray-600 hover:text-gray-700" aria-hidden="true" />
-                </button> */}
+                </button>
                 <button
                   className='p-1'
-                  onClick={() => {
-                    audio.pause(); setAudioPlaying(false)
-                  }}
+                  onClick={() => props.pauseAudio()}
                 >
                   <PauseIcon className="h-8 w-8 text-gray-600 hover:text-gray-700" aria-hidden="true" />
                 </button>
