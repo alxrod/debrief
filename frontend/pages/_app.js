@@ -20,6 +20,11 @@ const App = ({Component, pageProps}) => {
         />
         <link rel="apple-touch-icon" href={process.env.NEXT_PUBLIC_FRONTEND_URL+"/logo192.png"} />
 
+        <link rel="preconnect" href="https://fonts.googleapis.com"/>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true"/>
+        <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap" rel="stylesheet"/>
+        
+
         <link rel="manifest" href={"/manifest.json"}/>
 
         <title>Debrief</title>

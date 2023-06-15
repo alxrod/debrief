@@ -93,7 +93,7 @@ func NewGrpcServer(pemPath, keyPath string, jwtManager *services.JWTManager) (*g
 	return s, nil
 }
 
-func NewServer(server_cert, server_key, addr string, dbName ...string) (*BackServer, error) {
+func NewServer(server_cert, server_key, addr string) (*BackServer, error) {
 	jwtManager := services.NewJWTManager(secretKey, tokenDuration)
 
 	grpcServer, err := NewGrpcServer(server_cert, server_key, jwtManager)
@@ -107,6 +107,7 @@ func NewServer(server_cert, server_key, addr string, dbName ...string) (*BackSer
 	}
 
 	dbIP := os.Getenv("DB_IP")
+	dbName := os.Getenv("DB_NAME")
 	dbUsername := os.Getenv("DB_USERNAME")
 	dbPassword := os.Getenv("DB_PASSWORD")
 
@@ -132,26 +133,20 @@ func NewServer(server_cert, server_key, addr string, dbName ...string) (*BackSer
 		return nil, err
 	}
 
-	s_dbName := ""
-	if len(dbName) == 1 {
-		s_dbName = dbName[0]
-	} else {
-		s_dbName = "debrief"
-	}
 	s := &BackServer{
 		lis:        lis,
 		GrpcSrv:    grpcServer,
 		JwtManager: jwtManager,
 		EmailAgent: &services.EmailAgent{},
 
-		dbName:   s_dbName,
+		dbName:   dbName,
 		dbClient: client,
 		dbCtx:    ctx,
 	}
 
 	s.EmailAgent.Initialize(&tls.Config{
 		InsecureSkipVerify: true,
-	}, client.Database(s_dbName))
+	}, client.Database(dbName))
 
 	// Have to add this for every service
 	proto.RegisterAuthServer(grpcServer, s)

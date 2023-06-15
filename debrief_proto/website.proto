@@ -46,4 +46,5 @@ service Summary {
 service Generate {
   rpc Title(WebsiteEntity) returns (WebsiteEntity) {};
   rpc Summarize(WebsiteEntity) returns (WebsiteEntity) {};
+  rpc TestConn(NullRequest) returns (NullResponse) {};
 }
