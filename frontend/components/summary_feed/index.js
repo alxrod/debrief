@@ -12,19 +12,20 @@ import FeedHeader from './feed_header'
  
 const SummaryFeed = (props) => {
   const pauseAudio = () => {
-    if (curAudio.cur != null) {
+    if (curAudio.audio != null) {
       setCurAudioPlaying(false)
-      curAudio.cur.pause();
+      curAudio.audio.pause();
     }
   }
 
   const resumeAudio = () => {
-    if (curAudio.cur != null) {
+    if (curAudio.audio != null) {
       setCurAudioPlaying(true)
-      curAudio.cur.play();
+      curAudio.audio.play();
     }
   }
 
+  const [curFilter, setCurFilter] = useState("all")
   const filters = {
     all: (websites) => {
       return [
@@ -51,112 +52,111 @@ const SummaryFeed = (props) => {
         return site.saved;
       }).sort((a, b) => (a.saveTime.getTime() < b.saveTime.getTime()) ? 1 : -1)
     },
+  }
+
+  // const playAllAudio = () => {
+  //   pauseAudio()
+  //   setAllAudioPlaying(true)
+  //   let prev = null;
+  //   let next = null;
+  //   let start = null
+  //   props.websites.filter(function (site) {
+  //     return !site.read && site.summaryUploaded;
+  //   }).sort((a, b) => (a.saveTime.getTime() < b.saveTime.getTime()) ? 1 : -1).forEach((website) => {
+  //     const audio = { 
+  //       id: website.id,
+  //       cur: makeAudio(website.id),
+  //       next: next,
+  //       prev: prev,
+  //     }
+  //     if (prev != null) {
+  //       prev.next = audio
+  //     }
+  //     prev = audio
+  //     if (start == null) {
+  //       start = audio
+  //     }
+  //     audio.cur.onended = function() {
+  //       markRead(audio.id, true)
+  //       if (audio.next != null) {
+  //         setCurAudioPlaying(true)
+  //         audio.next.cur.play()
+  //       } else {
+  //         setCurAudioPlaying(false)
+  //       }
+  //     };
+  //   })
+  //   if (start === null) {
+  //     return
+  //   }
+  //   setCurAudio(start)
+  //   start.cur.play()
+  //   setCurAudioPlaying(true)
+  // }
+
+  // const refreshAudio = (audio) => {
+  //   audio.cur.pause()
+  //   const endFunc = audio.cur.onended
+  //   audio.cur = makeAudio(audio.id)
+  //   audio.cur.onended = endFunc
+  //   setCurAudio(audio)
+  //   audio.cur.play()
+  //   setCurAudioPlaying(true)
+  // }
+
+  // const skipForward = () => {
+  //   pauseAudio()
+  //   markRead(curAudio.id, true)
+  //   if (curAudio.next != null) {
+  //     refreshAudio(curAudio.next)
+  //     curAudio.next.cur.play()
+  //     setCurAudioPlaying(true)
+  //     setCurAudio(curAudio.next)
+  //   } else {
+  //     setCurAudioPlaying(false)
+  //     setAllAudioPlaying(false)
+  //     setCurAudio(
+  //       { 
+  //         id: "",
+  //         cur: null,
+  //         next: null,
+  //         prev: null,
+  //       }
+  //     )
+  //   }
     
-  }
-  
+  // }
 
-  const playAllAudio = () => {
-    pauseAudio()
-    setAllAudioPlaying(true)
-    let prev = null;
-    let next = null;
-    let start = null
-    props.websites.filter(function (site) {
-      return !site.read && site.summaryUploaded;
-    }).sort((a, b) => (a.saveTime.getTime() < b.saveTime.getTime()) ? 1 : -1).forEach((website) => {
-      const audio = { 
-        id: website.id,
-        cur: makeAudio(website.id),
-        next: next,
-        prev: prev,
-      }
-      if (prev != null) {
-        prev.next = audio
-      }
-      prev = audio
-      if (start == null) {
-        start = audio
-      }
-      audio.cur.onended = function() {
-        markRead(audio.id, true)
-        if (audio.next != null) {
-          setCurAudioPlaying(true)
-          audio.next.cur.play()
-        } else {
-          setCurAudioPlaying(false)
-        }
-      };
-    })
-    if (start === null) {
-      return
-    }
-    setCurAudio(start)
-    start.cur.play()
-    setCurAudioPlaying(true)
-  }
-
-  const refreshAudio = (audio) => {
-    audio.cur.pause()
-    const endFunc = audio.cur.onended
-    audio.cur = makeAudio(audio.id)
-    audio.cur.onended = endFunc
-    setCurAudio(audio)
-    audio.cur.play()
-    setCurAudioPlaying(true)
-  }
-
-  const skipForward = () => {
-    pauseAudio()
-    markRead(curAudio.id, true)
-    if (curAudio.next != null) {
-      refreshAudio(curAudio.next)
-      curAudio.next.cur.play()
-      setCurAudioPlaying(true)
-      setCurAudio(curAudio.next)
-    } else {
-      setCurAudioPlaying(false)
-      setAllAudioPlaying(false)
-      setCurAudio(
-        { 
-          id: "",
-          cur: null,
-          next: null,
-          prev: null,
-        }
-      )
-    }
-    
-  }
-
-  const skipBackward = () => {
-    pauseAudio()
-    if (curAudio.prev != null) {
-      refreshAudio(curAudio.prev)
-      curAudio.prev.cur.play()
-      setCurAudio(curAudio.prev)
-      setCurAudioPlaying(true)
-    } else {
-      refreshAudio(curAudio)
-    }
-    
-  }
+  // const skipBackward = () => {
+  //   pauseAudio()
+  //   if (curAudio.prev != null) {
+  //     refreshAudio(curAudio.prev)
+  //     curAudio.prev.cur.play()
+  //     setCurAudio(curAudio.prev)
+  //     setCurAudioPlaying(true)
+  //   } else {
+  //     refreshAudio(curAudio)
+  //   }
+  // }
 
 
   const playSingleAudio = (website) => {
     pauseAudio()
     setAllAudioPlaying(false)
+ 
     const audio = { 
       id: website.id,
-      cur: makeAudio(website.id),
-      next: null,
-      prev: null,
+      audio: curAudio.audio,
     }
-    audio.cur.onended = function() {
+    audio.audio.src = "https://debrief-summaries.s3.amazonaws.com/" + website.id
+
+    audio.audio.onended = function() {
       markRead(audio.id, true)
       setCurAudioPlaying(false)
     };
+    
     setCurAudio(audio)
-    audio.cur.play()
+    audio.audio.play()
     setCurAudioPlaying(true)
   }
 
@@ -166,12 +166,19 @@ const SummaryFeed = (props) => {
     )
   }
 
-  const [curAudio, setCurAudio] = useState({id: "", cur: null, next: null, prev: null})
+  const [curAudio, setCurAudio] = useState({id: "", audio: null})
+  useEffect(() => {
+    if (curAudio.id === "") {
+      curAudio.audio = new Audio()
+      console.log("Created audio as ", curAudio)
+      setCurAudio(curAudio)
+    }
+  }, [curAudio])
+
   const [curAudioPlaying, setCurAudioPlaying] = useState(false)
   const [allAudioPlaying, setAllAudioPlaying] = useState(false)
   const [playbackSpeed, setPlaybackSpeed] = useState(1.2)
 
-  const [curFilter, setCurFilter] = useState("all")
   const makeAudio = (id) => {
     const url = "https://debrief-summaries.s3.amazonaws.com/" + id
     var a = new Audio(url);
@@ -182,7 +189,7 @@ const SummaryFeed = (props) => {
   return (
     <div className="flex flex-col items-start w-full">
       <div className="w-full">
-        <FeedHeader 
+        {/* <FeedHeader 
           playAllAudio={playAllAudio}
           pauseAudio={pauseAudio}
           resumeAudio={resumeAudio}
@@ -196,7 +203,7 @@ const SummaryFeed = (props) => {
             return !site.read && site.summaryUploaded;
           }).length}
           setCurFilter={setCurFilter}
-        />
+        /> */}
       </div>
       <div className="w-full">
         <ul role="list" className="divide-y divide-gray-100 min-w-md max-w-md">

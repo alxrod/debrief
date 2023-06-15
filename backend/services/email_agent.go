@@ -88,11 +88,15 @@ func (agent *EmailAgent) Initialize(config *tls.Config, db *mongo.Database) erro
 		return err
 	}
 
-	agent.AIConn, err = grpc.Dial("localhost:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	agent.AIConn, err = grpc.Dial("127.0.0.1:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("failed to connect to ai server: %v", err)
 	}
 	agent.AIClient = proto.NewGenerateClient(agent.AIConn)
+	_, err = agent.AIClient.TestConn(context.Background(), &proto.NullRequest{})
+	if err != nil {
+		log.Fatal("Failed to connect to AI server: ", err)
+	}
 
 	go func() {
 		log.Printf("Set up Email Fetching")
@@ -228,7 +232,7 @@ func (agent *EmailAgent) fetchEmails() error {
 				log.Printf("Error inserting %s for link %s", err, website)
 				continue
 			}
-			log.Println("Titlign new site")
+			log.Println("Titling new site")
 			websiteProto, err := agent.AIClient.Title(context.Background(), website.Proto())
 			if err != nil {
 				log.Println("Error titling: ", err)

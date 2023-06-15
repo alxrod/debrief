@@ -6,6 +6,8 @@ import sys
 import os 
 sys.path.insert(1, os.getcwd()+'/debrief_proto')
 
+
+from debrief_proto import generic_pb2
 from debrief_proto import website_pb2
 from debrief_proto import website_pb2_grpc
 import boto3
@@ -34,7 +36,7 @@ class Generator(website_pb2_grpc.GenerateServicer):
 
     def Summarize(self, request, context):
         link = request.raw_link
-        print("Generating for link ", link)
+        print("Generating summary for link ", link)
 
         # summary = ""
         title, summary, temp_file = self.audio_gen.output_summary(link)
@@ -56,6 +58,9 @@ class Generator(website_pb2_grpc.GenerateServicer):
         
         print("generation complete")
         return request
+    
+    def TestConn(self, request, context):
+        return generic_pb2.NullResponse()
 
 def serve():
     port = '50051'
@@ -70,3 +75,4 @@ def serve():
 if __name__ == '__main__':
     logging.basicConfig()
     serve()
+
