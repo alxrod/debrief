@@ -70,6 +70,7 @@ func (s *BackServer) Shutdown() {
 func NewGrpcServer(pemPath, keyPath string, jwtManager *services.JWTManager) (*grpc.Server, error) {
 	var cred credentials.TransportCredentials
 	var err error
+
 	if debug {
 		log.Println(color.Ize(color.Yellow, "Running without TLS"))
 		cred = credentials.NewTLS(&tls.Config{
