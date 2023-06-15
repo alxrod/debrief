@@ -42,7 +42,7 @@ const SummaryEntry = (props) => {
   
   useEffect(() => {
     if (props.website.id != null) {
-      setAudio(new Audio("https://debrief-summaries.s3.amazonaws.com/"  + props.website.id))
+      setAudio(new Audio())
     }
   }, [props.website.audio])
 
@@ -106,7 +106,10 @@ const SummaryEntry = (props) => {
             {!audioPlaying ? (
               <button
                 className='p-1'
-                onClick={() => {audio.play(); setAudioPlaying(true)}}
+                onClick={() => {
+                  audio.src = "https://debrief-summaries.s3.amazonaws.com/"  + props.website.id;
+                  audio.play(); setAudioPlaying(true)
+                }}
               >
                 <PlayIcon className="h-8 w-8 text-gray-600 hover:text-gray-700" aria-hidden="true" />
               </button>
@@ -120,7 +123,9 @@ const SummaryEntry = (props) => {
                 </button> */}
                 <button
                   className='p-1'
-                  onClick={() => {audio.pause(); setAudioPlaying(false)}}
+                  onClick={() => {
+                    audio.pause(); setAudioPlaying(false)
+                  }}
                 >
                   <PauseIcon className="h-8 w-8 text-gray-600 hover:text-gray-700" aria-hidden="true" />
                 </button>
