@@ -173,7 +173,7 @@ const SummaryFeed = (props) => {
 
   const [curFilter, setCurFilter] = useState("all")
   const makeAudio = (id) => {
-    const url = "https://debrief-summaries.s3.amazonaws.com/" + id
+    const url = "https://debrief-summaries.s3.amazonaws.com/" + id + ".mp3"
     var a = new Audio(url);
     a.playbackRate=playbackSpeed;
     return a
