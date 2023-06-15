@@ -72,7 +72,7 @@ const SummaryEntry = (props) => {
             </div>
         </div>
         <div className="mt-1 flex justify-between items-center gap-x-2 text-xs leading-5 text-gray-500">
-          <div className="flex grow items-center gap-x-1">
+          <div className={"flex grow gap-x-1 "  + (props.curAudio.id !== props.website.id ? "flex-row items-center" : "flex-col items-start")}>
             <p className="whitespace-nowrap">
               Added on{" "}
               <time dateTime={props.website.saveTime}>
