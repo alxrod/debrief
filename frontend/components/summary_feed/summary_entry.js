@@ -96,7 +96,7 @@ const SummaryEntry = (props) => {
             {props.curAudio.id !== props.website.id  ? (
               <button
                 className='p-1'
-                onClick={() => props.playSingleAudio(props.website)}
+                onClick={() => {props.playSingleAudio(props.website); props.curAudio.audio.play()}}
               >
                 <PlayIcon className="h-8 w-8 text-gray-600 hover:text-gray-700" aria-hidden="true" />
               </button>
@@ -104,7 +104,7 @@ const SummaryEntry = (props) => {
               <>
               <button
                 className='p-1'
-                onClick={() => props.playSingleAudio(props.website)}
+                onClick={() => {props.playSingleAudio(props.website); props.curAudio.audio.play()}}
               >
                 <RefreshIcon className="h-8 w-8 text-gray-600 hover:text-gray-700" aria-hidden="true" />
               </button>
