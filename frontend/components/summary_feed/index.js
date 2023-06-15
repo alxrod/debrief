@@ -155,9 +155,9 @@ const SummaryFeed = (props) => {
       setCurAudioPlaying(false)
     };
     
-    setCurAudio(audio)
-    audio.audio.play()
     setCurAudioPlaying(true)
+    setCurAudio(audio)
+    
   }
 
   const markRead = (website_id, read) => {
