@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux'
 import { confirmResetId, changePassword } from "../../reducers/user/dispatchers/user.dispatcher";
 
 import { useRouter } from "next/router"
-
+import PublicRoute from "../../components/public"
 export async function getStaticPaths() {
   return {
       paths: [], //indicates that no page needs be created at build time
@@ -60,7 +60,7 @@ const ResetPassword = (props) => {
     router.push("/feed")
   }
   return (
-      <>
+      <PublicRoute>
         <div className="min-h-full flex flex-col items-center py-12 sm:px-6 lg:px-8">
           <div className="sm:mx-auto sm:w-full sm:max-w-md">
             <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Reset Your Password</h2>
@@ -107,7 +107,7 @@ const ResetPassword = (props) => {
             </div>
           </div>
         </div>
-      </>
+      </PublicRoute>
     )
 }
 

@@ -1,5 +1,4 @@
 import React, {useState, useEffect} from 'react';
-import TestService from "../services/test.service";
 import Image from 'next/image'
 
 import { MailIcon, VolumeUpIcon, CloudIcon } from '@heroicons/react/solid'
@@ -52,12 +51,6 @@ const LandingPage = (props) => {
     })
   }
 
-  const router = useRouter()
-  useEffect( () => {
-    if (props.isLoggedIn) {
-      router.push("/feed")
-    }
-  })
   return (
     
     <div>

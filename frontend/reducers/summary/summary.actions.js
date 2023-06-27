@@ -1,3 +1,3 @@
-export const LOAD = "summary/websites/LOAD"
-export const CLEAR = "summary/websites/CLEAR"
-export const TOGGLE_FLAG = "summary/websites/TOGGLE_FLAG"
+export const LOAD = "summary/articles/LOAD"
+export const CLEAR = "summary/articles/CLEAR"
+export const TOGGLE_FLAG = "summary/articles/TOGGLE_FLAG"

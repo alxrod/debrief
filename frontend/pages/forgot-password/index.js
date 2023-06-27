@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux'
 import { forgotPassword } from "../../reducers/user/dispatchers/user.dispatcher";
 
 import { useRouter } from "next/router"
-
+import PublicRoute from "../../components/public";
 const ForgotPassword = (props) => {
   const router = useRouter()
   const [email, setEmail] = useState("")
@@ -41,7 +41,7 @@ const ForgotPassword = (props) => {
     router.push("/feed")
   }
   return (
-      <>
+      <PublicRoute>
         <div className="min-h-full flex flex-col items-center py-12 sm:px-6 lg:px-8">
           <div className="sm:mx-auto sm:w-full sm:max-w-md">
             <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Forgot your password?</h2>
@@ -88,7 +88,7 @@ const ForgotPassword = (props) => {
             </div>
           </div>
         </div>
-      </>
+      </PublicRoute>
     )
 }
 

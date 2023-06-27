@@ -39,31 +39,34 @@ const SummaryEntry = (props) => {
 
   
   return (
-    <li key={props.website.id} className="flex items-start justify-between gap-x-6 py-5" reloadattr={props.websitesChanged.toString()}>
+    <li key={props.article.id} className="flex items-start justify-between gap-x-6 py-5" reloadattr={props.articlesChanged.toString()}>
       <div className="min-w-0">
         <div className="flex justify-between items-center gap-x-3">
             <a 
-              href={props.website.rawLink} 
+              href={props.article.raw_link} 
               target="_blank" 
               className="text-sm font-semibold leading-6 text-gray-900"
             >
-              {props.website.title}
+              {props.article.title}
             </a>
 
             <div className="flex gap-x-3 justify-start items-center">
               <p
                 className={classNames(
-                  props.website.read ? statuses["Old"] : statuses["Unread"],
+                  props.article.metadata.read ? statuses["Old"] : statuses["Unread"],
                   'rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset'
                 )}
               >
-                {props.website.read ? "old" : "unread"}
+                {props.article.metadata.read ? "old" : "unread"}
               </p>
               
               <button
-                onClick={() => props.toggleFlag(props.website.id, "saved", !props.website.saved)}
+                onClick={() => {
+                  props.article.metadata.saved = !props.article.metadata.saved
+                  props.toggleFlag(props.article.id, props.article.metadata)
+                }}
               >
-                {props.website.saved ? (
+                {props.article.metadata.saved ? (
                   <StarIcon className="h-5 w-5 text-yellow-400" aria-hidden="true" />
                 ) : (
                   <StarOutlineIcon className="h-5 w-5 text-gray-500" aria-hidden="true" />
@@ -72,18 +75,18 @@ const SummaryEntry = (props) => {
             </div>
         </div>
         <div className="mt-1 flex justify-between items-center gap-x-2 text-xs leading-5 text-gray-500">
-          <div className={"flex grow gap-x-1 "  + (props.curAudio.id !== props.website.id ? "flex-row items-center" : "flex-col items-start")}>
+          <div className={"flex grow gap-x-1 "  + (props.curAudio.id !== props.article.id ? "flex-row items-center" : "flex-col items-start")}>
             <p className="whitespace-nowrap">
               Added on{" "}
-              <time dateTime={props.website.saveTime}>
-                {genTimeString(props.website.saveTime)}
+              <time dateTime={props.article.metadata.save_time}>
+                {genTimeString(props.article.metadata.save_time)}
               </time>
             </p>
             <svg viewBox="0 0 2 2" className="h-0.5 w-0.5 fill-current">
               <circle cx={1} cy={1} r={1} />
             </svg>
             <a 
-              href={props.website.rawLink} 
+              href={props.article.raw_link} 
               target="_blank" 
               className="truncate text-secondary4 hover:text-secondary5 font-medium flex gap-x-1 items-center"
             >
@@ -92,19 +95,19 @@ const SummaryEntry = (props) => {
             </a>
           </div>
 
-          {props.website.summaryUploaded && (<>
-            {props.curAudio.id !== props.website.id  ? (
+          {props.article.summary_uploaded && (<>
+            {props.curAudio.id !== props.article.id  ? (
               <button
                 className='p-1'
-                onClick={() => props.playSingleAudio(props.website)}
+                onClick={() => props.playSingleAudio(props.article)}
               >
                 <PlayIcon className="h-8 w-8 text-gray-600 hover:text-gray-700" aria-hidden="true" />
               </button>
-            ) : (props.curAudio.id === props.website.id && !props.curAudioPlaying) ? (
+            ) : (props.curAudio.id === props.article.id && !props.curAudioPlaying) ? (
               <>
               <button
                 className='p-1'
-                onClick={() => props.playSingleAudio(props.website)}
+                onClick={() => props.playSingleAudio(props.article)}
               >
                 <RefreshIcon className="h-8 w-8 text-gray-600 hover:text-gray-700" aria-hidden="true" />
               </button>
@@ -119,7 +122,7 @@ const SummaryEntry = (props) => {
               <>
                 <button
                   className='p-1'
-                  onClick={() => props.playSingleAudio(props.website)}
+                  onClick={() => props.playSingleAudio(props.article)}
                 >
                   <RefreshIcon className="h-8 w-8 text-gray-600 hover:text-gray-700" aria-hidden="true" />
                 </button>
@@ -156,9 +159,12 @@ const SummaryEntry = (props) => {
                             active ? 'bg-gray-50' : '',
                             'block px-3 py-1 text-sm leading-6 text-gray-900'
                           )}
-                          onClick={() => props.toggleFlag(props.website.id, "read", !props.website.read)}
+                          onClick={() => {
+                            props.article.metadata.read = !props.article.metadata.read
+                            props.toggleFlag(props.article.id, props.article.metadata)
+                          }}
                         >
-                          {"Mark " + (props.website.read ? "Unread" : "Read")}<span className="sr-only">, {props.website.id}</span>
+                          {"Mark " + (props.article.metadata.read ? "Unread" : "Read")}<span className="sr-only">, {props.article.id}</span>
                         </button>
                       )}
                     </Menu.Item>
@@ -170,9 +176,12 @@ const SummaryEntry = (props) => {
                             active ? 'bg-gray-50' : '',
                             'block px-3 py-1 text-sm leading-6 text-gray-900'
                           )}
-                          onClick={() => props.toggleFlag(props.website.id, "saved", !props.website.saved)}
+                          onClick={() => {
+                            props.article.metadata.saved = !props.article.metadata.saved
+                            props.toggleFlag(props.article.id, props.article.metadata)
+                          }}
                         >
-                          {(props.website.saved ? "Unsave" : "Save")}<span className="sr-only">, {props.website.id}</span>
+                          {(props.article.metadata.saved ? "Unsave" : "Save")}<span className="sr-only">, {props.article.id}</span>
                         </button>
                       )}
                     </Menu.Item>
@@ -184,9 +193,12 @@ const SummaryEntry = (props) => {
                             active ? 'bg-gray-50' : '',
                             'block px-3 py-1 text-sm leading-6 text-gray-900'
                           )}
-                          onClick={() => props.toggleFlag(props.website.id, "archived", !props.website.archived)}
+                          onClick={() => {
+                            props.article.metadata.archived = !props.article.metadata.archived
+                            props.toggleFlag(props.article.id, props.article.metadata)
+                          }}
                         >
-                          {(props.website.archived ? "Unarchive" : "Archive")}<span className="sr-only">, {props.website.id}</span>
+                          {(props.article.metadata.archived ? "Unarchive" : "Archive")}<span className="sr-only">, {props.article.id}</span>
                         </button>
                       )}
                     </Menu.Item>
@@ -197,18 +209,18 @@ const SummaryEntry = (props) => {
           </>
         )}
         </div>
-        {props.website.summaryUploaded ? (
+        {props.article.summary_uploaded ? (
           <div 
             className="mt-1 flex items-center gap-x-2 text-xs leading-5 text-gray-500"
             style={{
               "overflow": "hidden",
               "transition": "0.4s max-height",
-              "maxHeight": (props.curAudio.id === props.website.id) ? "400px" : "52px"
+              "maxHeight": (props.curAudio.id === props.article.id) ? "400px" : "52px"
             }}>
-            {(props.curAudio.id === props.website.id && props.curAudioPlaying) ? (
-              <p>{props.website.summary}</p>
+            {(props.curAudio.id === props.article.id && props.curAudioPlaying) ? (
+              <p>{props.article.summary}</p>
             ) : (
-              <p>{truncateString(props.website.summary, 20)}</p>
+              <p>{truncateString(props.article.summary, 20)}</p>
             )}
           </div>
         ) : (
@@ -223,7 +235,7 @@ const SummaryEntry = (props) => {
 }
 
 const mapStateToProps = ({ user, summary}) => ({
-  websitesChanged: summary.websitesChanged,
+  articlesChanged: summary.articlesChanged,
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({

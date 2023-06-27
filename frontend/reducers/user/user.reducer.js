@@ -1,5 +1,6 @@
 import * as userActions from "./user.actions";
 
+
 const initialState = {
     isLoggedIn: false,
     user: null,
@@ -11,8 +12,6 @@ export default (state = initialState, action) => {
                 ...state,
                 user: action.payload.user,
                 isLoggedIn: true,
-                creds: action.payload.creds,
-                credsInCookies: true,
             }
 
         case userActions.CLEAR_USER:

@@ -2,9 +2,9 @@
 import store from '../store'
 import { Provider } from 'react-redux'
 import '../styles/globals.css'
-import AppWrapper from "../components/app_wrapper";
 import Navbar from "../components/navbar";
 import Head from 'next/head';
+import AppWrapper from "../components/app_wrapper";
 
 const App = ({Component, pageProps}) => {
   return (

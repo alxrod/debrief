@@ -1,10 +1,10 @@
 
-export const toggleFlag = (websites, website_id, name, status) => {
-  for (let i = 0; i < websites.length; i++) {
-    if (websites[i].id === website_id) {
-      websites[i][name] = status
+export const updateMetadata = (articles, id, metadata) => {
+  for (let i = 0; i < articles.length; i++) {
+    if (articles[i].id === id) {
+      articles[i].metadata = metadata;
     }
   }
-  return websites
+  return articles
 }
 

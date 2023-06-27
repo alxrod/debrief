@@ -1,47 +1,40 @@
 import SummaryService from "../../../services/summary.service";
 
 import * as summaryActions from "../summary.actions";
-import * as helpers from "../../helpers"
 
-export const getWebsites = () => {
-    return dispatch => {
-        return helpers.authCheck(dispatch).then(
-            (creds) => {
-                return SummaryService.get(creds.access_token, creds.user_id).then(
-                    (sites) => {
-                        dispatch({
-                            type: summaryActions.LOAD,
-                            payload: sites,
-                        });
-                        return Promise.resolve(sites);
-                    },
-                    (error) => {
-                      const message = 
-                          (error.response &&
-                          error.response.data &&
-                          error.response.data.message) ||
-                          error.messsage ||
-                          error.toString();
-                      dispatch({
-                          type: summaryActions.CLEAR,
-                      });
-                      return Promise.reject(message);
-                    }
-                );
-            },
-            () => {
-                return Promise.reject("Auth check failed")
-            }
-        )
-    }
+const parseArticle = (article) => {
+  article.id = article._id
+  article.metadata.save_time = new Date(article.metadata.save_time)
+  return article
+}
+
+export const getFeeds = (feed_ids) => {
+  return dispatch => {
+    return new Promise((resolve, reject) => {
+      (async () => {
+        let articles = []
+        for (const feed_id of feed_ids) {
+          const feed_articles = await SummaryService.pullFeed(feed_id)
+          for (const article of feed_articles) {
+            articles.push(parseArticle(article))
+          }
+        }
+        dispatch({
+          type: summaryActions.LOAD,
+          payload: articles,
+        });
+        resolve(articles);
+      })()
+    })
+  }
 };
 
 export const clearWebsites = () => {
   return dispatch => {
-      dispatch({
-          type: summaryActions.LOAD,
-          payload: sites,
-      });
-      return Promise.resolve(sites);
+    dispatch({
+      type: summaryActions.LOAD,
+      payload: sites,
+    });
+    return Promise.resolve(sites);
   }       
 };

@@ -2,8 +2,8 @@ import * as summaryActions from "./summary.actions";
 import * as summaryHelpers from "./summary.helpers";
 
 const initialState = {
-  websites: [],
-  websitesChanged: false,
+  articles: [],
+  articlesChanged: false,
 } 
 
 export default (state = initialState, action) => {
@@ -11,27 +11,26 @@ export default (state = initialState, action) => {
         case summaryActions.LOAD:
             return {
                 ...state,
-                websites: action.payload,
-                websitesChanged: !state.websitesChanged
+                articles: action.payload,
+                articlesChanged: !state.articlesChanged
             }
 
         case summaryActions.CLEAR:
             return {
                 ...state,
-                websites: [],
-                websitesChanged: !state.websitesChanged
+                articles: [],
+                articlesChanged: !state.articlesChanged
             };
         
         case summaryActions.TOGGLE_FLAG:
             return {
                 ...state,
-                websites: summaryHelpers.toggleFlag(
-                    state.websites, 
+                articles: summaryHelpers.updateMetadata(
+                    state.articles, 
                     action.payload.website_id, 
-                    action.payload.name,
-                    action.payload.status
+                    action.payload.metadata
                 ),
-                websitesChanged: !state.websitesChanged
+                articlesChanged: !state.articlesChanged
             };
 
         default:

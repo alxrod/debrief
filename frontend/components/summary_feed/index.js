@@ -26,30 +26,30 @@ const SummaryFeed = (props) => {
   }
 
   const filters = {
-    all: (websites) => {
+    all: (articles) => {
       return [
-        ...(websites.filter(function (site) {
-          return !site.read && !site.archived;
-        }).sort((a, b) => (a.saveTime.getTime() < b.saveTime.getTime()) ? 1 : -1)),
-        ...(websites.filter(function (site) {
-          return site.read && !site.archived;
-        }).sort((a, b) => (a.saveTime.getTime() < b.saveTime.getTime()) ? 1 : -1)),
+        ...(articles.filter(function (article) {
+          return !article.metadata.read && !article.metadata.archived;
+        }).sort((a, b) => (a.metadata.save_time.getTime() < b.metadata.save_time.getTime()) ? 1 : -1)),
+        ...(articles.filter(function (article) {
+          return article.metadata.read && !article.metadata.archived;
+        }).sort((a, b) => (a.metadata.save_time.getTime() < b.metadata.save_time.getTime()) ? 1 : -1)),
       ]
     },
-    unread: (websites) => {
-      return websites.filter(function (site) {
-        return !site.read;
-      }).sort((a, b) => (a.saveTime.getTime() < b.saveTime.getTime()) ? 1 : -1)
+    unread: (articles) => {
+      return articles.filter(function (article) {
+        return !article.metadata.read;
+      }).sort((a, b) => (a.metadata.save_time.getTime() < b.metadata.save_time.getTime()) ? 1 : -1)
     },
-    archived: (websites) => {
-      return websites.filter(function (site) {
-        return site.archived;
-      }).sort((a, b) => (a.saveTime.getTime() < b.saveTime.getTime()) ? 1 : -1)
+    archived: (articles) => {
+      return articles.filter(function (article) {
+        return article.metadata.archived;
+      }).sort((a, b) => (a.metadata.save_time.getTime() < b.metadata.save_time.getTime()) ? 1 : -1)
     },
-    saved: (websites) => {
-      return websites.filter(function (site) {
-        return site.saved;
-      }).sort((a, b) => (a.saveTime.getTime() < b.saveTime.getTime()) ? 1 : -1)
+    saved: (articles) => {
+      return articles.filter(function (article) {
+        return article.metadata.saved;
+      }).sort((a, b) => (a.metadata.save_time.getTime() < b.metadata.save_time.getTime()) ? 1 : -1)
     },
     
   }
@@ -61,12 +61,13 @@ const SummaryFeed = (props) => {
     let prev = null;
     let next = null;
     let start = null
-    props.websites.filter(function (site) {
-      return !site.read && site.summaryUploaded;
-    }).sort((a, b) => (a.saveTime.getTime() < b.saveTime.getTime()) ? 1 : -1).forEach((website) => {
+    props.articles.filter(function (article) {
+      return !article.metadata.read && article.summary_uploaded;
+    }).sort((a, b) => (a.metadata.save_time.getTime() < b.metadata.save_time.getTime()) ? 1 : -1).forEach((article) => {
       const audio = { 
-        id: website.id,
-        cur: makeAudio(website.id),
+        id: article.id,
+        upload_path: article.upload_path,
+        cur: makeAudio(article.upload_path),
         next: next,
         prev: prev,
       }
@@ -98,7 +99,7 @@ const SummaryFeed = (props) => {
   const refreshAudio = (audio) => {
     audio.cur.pause()
     const endFunc = audio.cur.onended
-    audio.cur = makeAudio(audio.id)
+    audio.cur = makeAudio(audio.upload_path)
     audio.cur.onended = endFunc
     setCurAudio(audio)
     audio.cur.play()
@@ -142,12 +143,12 @@ const SummaryFeed = (props) => {
   }
 
 
-  const playSingleAudio = (website) => {
+  const playSingleAudio = (article) => {
     pauseAudio()
     setAllAudioPlaying(false)
     const audio = { 
-      id: website.id,
-      cur: makeAudio(website.id),
+      id: article.id,
+      cur: makeAudio(article.upload_path),
       next: null,
       prev: null,
     }
@@ -161,7 +162,14 @@ const SummaryFeed = (props) => {
   }
 
   const markRead = (website_id, read) => {
-    props.toggleFlag(website_id, "read", read).then(
+    let new_meta = {}
+    for (let i = 0; i < props.articles.length; i++) {
+      if (props.articles[i].id === website_id) {
+        new_meta = props.articles[i].metadata
+      }
+    }
+    new_meta.read = read
+    props.toggleFlag(website_id, new_meta).then(
       console.log("Marked article as read"),
     )
   }
@@ -172,8 +180,8 @@ const SummaryFeed = (props) => {
   const [playbackSpeed, setPlaybackSpeed] = useState(1.2)
 
   const [curFilter, setCurFilter] = useState("all")
-  const makeAudio = (id) => {
-    const url = "https://debrief-summaries.s3.amazonaws.com/" + id + ".mp3"
+  const makeAudio = (upload_path) => {
+    const url = "https://debrief-summaries.s3.amazonaws.com/" + upload_path
     var a = new Audio(url);
     a.playbackRate=playbackSpeed;
     return a
@@ -192,20 +200,20 @@ const SummaryFeed = (props) => {
           allAudioPlaying={allAudioPlaying}
           skipForward={skipForward}
           skipBackward={skipBackward}
-          readCount={props.websites.filter(function (site) {
-            return !site.read && site.summaryUploaded;
+          readCount={props.articles.filter(function (article) {
+            return !article.metadata.read && article.summary_uploaded;
           }).length}
           setCurFilter={setCurFilter}
         />
       </div>
       <div className="w-full">
         <ul role="list" className="divide-y divide-gray-100 min-w-md max-w-md">
-          {filters[curFilter](props.websites).length !== 0 ? (
+          {filters[curFilter](props.articles).length !== 0 ? (
             <>
-            {filters[curFilter](props.websites).map((website) => (
+            {filters[curFilter](props.articles).map((article) => (
               <SummaryEntry 
-              website={website} 
-              key={website.id} 
+              article={article} 
+              key={article.id} 
               playSingleAudio={playSingleAudio} 
               pauseAudio={pauseAudio} 
               resumeAudio={resumeAudio}
@@ -244,8 +252,8 @@ const SummaryFeed = (props) => {
 }
 
 const mapStateToProps = ({ user, summary}) => ({
-  websites: summary.websites,
-  websitesChanged: summary.websitesChanged,
+  articles: summary.articles,
+  articlesChanged: summary.articlesChanged,
   user: user.user,
 })
 

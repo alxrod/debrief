@@ -1,36 +1,33 @@
-import React, { useEffect } from "react";
+import React, {useState, useEffect } from 'react'
 
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux'
+import { useRouter } from 'next/router';
 
-import { pullUser } from "../../reducers/user/dispatchers/user.dispatcher";
-
-const AppWrapper = (props) => {
+const PublicRoute = (props) => {
   
+  const router = useRouter()
   useEffect(() => {
     const loggedIn = JSON.parse(localStorage.getItem("creds")) ? true : false
-    if (loggedIn && props.user === null) {
-      props.pullUser()
+    if (loggedIn) {
+      router.push("/feed")
     }
   },[])
-  
+
   return (
-    <>
-      {props.children}
-    </>
+    <>{props.children}</>
   )
 }
 
 const mapStateToProps = ({ user }) => ({
-  isLoggedIn: user.isLoggedIn,
   user: user.user,
+  isLoggedIn: user.isLoggedIn,
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-  pullUser,
 }, dispatch)
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(AppWrapper)
+)(PublicRoute)
