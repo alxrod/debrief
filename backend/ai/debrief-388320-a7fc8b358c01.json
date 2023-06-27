@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "debrief-388320",
+  "private_key_id": "a7fc8b358c0108fdf86078142aa800ffa03d8280",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDGb8uRZoB5KTpg\nWfsMU5JNZwIKGpvxK2DNpn9MzHSWBz/x1QCDnvu4cb5c5PJ8jtSsDESEvmCoj7F8\n/ZxuZFo+rOs8CMQVk62gso81F3r+pIYcwVScSZfZS5JY97vhBQj4Qn06kFO+KFXc\n9cxc4PsJ3o8nVEkarPs8XQLBSUSqPj6reCopJGbJ9XnCMSSXgYG7ynvZh996yn+k\nUo2L31WAqvuQFzyKJPrLwsPV08V5h73M2A5elENmvk63z8osAcxRcpC5oRVeBRZP\nDZ3r3zjxlWArcF394FmkgDJidFnDOmtoiv+hwDs5bYRa0ltjB4vZvM90WRw9D3lo\nkg1bosxTAgMBAAECggEAQk1xVaxLifA6Fp6KEOTNkfo0hr68Uxkc16nlh/oajFRw\ny7NRYCkbT1YF9pDy6qZorfHNZRMdRcT5V1t/zKzQMHfjg2QkbFczIOn4ipNFX9cG\nDo6UYEIAsDSdegeQaY+enyDMKei2amecxN8GARSVHIeWClyRro2UxmcHeCCshjr9\nUzuORUnYWG0gEgjW3NA3DKr3fZDWkQq5b/SEW5yemZpFzYvIgc86noq7UvE3Hnaj\nQjHt7Ct4PTglcgz+3FvxSyHdi+fMyrWZ7r0uNlJEDnSxVh6GSTeirwVS2skQiVr4\nIgE3ZG0mIJSnBi1X7t74PxXjHTOp8d38DM9n7cgjGQKBgQD93gxfVkm8uzAdu+Ym\nfHDto2+FEEwKh6rnzVwP8c6NJ1HfkHrdJAeZYNfSI5yzK5kbnBeukuQjLomMAXXQ\nooNBjvYO7oYZAnmMqbhySQIkNj0nQQsDFOyjCf0UncIDg3TiHzPRPvGSJmbi4CiU\nmjiJpQbT4pJecAGJcGFZqEpzmwKBgQDIGoqBCe2mDOgWTe93Xfnw2IFyyNUXXGJf\nFB+88nRQ3bmQ0L3EUyNGB1lCqLLFf9lZCXlSYRedOjff0HgvVYrkQI12ZENRHDSU\nYT/zwQU2EM07geArHXHbyNBJ9tnrFgYKY36lEdMLO9RY54qdATTSnKQL74Eb7esP\nCk/Bf9ihqQKBgQCG/ycRI29+nwPNK/gNCyt6Eujgl3P4PYCSV0/XYrx1ry0Id2n+\nYoRv+WGK60kOteZrGiw1twL9+mdGPhiKY4Dswbry4cAJWJmORUpB67Tp0LXgQ+Q5\nNU1Iva0I44MiHytuey0w3gnTr/wSNSUfMItUFp902Q0AjwsiLNJ3vNgqdQKBgQC6\ntXkSmg7yZwyO8z1DZZ53Ca0PSzD5USxAhuhuRtQdOCWTaBIJA4HgL68rsXjNK1PD\n7kETiqCcBdxoq33YvLqR62GTXE4remPdJzii2jFglyDIK5Dc6eZ5KtCekwQWhEAy\npU9f+levHa4vHiyJ/rwo4Bt5P4p6Yu525Coy5HVfsQKBgQCSziVceGI8qQglm/Z5\nw/VaY3FQejnMBUIHPXVAdoItmPISnDuWw09i5XRPSpELkyTGa1wE3k7M9B9wwuyn\niDnzl7UOHuG08jMOLu4IKbVHpq2E3E4M/uqRQY/fcRMAOkgydJTPjy04iEJ+nOjN\nf4Ze+cOV5V9NHHrnbddyQpS4sQ==\n-----END PRIVATE KEY-----\n",
+  "client_email": "debriefspeak-968@debrief-388320.iam.gserviceaccount.com",
+  "client_id": "116330761955717558666",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/debriefspeak-968%40debrief-388320.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
