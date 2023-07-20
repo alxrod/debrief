@@ -26,10 +26,7 @@ def create_article(request: Request, article):
     "raw_link": article["raw_link"]
   })
   if existing_site is not None:
-    raise HTTPException(
-      status_code=status.HTTP_400_BAD_REQUEST,
-      detail="This site already exists in the system"
-    )
+    return existing_site
   article["creation_time"] = datetime.datetime.now()
 
   new_article = request.app.database["articles"].insert_one(article)
@@ -48,6 +45,7 @@ def create(request: Request, article: ArticleModel = Body(...), Authorize: AuthJ
 
 @router.post("/add-to-inbox", summary='add new article to users inbox', status_code=status.HTTP_201_CREATED)
 def add_to_inbox(request: Request, inbox_req: InboxAddRequest = Body(...), api_key: APIKey = Depends(auth.get_api_key)):
+  print("REQ BEGAN")
   article_and_user = jsonable_encoder(inbox_req)
   created_site = create_article(request, article_and_user["article"])
 
@@ -55,6 +53,7 @@ def add_to_inbox(request: Request, inbox_req: InboxAddRequest = Body(...), api_k
     "email": article_and_user["email"]
   })
   if user is None:
+    print("BROKEN")
     raise HTTPException(
       status_code=status.HTTP_400_BAD_REQUEST,
       detail="There is no registered user with this email"
@@ -66,20 +65,25 @@ def add_to_inbox(request: Request, inbox_req: InboxAddRequest = Body(...), api_k
   })
 
   if feed is None:
-    new_feed = request.app.database["feeds"].insert_one(FeedModel.emptyFeed("inbox"))
-    new_feed["user_ids"] = [user["_id"]]
-    new_feed["article_ids"] = [created_site["_id"]]
+    print("INBOX NEEDS TO BE CREATED")
+    inserted_new_feed = request.app.database["feeds"].insert_one(FeedModel.emptyFeed("inbox"))
     feed = request.app.database["feeds"].find_one({
-      "_id": new_feed.inserted_id
+        "_id": inserted_new_feed.inserted_id
     })
+
+    feed["user_ids"] = [user["_id"]]
+    feed["article_ids"] = [created_site["_id"]]
   else:
+    if created_site["_id"] in feed["article_ids"]:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="The article you added is already in the feed")
     feed["article_ids"].append(created_site["_id"])
     feed["user_ids"].append(user["_id"])
-    update_result = request.app.database["feeds"].update_one({"_id": feed["_id"] }, {"$set": {
-      "user_ids": feed["user_ids"],
-      "article_ids": feed["article_ids"],
-    }})
-    if update_result.modified_count == 0:
-      raise HTTPException(status_code=status.HTTP_304_NOT_MODIFIED, detail=f"Feed has not been modified")
+  
+  update_result = request.app.database["feeds"].update_one({"_id": feed["_id"] }, {"$set": {
+    "user_ids": feed["user_ids"],
+    "article_ids": feed["article_ids"],
+  }})
+  if update_result.modified_count == 0:
+    raise HTTPException(status_code=status.HTTP_304_NOT_MODIFIED, detail=f"Feed has not been modified")
     
   return created_site

@@ -14,20 +14,21 @@ from fastapi_jwt_auth.exceptions import AuthJWTException
 
 config = dotenv_values(".env")
 
-from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
 origins = [
     "http://localhost:3000",
+    "*"
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"], # Allows all origins
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"], # Allows all methods
+    allow_headers=["*"], # Allows all headers
 )
 
 app.include_router(user_router, tags=["user"], prefix="/user")
@@ -44,7 +45,7 @@ def startup_db_client():
     # app.mongodb_client = MongoClient(config["MONGODB_CONNECTION_URI"])
     # app.database = app.mongodb_client[config["DB_NAME"]]
     app.mongodb_client = MongoClient("mongodb://127.0.0.1:27017")
-    app.database = app.mongodb_client["todo_backend"]
+    app.database = app.mongodb_client[config["MONGO_DB"]]
     print("Connected to the MongoDB database!")
 
 @app.on_event("shutdown")
