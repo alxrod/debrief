@@ -7,13 +7,17 @@ from fastapi_jwt_auth.exceptions import AuthJWTException
 from typing import List
 import datetime
 
+from fastapi.security.api_key import APIKey
+import user.auth as auth
 
 from uuid import uuid4
 
 from user.models import UserModel
 from article.models import ArticleModel, ArticleMetaModel 
 from metadata.models import MetadataModel
-from feed.models import FeedRequestScheme, FeedModel, FeedAddScheme, FeedCreateScheme
+from feed.models import FeedRequestScheme, FeedModel, FeedAddScheme, FeedCreateScheme, FeedExistsRequest
+
+import datetime
 
 router = APIRouter()
 
@@ -30,9 +34,16 @@ def pull(request: Request, feed_id: str, Authorize: AuthJWT = Depends()):
       status_code=status.HTTP_400_BAD_REQUEST,
       detail="there is no feed with the provided id"
     )
+
+  day_window = 3
+  if feed["name"] == "inbox":
+    day_window = 30
+  time_ago = datetime.datetime.now() - datetime.timedelta(days=day_window)
   articles = request.app.database["articles"].find({
-    "_id": {"$in": feed["article_ids"]}
+    "_id": {"$in": feed["article_ids"]},
+    "creation_time": {"$gt": time_ago}
   })
+
 
   article_metas = []
   for article in articles:
@@ -56,10 +67,37 @@ def pull(request: Request, feed_id: str, Authorize: AuthJWT = Depends()):
     
   return article_metas
 
-@router.post("/create", summary='creating feed', status_code=status.HTTP_201_CREATED,response_model=FeedModel)
-def add(request: Request, feed_request: FeedCreateScheme = Body(...), Authorize: AuthJWT = Depends()):
+@router.get("/pull-all", summary='pull all public feeds', status_code=status.HTTP_200_OK)
+def pull_all(request: Request, Authorize: AuthJWT = Depends()):
   Authorize.jwt_required()
+  user_id = Authorize.get_jwt_subject()
+  
+  feeds = list(request.app.database["feeds"].find({
+    "name": {"$ne": "inbox"}
+  }))
 
+  feed_infos = []
+  for feed in feeds:
+    feed_infos.append({
+      "_id": feed["_id"],
+      "name": feed["name"],
+    })
+  return feed_infos
+
+@router.post("/check-exists", summary='check if an feed exists', status_code=status.HTTP_200_OK)
+def add_to_inbox(request: Request, exists_req: FeedExistsRequest = Body(...), api_key: APIKey = Depends(auth.get_api_key)):
+  req = jsonable_encoder(exists_req)
+  name = req["feed_name"]
+  feed = request.app.database["feeds"].find_one({
+    "name": name
+  })
+  if feed is None:
+    return {"exists": False, "feed": {}}
+
+  return {"exists": True, "feed": feed}
+
+@router.post("/create", summary='creating feed', status_code=status.HTTP_201_CREATED,response_model=FeedModel)
+def add(request: Request, feed_request: FeedCreateScheme = Body(...), api_key: APIKey = Depends(auth.get_api_key)):
   feed_request = jsonable_encoder(feed_request)
   new_feed = request.app.database["feeds"].insert_one(FeedModel.emptyFeed(feed_request["feed_name"]))
   feed = request.app.database["feeds"].find_one({
@@ -67,12 +105,13 @@ def add(request: Request, feed_request: FeedCreateScheme = Body(...), Authorize:
   })
   return feed
 
-@router.post("/add", summary='adding article to a feed', status_code=status.HTTP_200_OK,response_model=FeedModel)
+
+@router.post("/add", summary='adding article / user to a feed', status_code=status.HTTP_200_OK,response_model=FeedModel)
 def add(request: Request, feed_request: FeedAddScheme = Body(...), Authorize: AuthJWT = Depends()):
   Authorize.jwt_required()
   feed_request = jsonable_encoder(feed_request)
 
-  print("FEED ID: ", feed_request["feed_id"])
+  # print("FEED ID: ", feed_request["feed_id"])
   feed = request.app.database["feeds"].find_one({
     "_id": feed_request["feed_id"]
   })

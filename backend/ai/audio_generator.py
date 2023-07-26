@@ -33,9 +33,17 @@ class AudioGenerator:
             speaking_rate=1.15,
         )
 
-    def get_html(self, url):
-        response = requests.get(url)
-        return response.content
+    def get_html(self, url, lossy=False):
+        if lossy:
+            try:
+                response = requests.get(url, timeout=10)
+                return response.content
+            except:
+                print("Request timed out")
+                return ""
+        else:
+            response = requests.get(url)
+            return response.content
 
     def get_title(self, raw_html):
         try:
@@ -96,11 +104,18 @@ class AudioGenerator:
         prompt = (f"Summarize the following text in {min(150, 750/num_chunks)} words or less. Do not write any sentences over 20 words.\n{text}\n\n")
         print("Prompt length is: ", len(prompt))
         messages.append({"role": "user", "content": prompt})
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            temperature=0.5,
-            messages=messages,
-        )
+        try:
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                temperature=0.5,
+                messages=messages,
+            )
+        except: 
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo-16k",
+                temperature=0.5,
+                messages=messages,
+            )
         resp_body = response.choices[0].message.content.strip()
         # parts = resp_body.split("_debrief_summary: ")
         # print(resp_body)
@@ -130,8 +145,24 @@ class AudioGenerator:
             chunks.append(chunk)
         return chunks
 
-    
-    def summarize_text(self, text):
+    def check_for_error(self, text):
+        prompt = (f"Consider the text from a webpage: \n{text}\n. Is this webpage a error page? Answer yes or no\n")
+        messages = [{"role": "user", "content": prompt}]
+
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            temperature=0.5,
+            messages=messages,
+        )
+
+        resp_body = response.choices[0].message.content.strip()
+        if "yes" in resp_body.lower():
+            print("Error page detected")
+            return True
+        else:
+            return False
+
+    def summarize_text(self, text, lossy=False):
         chunks = self.chunk_text(text)
         summary = ""
         messages = []
@@ -139,10 +170,15 @@ class AudioGenerator:
         if len(chunks) == 0:
             return "Error: No text to summarize"
         elif len(chunks) == 1:
-            return self.generate_summary(chunks[0], messages)
+            if lossy and len(chunks[0]) < 1600:
+                
+                is_error = self.check_for_error(chunks[0])
+                if is_error:
+                    return "", True
+            return self.generate_summary(chunks[0], messages), False
 
         print("Managing ", len(chunks), " chunks")
-        for chunk in chunks:
+        for chunk in chunks[:min(4, len(chunks))]:
             summary = self.generate_summary(chunk, messages, len(chunks))
             messages.append({"role": "assistant", "content": summary})
 
@@ -162,14 +198,21 @@ class AudioGenerator:
                     prompt += message["content"] + "\n\n"
 
         messages.append({"role": "user", "content": prompt})
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            temperature=0.5,
-            messages=messages,
-        )
+        try:
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                temperature=0.5,
+                messages=messages,
+            )
+        except: 
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo-16k",
+                temperature=0.5,
+                messages=messages,
+            )
         final_sum = response.choices[0].message.content.strip()
         
-        return final_sum
+        return final_sum, False
 
     def synthesize_speech(self, text, output_filename):
         # Set the text input
@@ -183,8 +226,10 @@ class AudioGenerator:
             print(f"Audio content written to '{output_filename}'")
     
 
-    def output_title(self, url):
-        html = self.get_html(url)
+    def output_title(self, url, lossy=False):
+        html = self.get_html(url, lossy=lossy)
+        if html == "" and lossy:
+            return ""
         return self.get_title(html)
     
     def preprocess(self, html):
@@ -223,19 +268,44 @@ class AudioGenerator:
         with open(filename, "w") as f:
             f.write(text)
         
-        
-    def output_summary(self, url):
-        html = self.get_html(url)
+    def output_summary(self, url, lossy=False):
+        print("Generating summary and audio for ", url)
+        html = self.get_html(url, lossy=lossy)
+        if html == "" and lossy:
+            return "", "", "", True
+
         title = self.get_title(html)
         text = self.preprocess(html)
 
-        summary = self.summarize_text(text) 
+        summary, is_error = self.summarize_text(text, lossy) 
+        if lossy and is_error:
+            return "", "", "", True
+
+        print("Summary: ", summary)
+
+        # This is a total hack to get aorund sentence length limits for google
+        sentences = summary.split(".")
+        out_sentences = []
+        for sentence in sentences:
+            if len(sentence.split(" ")) > 35:
+                split_sentences = []
+                words = sentence.split(" ")
+                for i in range(math.ceil(len(words)/20)):
+                    split_sentences.append(" ".join(words[i*20: min(len(words), (i+1)*20)]))
+                out_sentences.extend(split_sentences)
+
+        audio_summary = ". ".join(out_sentences)
 
         output_name = "./tmp/"+url.replace("https://", "").replace("http://", "").replace("/", "_")
-        print("Generating audio for: ", output_name)
-        full_descript = ". ".join([title, summary])
 
-        self.synthesize_speech(full_descript, output_name+".mp3")
-        return title, summary, output_name+".mp3"
+        full_descript_orig = ". ".join([title, summary])
+        full_descript = ". ".join([title, audio_summary])
+
+        try:
+            self.synthesize_speech(full_descript_orig, output_name+".mp3")
+        except:
+            self.synthesize_speech(full_descript, output_name+".mp3")
+        
+        return title, summary, output_name+".mp3", False
 
 

@@ -13,7 +13,7 @@ from uuid import uuid4
 
 from user.models import UserModel
 from feed.models import FeedModel
-from article.models import ArticleModel, ArticleMetaModel, InboxAddRequest
+from article.models import ArticleModel, ArticleMetaModel, InboxAddRequest, ArticleExistsRequest, FeedAddRequest
 
 router = APIRouter()
 
@@ -27,6 +27,7 @@ def create_article(request: Request, article):
   })
   if existing_site is not None:
     return existing_site
+  
   article["creation_time"] = datetime.datetime.now()
 
   new_article = request.app.database["articles"].insert_one(article)
@@ -35,7 +36,6 @@ def create_article(request: Request, article):
   })
   return created_site
 
-
 @router.post("/create", summary='create a new article', status_code=status.HTTP_201_CREATED,response_model=ArticleModel)
 def create(request: Request, article: ArticleModel = Body(...), Authorize: AuthJWT = Depends()):
   Authorize.jwt_required()
@@ -43,9 +43,28 @@ def create(request: Request, article: ArticleModel = Body(...), Authorize: AuthJ
   created_site = create_article(request, new_article)
   return created_site
 
+@router.post("/check-exists", summary='check if an article exists', status_code=status.HTTP_200_OK)
+def add_to_inbox(request: Request, exists_req: ArticleExistsRequest = Body(...), api_key: APIKey = Depends(auth.get_api_key)):
+  req = jsonable_encoder(exists_req)
+  link = req["article_link"]
+  article = request.app.database["articles"].find_one({
+    "raw_link": link
+  })
+  if article is None:
+    return {"exists": False}
+  elif "feed_id" in req and req["feed_id"] != "":
+    feed = request.app.database["feeds"].find_one({
+      "_id": req["feed_id"],
+    })
+    if feed is None:
+      return {"exists": False}
+    elif not article["_id"] in feed["article_ids"]:
+      return {"exists": False}
+  
+  return {"exists": True}
+
 @router.post("/add-to-inbox", summary='add new article to users inbox', status_code=status.HTTP_201_CREATED)
 def add_to_inbox(request: Request, inbox_req: InboxAddRequest = Body(...), api_key: APIKey = Depends(auth.get_api_key)):
-  print("REQ BEGAN")
   article_and_user = jsonable_encoder(inbox_req)
   created_site = create_article(request, article_and_user["article"])
 
@@ -53,7 +72,6 @@ def add_to_inbox(request: Request, inbox_req: InboxAddRequest = Body(...), api_k
     "email": article_and_user["email"]
   })
   if user is None:
-    print("BROKEN")
     raise HTTPException(
       status_code=status.HTTP_400_BAD_REQUEST,
       detail="There is no registered user with this email"
@@ -81,6 +99,33 @@ def add_to_inbox(request: Request, inbox_req: InboxAddRequest = Body(...), api_k
   
   update_result = request.app.database["feeds"].update_one({"_id": feed["_id"] }, {"$set": {
     "user_ids": feed["user_ids"],
+    "article_ids": feed["article_ids"],
+  }})
+  if update_result.modified_count == 0:
+    raise HTTPException(status_code=status.HTTP_304_NOT_MODIFIED, detail=f"Feed has not been modified")
+    
+  return created_site
+
+@router.post("/add-to-feed", summary='add new article to feed', status_code=status.HTTP_201_CREATED)
+def add_to_inbox(request: Request, add_req: FeedAddRequest = Body(...), api_key: APIKey = Depends(auth.get_api_key)):
+  article_and_feed = jsonable_encoder(add_req)
+  created_site = create_article(request, article_and_feed["article"])
+
+  feed = request.app.database["feeds"].find_one({
+    "_id": article_and_feed["feed_id"]
+  })
+  if feed is None:
+    raise HTTPException(
+      status_code=status.HTTP_400_BAD_REQUEST,
+      detail="There is no feed with this id"
+    )
+
+  if created_site["_id"] in feed["article_ids"]:
+    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="The article you added is already in the feed")
+  
+  feed["article_ids"].append(created_site["_id"])
+  
+  update_result = request.app.database["feeds"].update_one({"_id": feed["_id"] }, {"$set": {
     "article_ids": feed["article_ids"],
   }})
   if update_result.modified_count == 0:

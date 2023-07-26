@@ -9,7 +9,6 @@ from starlette.status import HTTP_403_FORBIDDEN
 api_key_header = APIKeyHeader(name="access_token", auto_error=False)
 
 async def get_api_key(api_key_header: str = Security(api_key_header)):
-  print("CALLED API HEADER PROBLEM ",)
   if api_key_header == config["API_KEY"]:
     return api_key_header   
   else:
