@@ -25,6 +25,9 @@ class FeedModel(BaseModel):
 
 class FeedCreateScheme(BaseModel):
   feed_name: str
+
+class FeedExistsRequest(BaseModel):
+  feed_name: str
   
 class FeedRequestScheme(BaseModel):
   feed_id: str

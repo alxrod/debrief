@@ -28,3 +28,23 @@ export const toggleFlag = (website_id, metadata) => {
   }
 };
 
+
+export const addUserToFeed = (feed_id, user_id) => {
+  return dispatch => {
+    return SummaryService.addUserToFeed(feed_id, user_id).then(
+      () => {
+  
+        return Promise.resolve();
+      },
+      (error) => {
+        const message = 
+            (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+            error.messsage ||
+            error.toString();
+        return Promise.reject(message);
+      }
+    );
+  }
+}

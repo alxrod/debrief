@@ -20,3 +20,11 @@ class ArticleMetaModel(ArticleModel):
 class InboxAddRequest(BaseModel):
   email: str
   article: ArticleModel
+
+class FeedAddRequest(BaseModel):
+  feed_id: str
+  article: ArticleModel
+
+class ArticleExistsRequest(BaseModel):
+  article_link: str
+  feed_id: Optional[str]

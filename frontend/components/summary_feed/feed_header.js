@@ -1,33 +1,30 @@
-/*
-  This example requires some changes to your config:
-  
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-    ],
-  }
-  ```
-*/
+import { PlusIcon } from '@heroicons/react/outline'
 import { useState } from 'react'
 
 import { FastForwardIcon, RewindIcon, PauseIcon, PlayIcon, RefreshIcon } from '@heroicons/react/solid'
+import AddFeedPanel from "./add_feed_panel"
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
+}
+
+function capWord(word) {
+  return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
 
 export default function FeedHeader(props) {
   const [curTab, setCurTab] = useState("Inbox")
+  const [addPanelOpen, setAddPanelOpen] = useState(false)
 
-  const tabs = [
-    { name: 'Inbox', onClick: () => {
-      props.setCurFilter("all")
-      setCurTab("Inbox")
-    }},
+  const [tabs, setTab] = useState([
+    ...props.feeds.map((feed) => {
+      return { name: capWord(feed.name), onClick: () => {
+        props.setCurFilter("feed")
+        props.setCurFeedId(feed.id)
+        setCurTab(capWord(feed.name))
+      }}
+    }),
     { name: 'Unread', onClick: () => {
       props.setCurFilter("unread")
       setCurTab("Unread")
@@ -40,14 +37,13 @@ export default function FeedHeader(props) {
       props.setCurFilter("archived")
       setCurTab("Archived")
     }},
-    
-  ]
+  ])
 
   return (
     <div className="relative border-b border-gray-200 py-5 sm:pb-0 flex flex-col justify-center justify-between">
       <div className="flex items-center w-full justify-center">
         {props.readCount > 0 ? (<>
-          {props.allAudioPlaying ? (
+          {props.allAudioPlaying && props.allAudioFilter === props.curFilter ? (
             <div className='flex items-center'>
               <button
                 type="button"
@@ -108,7 +104,7 @@ export default function FeedHeader(props) {
         )}
       </div>
 
-      <div className="mt-4">
+      <div className="mt-4 max-w-md overflow-x-scroll">
         <div className="sm:hidden">
           <label htmlFor="current-tab" className="sr-only">
             Select a tab
@@ -117,7 +113,7 @@ export default function FeedHeader(props) {
             id="current-tab"
             name="current-tab"
             className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary6"
-            defaultValue={tabs.find((tab) => tab.name === curTab).name}
+            defaultValue={tabs.find((tab) => tab.name === curTab)?.name}
             onChange={(e) => {
               tabs.find((tab) => tab.name === e.target.value).onClick()
             }}
@@ -144,10 +140,24 @@ export default function FeedHeader(props) {
                 {tab.name}
               </button>
             ))}
+            <button
+                key="add-feed"
+                // onClick={tab.onClick}
+
+                className={classNames(
+                  'hover:border-primary5 hover:text-primary6',
+                  'border-transparent text-gray-500',
+                  'whitespace-nowrap border-b-2 px-1 pb-4 text-sm font-medium flex items-center'
+                )}
+                onClick={() => setAddPanelOpen(true)}
+              >
+                <PlusIcon className="w-4 h-4 mr-1"/>
+                Add Feed
+              </button>
           </nav>
         </div>
       </div>
-
+      <AddFeedPanel open={addPanelOpen} setOpen={setAddPanelOpen}/>
     </div>
   )
 }

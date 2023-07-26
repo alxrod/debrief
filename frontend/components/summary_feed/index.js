@@ -9,6 +9,7 @@ import { bindActionCreators } from 'redux'
 
 import SummaryEntry from './summary_entry'
 import FeedHeader from './feed_header'
+import EntryPagination from './entry_pagination';
  
 const SummaryFeed = (props) => {
   const pauseAudio = () => {
@@ -26,13 +27,13 @@ const SummaryFeed = (props) => {
   }
 
   const filters = {
-    all: (articles) => {
+    feed: (articles) => {
       return [
         ...(articles.filter(function (article) {
-          return !article.metadata.read && !article.metadata.archived;
+          return !article.metadata.read && !article.metadata.archived && article.feed_id === curFeedId;
         }).sort((a, b) => (a.metadata.save_time.getTime() < b.metadata.save_time.getTime()) ? 1 : -1)),
         ...(articles.filter(function (article) {
-          return article.metadata.read && !article.metadata.archived;
+          return article.metadata.read && !article.metadata.archived && article.feed_id === curFeedId;
         }).sort((a, b) => (a.metadata.save_time.getTime() < b.metadata.save_time.getTime()) ? 1 : -1)),
       ]
     },
@@ -51,17 +52,18 @@ const SummaryFeed = (props) => {
         return article.metadata.saved;
       }).sort((a, b) => (a.metadata.save_time.getTime() < b.metadata.save_time.getTime()) ? 1 : -1)
     },
-    
+
   }
   
 
   const playAllAudio = () => {
     pauseAudio()
     setAllAudioPlaying(true)
+    setAllAudioFilter(curFilter)
     let prev = null;
     let next = null;
     let start = null
-    props.articles.filter(function (article) {
+    filters[curFilter](props.articles).filter(function (article) {
       return !article.metadata.read && article.summary_uploaded;
     }).sort((a, b) => (a.metadata.save_time.getTime() < b.metadata.save_time.getTime()) ? 1 : -1).forEach((article) => {
       const audio = { 
@@ -117,6 +119,7 @@ const SummaryFeed = (props) => {
     } else {
       setCurAudioPlaying(false)
       setAllAudioPlaying(false)
+      setAllAudioFilter("")
       setCurAudio(
         { 
           id: "",
@@ -177,9 +180,22 @@ const SummaryFeed = (props) => {
   const [curAudio, setCurAudio] = useState({id: "", cur: null, next: null, prev: null})
   const [curAudioPlaying, setCurAudioPlaying] = useState(false)
   const [allAudioPlaying, setAllAudioPlaying] = useState(false)
+  const [allAudioFilter, setAllAudioFilter] = useState("")
   const [playbackSpeed, setPlaybackSpeed] = useState(1.2)
 
-  const [curFilter, setCurFilter] = useState("all")
+  const [curFeedId, setCurFeedId] = useState("")
+  useEffect(() => {
+    if (curFeedId === "") {
+      for(let i = 0; i < props.user?.feeds.length; i++) {
+        if (props.user.feeds[i].name.toLowerCase() === "inbox") {
+          setCurFeedId(props.user.feeds[i].id)
+          break
+        }
+      }
+    }
+  }, [props.user])
+
+  const [curFilter, setCurFilter] = useState("feed")
   const makeAudio = (upload_path) => {
     const url = "https://debrief-summaries.s3.amazonaws.com/" + upload_path
     var a = new Audio(url);
@@ -198,17 +214,22 @@ const SummaryFeed = (props) => {
           curAudio={curAudio}
           curAudioPlaying={curAudioPlaying} 
           allAudioPlaying={allAudioPlaying}
+          allAudioFilter={allAudioFilter}
+          curFilter={curFilter}
           skipForward={skipForward}
           skipBackward={skipBackward}
-          readCount={props.articles.filter(function (article) {
+          readCount={filters[curFilter](props.articles).filter(function (article) {
             return !article.metadata.read && article.summary_uploaded;
           }).length}
           setCurFilter={setCurFilter}
+
+          feeds={props.user?.feeds ? props.user.feeds : []}
+          setCurFeedId={setCurFeedId}
         />
       </div>
       <div className="w-full">
         <ul role="list" className="divide-y divide-gray-100 min-w-md max-w-md">
-          {filters[curFilter](props.articles).length !== 0 ? (
+          {filters[curFilter](props.articles).length > 0 && filters[curFilter](props.articles).length < 20 ? (
             <>
             {filters[curFilter](props.articles).map((article) => (
               <SummaryEntry 
@@ -222,6 +243,15 @@ const SummaryFeed = (props) => {
               />
             ))}
             </>
+          ) : filters[curFilter](props.articles).length > 20 ? (
+            <EntryPagination 
+              articles={filters[curFilter](props.articles)}
+              playSingleAudio={playSingleAudio} 
+              pauseAudio={pauseAudio} 
+              resumeAudio={resumeAudio}
+              curAudioPlaying={curAudioPlaying} 
+              curAudio={curAudio}
+            />
           ) : (
             <li key={"no-articles"} className="flex items-start justify-between gap-x-6 py-5">
               <div className="min-w-0">
@@ -230,7 +260,7 @@ const SummaryFeed = (props) => {
                       target="_blank" 
                       className="text-base font-semibold leading-6 text-gray-900"
                     >
-                      No articles saved yet
+                      No articles in this feed yet
                     </p>
                 </div>
   
@@ -240,7 +270,7 @@ const SummaryFeed = (props) => {
                     "overflow": "hidden",
                     "transition": "0.4s max-height",
                   }}>
-                  Email links to debrief.later@gmail.com and we will automatically generate audio summaries and show them here.
+                  Email links to debrief.later@gmail.com and we will automatically generate audio summaries or add a feed.
                 </div>
               </div>
             </li>
