@@ -1,7 +1,7 @@
 {
-  "short_name": "Feather",
-  "name": "Feather Contracts",
-  "icons": [
+  "short_name": "Debrief",
+  "name": "Debrief",
+  "icons":[
     {
       "src": "favicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
@@ -11,9 +11,19 @@
       "src": "logo256.png",
       "type": "image/png",
       "sizes": "256x256"
+    },
+    {
+      "src":"/android-chrome-192x192.png",
+      "sizes":"192x192",
+      "type":"image/png"
+    },
+    {
+      "src":"/android-chrome-512x512.png",
+      "sizes":"512x512",
+      "type":"image/png"
     }
   ],
-  "start_url": ".",
+
   "display": "standalone",
   "theme_color": "#557788",
   "background_color": "#ffffff"
