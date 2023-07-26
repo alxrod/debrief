@@ -4,7 +4,7 @@ import CheckButton from "react-validation/build/button";
 import Form from "react-validation/build/form";
 import Input from "react-validation/build/input";
 
-import { login } from "../../../reducers/user/dispatchers/user.dispatcher";
+import { login, pullUser } from "../../../reducers/user/dispatchers/user.dispatcher";
 
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux'
@@ -45,7 +45,9 @@ const LoginCard = (props) => {
           props.login(email, password, remember)
           .then(() => {
             if (props.redirectLink) {
-              router.push(props.redirectLink)
+              props.pullUser().then(() => {
+                router.push(props.redirectLink)
+              })
             }
           })
           .catch((error) => {
@@ -143,6 +145,7 @@ const mapStateToProps = ({ user }) => ({
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   login,
+  pullUser,
 }, dispatch)
 
 export default connect(

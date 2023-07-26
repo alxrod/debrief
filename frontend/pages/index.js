@@ -64,15 +64,27 @@ const LandingPage = (props) => {
                 </h1>
                 <div className="mt-8 flex-wrap justify-center sm:justify-start">
                   <p className="text-gray-600 mb-5">Debrief turns hundreds of pages into a single spoken summary. Stay up to date on your industry whenever and wherever you are. </p>
-                  <a
-                    href="/register"
-                    className="inline-block rounded-lg bg-primary5 px-4 py-1.5 text-base font-semibold leading-7 text-white shadow-sm ring-1 ring-primary5 hover:bg-primary6 hover:ring-primary6"
-                  >
-                    Get started{' '}
-                    <span className="text-indigo-200" aria-hidden="true">
-                      &rarr;
-                    </span>
-                  </a>
+                  {props.isLoggedIn ? (
+                    <a
+                      href="/feed"
+                      className="inline-block rounded-lg bg-primary5 px-4 py-1.5 text-base font-semibold leading-7 text-white shadow-sm ring-1 ring-primary5 hover:bg-primary6 hover:ring-primary6"
+                    >
+                      Go to your feed{' '}
+                      <span className="text-indigo-200" aria-hidden="true">
+                        &rarr;
+                      </span>
+                    </a>
+                  ) : (
+                    <a
+                      href="/register"
+                      className="inline-block rounded-lg bg-primary5 px-4 py-1.5 text-base font-semibold leading-7 text-white shadow-sm ring-1 ring-primary5 hover:bg-primary6 hover:ring-primary6"
+                    >
+                      Get started{' '}
+                      <span className="text-indigo-200" aria-hidden="true">
+                        &rarr;
+                      </span>
+                    </a>
+                  )}
                 </div>
               </div>
             </div>
