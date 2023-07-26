@@ -84,6 +84,7 @@ const SummaryFeed = (props) => {
         markRead(audio.id, true)
         if (audio.next != null) {
           setCurAudioPlaying(true)
+          setCurAudio(audio.next)
           audio.next.cur.play()
         } else {
           setCurAudioPlaying(false)
