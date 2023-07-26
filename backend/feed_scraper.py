@@ -66,7 +66,6 @@ if __name__ == "__main__":
     stats = json.load(file)
 
   while True:
-    print(url_cache)
 
     for name, obj in feeds.items():
       obj.ingest(url_cache, stats)

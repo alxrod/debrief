@@ -102,7 +102,6 @@ class AudioGenerator:
 
     def generate_summary(self, text, messages, num_chunks=1):
         prompt = (f"Summarize the following text in {min(150, 750/num_chunks)} words or less. Do not write any sentences over 20 words.\n{text}\n\n")
-        print("Prompt length is: ", len(prompt))
         messages.append({"role": "user", "content": prompt})
         try:
             response = openai.ChatCompletion.create(
@@ -125,7 +124,6 @@ class AudioGenerator:
         
         # title = self.remove_non_alphanumeric(parts[0].split("_debrief_title: ")[1])
         # summary = parts[1]
-
         return resp_body
 
     def num_tokens_from_string(self, string: str, encoding_name: str) -> int:
@@ -168,7 +166,7 @@ class AudioGenerator:
         messages = []
 
         if len(chunks) == 0:
-            return "Error: No text to summarize"
+            return "Error: No text to summarize", True
         elif len(chunks) == 1:
             if lossy and len(chunks[0]) < 1600:
                 
@@ -177,7 +175,6 @@ class AudioGenerator:
                     return "", True
             return self.generate_summary(chunks[0], messages), False
 
-        print("Managing ", len(chunks), " chunks")
         for chunk in chunks[:min(4, len(chunks))]:
             summary = self.generate_summary(chunk, messages, len(chunks))
             messages.append({"role": "assistant", "content": summary})
@@ -190,7 +187,6 @@ class AudioGenerator:
         
         # If the total tokens is greater than 4096, we need to combine the summaries not the entire convo
         if total_tokens >= 4000:
-            print("Merging due to exceding token limit")
             messages = []
             prompt = "Please combine the following summaries into a single paragraph of 150 words or less. Do not write any sentences over 20 words.\n\n"
             for message in messages:
@@ -211,7 +207,6 @@ class AudioGenerator:
                 messages=messages,
             )
         final_sum = response.choices[0].message.content.strip()
-        
         return final_sum, False
 
     def synthesize_speech(self, text, output_filename):
@@ -223,7 +218,6 @@ class AudioGenerator:
         
         with open(output_filename, "wb") as out:
             out.write(response.audio_content)
-            print(f"Audio content written to '{output_filename}'")
     
 
     def output_title(self, url, lossy=False):
@@ -269,7 +263,7 @@ class AudioGenerator:
             f.write(text)
         
     def output_summary(self, url, lossy=False):
-        print("Generating summary and audio for ", url)
+        print("\nGenerating summary and audio for ", url)
         html = self.get_html(url, lossy=lossy)
         if html == "" and lossy:
             return "", "", "", True
@@ -281,7 +275,6 @@ class AudioGenerator:
         if lossy and is_error:
             return "", "", "", True
 
-        print("Summary: ", summary)
 
         # This is a total hack to get aorund sentence length limits for google
         sentences = summary.split(".")
@@ -305,7 +298,6 @@ class AudioGenerator:
             self.synthesize_speech(full_descript_orig, output_name+".mp3")
         except:
             self.synthesize_speech(full_descript, output_name+".mp3")
-        
         return title, summary, output_name+".mp3", False
 
 
