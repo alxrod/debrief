@@ -3,13 +3,23 @@ import os
 from bs4 import BeautifulSoup, SoupStrainer
 
 from ai.feeds.feed_object import FeedObject
+import time
 
 class HackerNewsFeed(FeedObject):
     def fetch(self):
         links = []
 
         for i in range(2):
-            res = requests.get('https://news.ycombinator.com/?p='+str(i))
+            
+            retry = True    
+            while retry:
+                try:
+                    res = requests.get('https://news.ycombinator.com/?p='+str(i))
+                    retry = False
+                except:
+                    time.sleep(0.020)
+
+
             only_td = SoupStrainer('td')
             soup = BeautifulSoup(res.content, 'html.parser', parse_only=only_td)
             tdtitle = soup.find_all('td', attrs={'class':'title'})

@@ -21,7 +21,6 @@ class FeedObject(object):
     return []
   
   def ingest(self, url_cache, stats):
-    print("Pulling new set of links")
     new_urls = self.fetch()
     unentered_urls = []
     for url in new_urls:
@@ -33,7 +32,7 @@ class FeedObject(object):
     print("Ingesting ", len(unentered_urls), " new articles")
     for url in unentered_urls:
       if not self.add_url(url):
-        print("Failed to ingest: ", url)
+        print("Failed to ingest ", len(url))
         stats["failed_count"] += 1
         stats["failed_articles_list"].append(url)
       else:
