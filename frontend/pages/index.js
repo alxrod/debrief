@@ -46,7 +46,7 @@ const LandingPage = (props) => {
     if (props.isLoggedIn) {
       router.push("/feed")
     }
-  },[])
+  },[props.isLoggedIn])
   return (
     
     <div>
