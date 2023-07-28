@@ -10,7 +10,9 @@ const AppWrapper = (props) => {
   useEffect(() => {
     const loggedIn = JSON.parse(localStorage.getItem("creds")) ? true : false
     if (loggedIn && props.user === null) {
-      props.pullUser()
+      props.pullUser().catch(() => {
+        localStorage.removeItem("creds")
+      })
     }
   },[])
   
