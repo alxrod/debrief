@@ -37,19 +37,16 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-const router = useRouter()
-useEffect(() => {
-  if (props.isLoggedIn) {
-    router.push("/feed")
-  }
-},[])
+
 
 const LandingPage = (props) => {
 
+  const router = useRouter()
   useEffect(() => {
-    
+    if (props.isLoggedIn) {
+      router.push("/feed")
+    }
   },[])
-
   return (
     
     <div>
