@@ -2,7 +2,7 @@ import React, {useState} from "react";
 
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux'
-import { register } from "../../reducers/user/dispatchers/user.dispatcher";
+import { register, pullUser } from "../../reducers/user/dispatchers/user.dispatcher";
 
 import RegisterCard from "../../components/auth/register_card";
 import { useRouter } from 'next/router'
@@ -14,7 +14,9 @@ const Register = (props) => {
 
   const onSubmit = (values) => {
     props.register(values.email, values.password).then( () => {
+      props.pullUser().then(() => {
         router.push("/feed")
+      })
     }, err => {
         setServerError(err)
     })
@@ -22,7 +24,7 @@ const Register = (props) => {
 
   return (
       <PublicRoute>
-        <div className="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div className="min-h-full flex flex-col justify-start sm:justify-center py-8 sm:py-12 sm:px-6 sm:px-6 lg:px-8">
           <div className="sm:mx-auto sm:w-full sm:max-w-md">
             <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Welcome Aboard!</h2>
             <p className="mt-2 text-center text-sm text-gray-600">
@@ -50,7 +52,7 @@ const mapStateToProps = ({ user }) => ({
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   register,
-
+  pullUser
 }, dispatch)
 
 export default connect(

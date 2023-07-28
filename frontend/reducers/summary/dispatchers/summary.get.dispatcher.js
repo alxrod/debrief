@@ -1,6 +1,7 @@
 import SummaryService from "../../../services/summary.service";
 
 import * as summaryActions from "../summary.actions";
+import * as userActions from "../../user/user.actions";
 
 const parseArticle = (article, feed_id) => {
   article.id = article._id
@@ -43,7 +44,7 @@ export const getFeeds = (feed_ids) => {
 };
 
 
-export const getFeed = (feed_id) => {
+export const getFeed = (feed_id, feed_name) => {
   return dispatch => {
     return new Promise((resolve, reject) => {
       (async () => {
@@ -53,11 +54,24 @@ export const getFeed = (feed_id) => {
         for (const article of feed_articles) {
           articles.push(parseArticle(article, feed_id))
         }
-        
+        console.log("Adding : ",{
+          _id: feed_id,
+          name: feed_name
+        })
         dispatch({
-          type: summaryActions.LOAD,
-          payload: articles,
+          type: userActions.ADD_FEED_TO_USER,
+          payload: {
+            id: feed_id,
+            name: feed_name
+          }
         });
+        dispatch({
+          type: summaryActions.ADD_FEED,
+          payload: {
+            articles,
+          }
+        });
+        console.log("ARTICKES: ", articles)
         resolve(articles);
       })()
     })

@@ -8,22 +8,14 @@ import { bindActionCreators } from 'redux'
 import ProtectedRoute from "../../components/protected";
 
 const FeedPage = (props) => {
-  useMemo(() => {
+  useEffect(() => {
     if (props.isLoggedIn && props.user?.feeds?.length > 0) {
       let feeds = [];
       for (let feed of props.user.feeds) {
         feeds.push(feed.id)
       }
       console.log("Refreshing feeds")
-      props.getFeeds(feeds).then(
-        (sites) => {
-          console.log(sites)
-          console.log("Finished refresh")
-        },
-        (error) => {
-          console.log(error)
-        }
-      )
+      props.getFeeds(feeds)
     }
   }, [props.isLoggedIn, props.user?.feeds?.length])
 

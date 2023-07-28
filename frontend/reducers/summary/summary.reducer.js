@@ -14,7 +14,11 @@ export default (state = initialState, action) => {
                 articles: action.payload,
                 articlesChanged: !state.articlesChanged
             }
-
+        case summaryActions.ADD_FEED:
+            return {
+                ...state,
+                articles: [...state.articles, ...action.payload.articles]
+            }
         case summaryActions.CLEAR:
             return {
                 ...state,

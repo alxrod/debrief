@@ -1,5 +1,5 @@
 import { PlusIcon } from '@heroicons/react/outline'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 
 import { FastForwardIcon, RewindIcon, PauseIcon, PlayIcon, RefreshIcon } from '@heroicons/react/solid'
 import AddFeedPanel from "./add_feed_panel"
@@ -17,7 +17,7 @@ export default function FeedHeader(props) {
   const [curTab, setCurTab] = useState("Inbox")
   const [addPanelOpen, setAddPanelOpen] = useState(false)
 
-  const [tabs, setTab] = useState([
+  const tabs = useMemo(() => [
     ...props.feeds.map((feed) => {
       return { name: capWord(feed.name), onClick: () => {
         props.setCurFilter("feed")
