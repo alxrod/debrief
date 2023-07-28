@@ -27,7 +27,7 @@ clean:
 	
 .PHONY: frontend
 frontend:
-	npm run dev --prefix frontend/ 
+	npm run dev --host=0.0.0.0 --prefix frontend/ 
 
 .PHONY: proto
 proto:
