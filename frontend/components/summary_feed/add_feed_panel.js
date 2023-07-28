@@ -5,7 +5,7 @@ import { Combobox, Dialog, Transition } from '@headlessui/react'
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux'
 
-import {getAllFeeds} from '../../reducers/summary/dispatchers/summary.get.dispatcher'
+import {getAllFeeds, getFeed} from '../../reducers/summary/dispatchers/summary.get.dispatcher'
 import {addUserToFeed} from '../../reducers/summary/dispatchers/summary.edit.dispatcher'
 
 function classNames(...classes) {
@@ -25,8 +25,9 @@ const AddFeedPanel = (props) => {
 
   })
 
-  const addFeed = (feed_id) => {
-    props.addUserToFeed(feed_id, props.user["_id"]).then(() => {
+  const addFeed = (feed) => {
+    props.addUserToFeed(feed["_id"], props.user["_id"]).then(() => {
+      props.getFeed(feed["_id"], feed["name"])
       props.setOpen(false)
     })
   }
@@ -75,7 +76,7 @@ const AddFeedPanel = (props) => {
             leaveTo="opacity-0 scale-95"
           >
             <Dialog.Panel className="mx-auto max-w-xl transform divide-y divide-gray-100 overflow-hidden rounded-xl bg-white shadow-2xl ring-1 ring-black ring-opacity-5 transition-all">
-              <Combobox onChange={(feed) => (addFeed(feed["_id"]))}>
+              <Combobox onChange={(feed) => (addFeed(feed))}>
                 <div className="relative">
                   <SearchIcon
                     className="pointer-events-none absolute left-4 top-3.5 h-5 w-5 text-gray-400"
@@ -122,7 +123,8 @@ const mapStateToProps = ({ user, summary}) => ({
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   getAllFeeds,
-  addUserToFeed
+  addUserToFeed,
+  getFeed,
 }, dispatch)
 
 export default connect(

@@ -20,6 +20,16 @@ export default (state = initialState, action) => {
                 isLoggedIn: false,
                 user: null,
             };
+        
+        case userActions.ADD_FEED_TO_USER:
+            console.log(state.user.feeds)
+            return {
+                ...state,
+                user: {
+                    ...state.user,
+                    feeds: [...state.user.feeds, action.payload]
+                }
+            }
 
         default:
             return state
