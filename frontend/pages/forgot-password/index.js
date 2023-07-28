@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux'
-import { forgotPassword } from "../../reducers/user/dispatchers/user.dispatcher";
+// import { forgotPassword } from "../../reducers/user/dispatchers/user.dispatcher";
 
 import { useRouter } from "next/router"
 import PublicRoute from "../../components/public";
