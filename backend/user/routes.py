@@ -91,6 +91,11 @@ def get_me(request: Request, Authorize: AuthJWT = Depends()):
   user = request.app.database["users"].find_one({
     "_id": user_id
   })
+  if user is None:
+    raise HTTPException(
+      status_code=status.HTTP_400_BAD_REQUEST,
+      detail="The provided token is invalid"
+    )
   feeds = request.app.database["feeds"].find({
     "user_ids": user_id
   })
