@@ -6,6 +6,14 @@ import { useRouter } from 'next/router';
 import { pullUser } from '../../reducers/user/dispatchers/user.dispatcher';
 
 const ProtectedRoute = (props) => {
+  const router = useRouter()
+  useEffect(() => {
+    const loggedIn = JSON.parse(localStorage.getItem("creds")) ? true : false
+    if (!loggedIn) {
+      router.push("/login")
+    }
+  },[])
+
   return (
     <>
       {props.user !== null && (
