@@ -37,19 +37,18 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-const LandingPage = (props) => {
-  const [message, setMessage] = useState("")
-  const [textColor, setTextColor] = useState("text-green")
-
-  const onClick = () => {
-    TestService.ping().then((resp) => {
-      setTextColor("text-green")
-      setMessage(resp)
-    }).catch((err) => {
-      setTextColor("text-red")
-      setMessage(err)
-    })
+const router = useRouter()
+useEffect(() => {
+  if (props.isLoggedIn) {
+    router.push("/feed")
   }
+},[])
+
+const LandingPage = (props) => {
+
+  useEffect(() => {
+    
+  },[])
 
   return (
     

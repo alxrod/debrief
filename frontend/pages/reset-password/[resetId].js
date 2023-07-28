@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux'
-import { confirmResetId, changePassword } from "../../reducers/user/dispatchers/user.dispatcher";
+// import { confirmResetId, changePassword } from "../../reducers/user/dispatchers/user.dispatcher";
 
 import { useRouter } from "next/router"
 import PublicRoute from "../../components/public"
@@ -116,8 +116,8 @@ const mapStateToProps = ({ user }) => ({
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-  confirmResetId,
-  changePassword,
+  // confirmResetId,
+  // changePassword,
 }, dispatch)
 
 export default connect(
