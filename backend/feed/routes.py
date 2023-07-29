@@ -34,8 +34,10 @@ def pull(request: Request, feed_id: str, Authorize: AuthJWT = Depends()):
       status_code=status.HTTP_400_BAD_REQUEST,
       detail="there is no feed with the provided id"
     )
+  else:
+    print("Querying feed ", feed["name"], " with ", len(feed["article_ids"]), " articles")
 
-  day_window = 3
+  day_window = 7
   if feed["name"] == "inbox":
     day_window = 30
   time_ago = datetime.datetime.now() - datetime.timedelta(days=day_window)
@@ -64,7 +66,8 @@ def pull(request: Request, feed_id: str, Authorize: AuthJWT = Depends()):
       
     am = ArticleMetaModel(**article, metadata=meta)
     article_metas.append(am)
-    
+
+  print(len(article_metas))
   return article_metas
 
 @router.get("/pull-all", summary='pull all public feeds', status_code=status.HTTP_200_OK)

@@ -1,5 +1,7 @@
 from ai.feeds.instances.hackernews import HackerNewsFeed
 from ai.feeds.instances.theverge import TheVergeFeed
+from ai.feeds.instances.theguardian import TheGuardianFeed
+
 from dotenv import dotenv_values
 import requests
 import time
@@ -7,7 +9,7 @@ import time
 import json
 
 # REFRESH_TIME = 60 * 30
-REFRESH_TIME = 1
+REFRESH_TIME = 60 * 5
 
 class FeedPoster:
   def __init__(self, access_token, site_base):
@@ -44,6 +46,7 @@ if __name__ == "__main__":
   feeds = {
     "hackernews": HackerNewsFeed(),
     "theverge": TheVergeFeed(),
+    "theguardian": TheGuardianFeed(),
   }
   config = dotenv_values(".env")
 
