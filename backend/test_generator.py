@@ -1,6 +1,6 @@
-from ai.feeds.instances.theverge import TheVergeFeed
+from ai.feeds.instances.theguardian import TheGuardianFeed
 
 if __name__ == '__main__':
-  feed = TheVergeFeed()
+  feed = TheGuardianFeed()
   for f in feed.get_links():
     print(f)
