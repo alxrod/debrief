@@ -1,10 +1,6 @@
-from ai.main_generator import MainGenerator
+from ai.feeds.instances.theverge import TheVergeFeed
 
 if __name__ == '__main__':
-  mg = MainGenerator()
-  
-  mg.ingest(
-    "https://docpop.org/2013/10/way-ahead-of-its-time-the-remote-lounge-nyc/",
-    email="alexbrodriguez@gmail.com",
-    lossy=True
-  )
+  feed = TheVergeFeed()
+  for f in feed.get_links():
+    print(f)
