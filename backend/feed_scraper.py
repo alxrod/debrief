@@ -1,4 +1,5 @@
-from ai.feeds.hackernews import HackerNewsFeed
+from ai.feeds.instances.hackernews import HackerNewsFeed
+from ai.feeds.instances.theverge import TheVergeFeed
 from dotenv import dotenv_values
 import requests
 import time
@@ -40,7 +41,10 @@ class FeedPoster:
 
 
 if __name__ == "__main__":
-  feeds = {"hackernews": HackerNewsFeed()}
+  feeds = {
+    "hackernews": HackerNewsFeed(),
+    "theverge": TheVergeFeed(),
+  }
   config = dotenv_values(".env")
 
   poster = FeedPoster(config["API_KEY"], config["API_URL"])
