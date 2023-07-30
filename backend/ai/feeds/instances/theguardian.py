@@ -34,14 +34,15 @@ class TheGuardianFeed(FeedObject):
         current_year = str(datetime.now().year)
         links = [link for link in links if current_year in link.split("/")]
         # Remove cateogries I personally dont care about
-        links = [link for link in links if "food" not in link.split("/")]
-        links = [link for link in links if "film" not in link.split("/")]
-        links = [link for link in links if "lifeandstyle" not in link.split("/")]
-        links = [link for link in links if "society" not in link.split("/")]
-        links = [link for link in links if "football" not in link.split("/")]
-        links = [link for link in links if "artanddesign" not in link.split("/")]
-        links = [link for link in links if "commentisfree" not in link.split("/")]
-        links = [link for link in links if "tv-and-radio" not in link.split("/")]
+        links = [link for link in links if link.split("/")[1] in ['business', 'technology', 'politics', 'news', 'world', 'us-news']]
+        # links = [link for link in links if "food" not in link.split("/")]
+        # links = [link for link in links if "film" not in link.split("/")]
+        # links = [link for link in links if "lifeandstyle" not in link.split("/")]
+        # links = [link for link in links if "society" not in link.split("/")]
+        # links = [link for link in links if "football" not in link.split("/")]
+        # links = [link for link in links if "artanddesign" not in link.split("/")]
+        # links = [link for link in links if "commentisfree" not in link.split("/")]
+        # links = [link for link in links if "tv-and-radio" not in link.split("/")]
         
         links = list(set(links))
         # links = [(self.root_url+link) for link in links if self.is_number(link.split("/")[1])]
