@@ -14,7 +14,7 @@ export class ArticleNode {
 
   }
 
-  makeAudio = (upload_path) => {
+  makeAudio(upload_path) {
     const url = "https://debrief-summaries.s3.amazonaws.com/" + upload_path
     if (upload_path === "") {
       return new Audio()
@@ -24,19 +24,19 @@ export class ArticleNode {
     return a
   }
 
-  play = () => {
+  play() {
     this.cur.play()
   }
 
-  pause = () => {
+  pause() {
     this.cur.pause()
   }
 
-  resume = () => {
+  resume() {
     this.cur.play()
   }
   
-  reset = () => {
+  reset() {
     this.cur.pause()
     const endFunc = this.cur.onended
     this.cur = this.makeAudio(this.upload_path)
@@ -53,7 +53,7 @@ export default class ArticleLinkedList {
     this.endCallback = endCallback;
   }
 
-  composeOnEnd = (cur, next) => {
+  composeOnEnd(cur, next) {
     const ended = this.endCallback
     return function () {
       ended(cur)
