@@ -1,4 +1,8 @@
 export const LOAD = "summary/articles/LOAD"
+export const REORDER_ARTICLES = "summary/articles/REORDER_ARTICLES"
+export const REMOVE_ARTICLE = "summary/articles/REMOVE_ARTICLE"
 export const CLEAR = "summary/articles/CLEAR"
 export const TOGGLE_FLAG = "summary/articles/TOGGLE_FLAG"
 export const ADD_FEED = "summary/feeds/ADD_FEED"
+export const LOAD_FEED = "summary/feeds/LOAD_FEED" 
+export const CHANGE_PAGE = "summary/feeds/CHANGE_PAGE"

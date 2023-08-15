@@ -4,26 +4,45 @@ import * as summaryHelpers from "./summary.helpers";
 const initialState = {
   articles: [],
   articlesChanged: false,
+  
+  curPage: 1,
+  pageLimit: 10,
+  totalArticles: 0,
+
+  curFeed: {
+    id: "",
+    name: ""
+  }
 } 
 
 export default (state = initialState, action) => {
     switch (action.type) {
-        case summaryActions.LOAD:
+        case summaryActions.LOAD_FEED:
             return {
                 ...state,
-                articles: action.payload,
-                articlesChanged: !state.articlesChanged
+                curFeed: action.payload.feed,
+                curPage: summaryHelpers.resetPage(state.curPage, state.curFeed, action.payload.feed),
+                articles: summaryHelpers.loadArticles(
+                    state.curFeed,
+                    action.payload.feed,
+                    state.articles, 
+                    action.payload.articles
+                ),
+                articlesChanged: !state.articlesChanged,
+                totalArticles: action.payload.total_articles
             }
-        case summaryActions.ADD_FEED:
-            return {
-                ...state,
-                articles: [...state.articles, ...action.payload.articles]
-            }
+
         case summaryActions.CLEAR:
             return {
                 ...state,
                 articles: [],
                 articlesChanged: !state.articlesChanged
+            };
+        
+        case summaryActions.CHANGE_PAGE:
+            return {
+                ...state,
+                curPage: summaryHelpers.changePage(state.totalArticles, state.pageLimit, state.curPage, action.payload.page)
             };
         
         case summaryActions.TOGGLE_FLAG:
@@ -37,6 +56,22 @@ export default (state = initialState, action) => {
                 articlesChanged: !state.articlesChanged
             };
 
+        case summaryActions.REMOVE_ARTICLE:
+            return {
+                ...state,
+                articles: summaryHelpers.removeArticle(
+                    state.articles, 
+                    action.payload.article_id
+                ),
+            }
+
+        case summaryActions.REORDER_ARTICLES:
+            return {
+                ...state,
+                articles: action.payload.articles,
+                articlesChanged:  action.payload.noRefresh ? state.articlesChanged : !state.articlesChanged
+
+            }
         default:
             return state
     }

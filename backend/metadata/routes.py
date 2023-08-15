@@ -24,18 +24,17 @@ def add_to_inbox(request: Request, update: MetadataUpdate = Body(...), Authorize
   user_id = Authorize.get_jwt_subject()
 
   metadata = request.app.database["metadata"].find_one({
-    "_id": new_tags["id"]
+    "_id": new_tags["_id"]
   })
 
-  print("META: ", metadata)
   if user_id != metadata["user_id"]:
     raise HTTPException(
       status_code=status.HTTP_400_BAD_REQUEST,
       detail="You do not have access to this metadata"
     )
   for key, value in new_tags.items():
-    if key != "id":
+    if key != "_id" and value != None:
       metadata[key] = value
   
-  request.app.database["metadata"].update_one({"_id": new_tags["id"]}, {"$set": metadata})
+  request.app.database["metadata"].update_one({"_id": new_tags["_id"]}, {"$set": metadata})
   return metadata

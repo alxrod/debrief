@@ -41,7 +41,6 @@ const AddFeedPanel = (props) => {
             if (props.user.feeds[feed_id].id === feed["_id"]) {
               exists = true
               break
-              console.log('exists')
             }
           }
           return !exists

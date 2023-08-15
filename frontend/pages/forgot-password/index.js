@@ -38,7 +38,7 @@ const ForgotPassword = (props) => {
   }
   
   if (props.isLoggedIn) {
-    router.push("/feed")
+    router.push("/home")
   }
   return (
       <PublicRoute>

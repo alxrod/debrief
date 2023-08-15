@@ -26,7 +26,7 @@ class MetadataModel(BaseModel):
     }
 
 class MetadataUpdate(BaseModel):
-  id: str
+  id: str = Field(default_factory=uuid.uuid4, alias="_id")
   read: Optional[bool]
   archived: Optional[bool]
   saved: Optional[bool]

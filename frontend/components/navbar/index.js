@@ -1,13 +1,14 @@
 /* This example requires Tailwind CSS v2.0+ */
 import { Fragment, useState, useEffect } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
-import { MenuIcon, XIcon } from '@heroicons/react/outline'
+import { MenuIcon, XIcon, ArrowLeftIcon } from '@heroicons/react/outline'
 
 import { bindActionCreators } from 'redux'
 import { logout } from "../../reducers/user/dispatchers/user.dispatcher";
 import { connect } from "react-redux";
 
 import { useRouter } from 'next/router'
+import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 
 function classNames(...classes) {
@@ -16,6 +17,16 @@ function classNames(...classes) {
 
 const NavBar = (props) => {
   const router = useRouter()
+  const pathname = usePathname()
+  const [onFeed, setOnFeed] = useState(false)
+
+  useEffect(() => {
+    if (pathname.includes("/feed/")) {
+      setOnFeed(true)
+    } else {
+      setOnFeed(false)
+    }
+  }, [pathname])
   
   return (
     <Disclosure as="nav" className={"bg-secondary1 shadow"}>
@@ -24,9 +35,17 @@ const NavBar = (props) => {
           <div className="mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between h-16">
               <div className="flex">
-                <div className="flex-shrink-0 flex items-center cursor-pointer" onClick={() => router.push("/")}>
-                  <h1 className="font-medium">Debrief</h1>
-                </div>
+                {onFeed ? (
+                  <a className="flex-shrink-0 flex items-center cursor-pointer text-gray-400 hover:text-primary5" href={props.isLoggedIn ? "/home" : "/"}>
+                    <ArrowLeftIcon className="w-5 h-5 mr-2"/>
+                    <h1 className="font-medium">Back</h1>
+                  </a>
+                ) : (
+                  <div className="flex-shrink-0 flex items-center cursor-pointer" onClick={() => router.push(props.isLoggedIn ? "/home" : "/")}>
+                    <h1 className="font-medium">Debrief</h1>
+                  </div>
+                )}
+                
                 <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                   {/* Current: "border-primary4 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" */}
                   {props.isLoggedIn && (
@@ -41,7 +60,7 @@ const NavBar = (props) => {
                 {props.isLoggedIn ? (
                   <div className="flex px-1 pt-1 font-medium space-x-4">
                     <Link
-                      href="/feed"
+                      href="/home"
                       className='text-sm text-gray-700 hover:text-gray-900'
                     >
                       My Feed

@@ -1,29 +1,32 @@
 
 import api from './api';
 class SummaryService {
-
-  get(email, password) {
-    // return api
-    // .post("/user/login", {
-    //   email,
-    //   password
-    // })
-    // .then(response => {
-    //   if (response.data.access_token) {
-    //     console.log(response.data)
-    //     TokenService.setCreds(response.data);
-    //   }
-    //   return response.data;
-    // });
-  }
   
-  pullFeed(feed_id) {
+  pullFeed(feed_id, skip, limit) {
+    let url = "/feed/pull/"+feed_id
+    if (skip >= 0 && limit >= 0) {
+      url += "?" + new URLSearchParams({
+        skip: skip,
+        limit: limit,
+      })
+    }
+    console.log("URL: ", url)
     return api
-    .get(("/feed/pull/"+feed_id), {})
+    .get(url, {})
     .then(response => {
       return response.data;
     }).catch(error => {
-      console.log("FEED PULL ERROR: " + error.data.message);
+      console.log("ERROR: " + error.data.message);
+      return error.data.message;
+    });
+  }
+
+  pullDigest() {
+    return api
+    .get(("/feed/digest"), {})
+    .then(response => {
+      return response.data;
+    }).catch(error => {
       return error.data.message;
     });
   }
@@ -34,7 +37,6 @@ class SummaryService {
     .then(response => {
       return response.data;
     }).catch(error => {
-      console.log("FEED PULL ERROR: " + error.data.message);
       return error.data.message;
     });
   }
@@ -45,7 +47,6 @@ class SummaryService {
       "addition_id": user_id,
       type: "user",
     }
-    console.log(params)
     return api
     .post(("/feed/add"), params)
     .then(response => {
@@ -58,12 +59,7 @@ class SummaryService {
 
   toggleFlag(metadata) {
     return api
-    .post("/metadata/update", {
-      id: metadata._id,
-      saved: metadata.saved,
-      read: metadata.read,
-      archived: metadata.archived,
-    })
+    .post("/metadata/update", metadata)
     .then(response => {
       return response.data;
     }).catch(error => {
