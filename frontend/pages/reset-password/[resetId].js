@@ -36,14 +36,13 @@ const ResetPassword = (props) => {
             if (valid) {
               props.changePassword(props.resetId, newPassword).then(
                 () => {
-                  router.push("/feed")
+                  router.push("/home")
                 },
                 (error) => {
                   setErrorMsg(error)
                 }
               )
             } else {
-              console.log("VALID IS ", valid)
               setErrorMsg("The reset link you are using is invalid")
             }
           },
@@ -57,7 +56,7 @@ const ResetPassword = (props) => {
   }
   
   if (props.isLoggedIn) {
-    router.push("/feed")
+    router.push("/home")
   }
   return (
       <PublicRoute>

@@ -44,7 +44,7 @@ const LandingPage = (props) => {
   const router = useRouter()
   useEffect(() => {
     if (props.isLoggedIn) {
-      router.push("/feed")
+      router.push("/home")
     }
   },[props.isLoggedIn])
   return (
@@ -62,7 +62,7 @@ const LandingPage = (props) => {
                   <p className="text-gray-600 mb-5">Debrief turns hundreds of pages into a single spoken summary. Stay up to date on your industry whenever and wherever you are. </p>
                   {props.isLoggedIn ? (
                     <a
-                      href="/feed"
+                      href="/home"
                       className="inline-block rounded-lg bg-primary5 px-4 py-1.5 text-base font-semibold leading-7 text-white shadow-sm ring-1 ring-primary5 hover:bg-primary6 hover:ring-primary6"
                     >
                       Go to your feed{' '}

@@ -1106,6 +1106,9 @@ input:checked + .toggle-bg {
 .z-50 {
   z-index: 50;
 }
+.col-span-1 {
+  grid-column: span 1 / span 1;
+}
 .-m-2 {
   margin: -0.5rem;
 }
@@ -1174,6 +1177,9 @@ input:checked + .toggle-bg {
 .-mr-2 {
   margin-right: -0.5rem;
 }
+.-mr-px {
+  margin-right: -1px;
+}
 .-mt-px {
   margin-top: -1px;
 }
@@ -1215,6 +1221,12 @@ input:checked + .toggle-bg {
 }
 .ml-auto {
   margin-left: auto;
+}
+.mr-0 {
+  margin-right: 0px;
+}
+.mr-0\.5 {
+  margin-right: 0.125rem;
 }
 .mr-1 {
   margin-right: 0.25rem;
@@ -1440,6 +1452,9 @@ input:checked + .toggle-bg {
 .min-w-0 {
   min-width: 0px;
 }
+.min-w-\[225px\] {
+  min-width: 225px;
+}
 .max-w-2xl {
   max-width: 42rem;
 }
@@ -1457,6 +1472,12 @@ input:checked + .toggle-bg {
 }
 .max-w-7xl {
   max-width: 80rem;
+}
+.max-w-\[225px\] {
+  max-width: 225px;
+}
+.max-w-\[300px\] {
+  max-width: 300px;
 }
 .max-w-lg {
   max-width: 32rem;
@@ -1593,6 +1614,9 @@ input:checked + .toggle-bg {
 .appearance-none {
   appearance: none;
 }
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
 .grid-cols-4 {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
@@ -1641,6 +1665,9 @@ input:checked + .toggle-bg {
 .gap-4 {
   gap: 1rem;
 }
+.gap-5 {
+  gap: 1.25rem;
+}
 .gap-x-1 {
   column-gap: 0.25rem;
 }
@@ -1655,6 +1682,9 @@ input:checked + .toggle-bg {
 }
 .gap-x-6 {
   column-gap: 1.5rem;
+}
+.gap-y-10 {
+  row-gap: 2.5rem;
 }
 .-space-x-4 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-x-reverse: 0;
@@ -1680,6 +1710,11 @@ input:checked + .toggle-bg {
   --tw-space-x-reverse: 0;
   margin-right: calc(1rem * var(--tw-space-x-reverse));
   margin-left: calc(1rem * calc(1 - var(--tw-space-x-reverse)));
+}
+.space-x-6 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 0;
+  margin-right: calc(1.5rem * var(--tw-space-x-reverse));
+  margin-left: calc(1.5rem * calc(1 - var(--tw-space-x-reverse)));
 }
 .space-x-8 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-x-reverse: 0;
@@ -1792,6 +1827,10 @@ input:checked + .toggle-bg {
   border-top-right-radius: 0.5rem;
   border-bottom-right-radius: 0.5rem;
 }
+.rounded-r-md {
+  border-top-right-radius: 0.375rem;
+  border-bottom-right-radius: 0.375rem;
+}
 .rounded-r-none {
   border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;
@@ -1803,6 +1842,9 @@ input:checked + .toggle-bg {
 .rounded-t-lg {
   border-top-left-radius: 0.5rem;
   border-top-right-radius: 0.5rem;
+}
+.rounded-bl-lg {
+  border-bottom-left-radius: 0.5rem;
 }
 .border {
   border-width: 1px;
@@ -1827,6 +1869,9 @@ input:checked + .toggle-bg {
 }
 .border-l-0 {
   border-left-width: 0px;
+}
+.border-r {
+  border-right-width: 1px;
 }
 .border-r-0 {
   border-right-width: 0px;
@@ -2282,6 +2327,9 @@ input:checked + .toggle-bg {
 .p-2\.5 {
   padding: 0.625rem;
 }
+.p-3 {
+  padding: 0.75rem;
+}
 .p-4 {
   padding: 1rem;
 }
@@ -2420,6 +2468,9 @@ input:checked + .toggle-bg {
 .pr-10 {
   padding-right: 2.5rem;
 }
+.pr-2 {
+  padding-right: 0.5rem;
+}
 .pr-4 {
   padding-right: 1rem;
 }
@@ -2440,6 +2491,9 @@ input:checked + .toggle-bg {
 }
 .pt-4 {
   padding-top: 1rem;
+}
+.pt-5 {
+  padding-top: 1.25rem;
 }
 .text-left {
   text-align: left;
@@ -3189,6 +3243,10 @@ height: 100%;
 .focus\:ring-green-500:focus {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(34 197 94 / var(--tw-ring-opacity));
+}
+.focus\:ring-indigo-500:focus {
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(99 102 241 / var(--tw-ring-opacity));
 }
 .focus\:ring-lime-200:focus {
   --tw-ring-opacity: 1;
@@ -3976,8 +4034,24 @@ height: 100%;
     width: 100%;
   }
 
+  .sm\:max-w-\[100\%\] {
+    max-width: 100%;
+  }
+
+  .sm\:max-w-\[600px\] {
+    max-width: 600px;
+  }
+
   .sm\:max-w-md {
     max-width: 28rem;
+  }
+
+  .sm\:grow {
+    flex-grow: 1;
+  }
+
+  .sm\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .sm\:items-center {
@@ -3986,6 +4060,14 @@ height: 100%;
 
   .sm\:justify-start {
     justify-content: flex-start;
+  }
+
+  .sm\:justify-center {
+    justify-content: center;
+  }
+
+  .sm\:gap-6 {
+    gap: 1.5rem;
   }
 
   .sm\:space-x-8 > :not([hidden]) ~ :not([hidden]) {
@@ -4020,6 +4102,11 @@ height: 100%;
   .sm\:px-6 {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
+  }
+
+  .sm\:py-12 {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
   }
 
   .sm\:pb-0 {

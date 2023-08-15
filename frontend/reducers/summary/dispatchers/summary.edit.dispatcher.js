@@ -48,3 +48,27 @@ export const addUserToFeed = (feed_id, user_id) => {
     );
   }
 }
+
+
+export const reorderArticles = (new_articles, noRefresh) => {
+  return dispatch => {
+    dispatch({
+      type: summaryActions.REORDER_ARTICLES,
+      payload: {
+        articles: new_articles,
+        noRefresh: noRefresh,
+      },
+    });
+  }
+}
+
+export const removeArticle = (article_id) => {
+  return dispatch => {
+    dispatch({
+      type: summaryActions.REMOVE_ARTICLE,
+      payload: {
+        article_id: article_id,
+      },
+    });
+  }
+}

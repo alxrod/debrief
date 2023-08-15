@@ -1,44 +1,68 @@
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/solid'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import SummaryEntry from './summary_entry'
 
-export default function EntryPagination(props) {
-  const [curPage, setCurPage] = useState(1)
+import { connect } from "react-redux";
+import { bindActionCreators } from 'redux'
 
-  const [totalPages, setTotalPages] = useState(Math.ceil(props.articles.length / 20))
+import { getFeed, changePage } from '../../reducers/summary/dispatchers/summary.get.dispatcher';
+import { sortArticles } from '../../reducers/summary/summary.helpers';
+
+function EntryPagination(props) {
+
 
   const curArticles = useMemo(() => {
-    const start = (curPage - 1) * 20
-    const end = Math.min(start + 20, props.articles.length)
+    const start = (props.curPage - 1) * props.pageLimit
+    const end = Math.min(start + props.pageLimit, props.articles.length)
     return props.articles.slice(start, end)
-  }, [curPage, props.articles])
+  }, [props.curPage, props.articles.length, props.articlesChanged])
+
+  const totalPages = useMemo(() => {
+    return Math.ceil(props.articles.length / props.pageLimit)
+  }, [props.articles])
+
+  const nextPage = () => {
+    props.changePage(props.curPage + 1)
+  }
+
+  const prevPage = () => {
+    props.changePage(props.curPage - 1)
+  }
+
+  const setCurPage = (page) => {
+    props.changePage(page)
+  }
 
   return (
-    <div>
-      {curArticles.map((article) => (
-        <SummaryEntry 
-        article={article} 
-        key={article.id} 
-        playSingleAudio={props.playSingleAudio} 
-        pauseAudio={props.pauseAudio} 
-        resumeAudio={props.resumeAudio}
-        curAudioPlaying={props.curAudioPlaying} 
-        curAudio={props.curAudio}
-        />
-      ))}
+    <div refresh-attr={props.articlesChanged.toString()}>
+      <ul role="list" className="divide-y divide-gray-100">
+        {curArticles.map((article) => (
+          <li key={article.id} className="flex items-start justify-between gap-x-6 py-5">
+            <SummaryEntry 
+              article={article} 
+              key={article.id} 
+              playSingleAudio={props.playSingleAudio} 
+              pauseAudio={props.pauseAudio} 
+              resumeAudio={props.resumeAudio}
+              curAudioPlaying={props.curAudioPlaying} 
+              curAudio={props.curAudio}
+            />
+          </li>
+        ))}
+      </ul>
       <nav className="flex items-center justify-between border-t border-gray-200 px-4 sm:px-0">
         <div className="-mt-px flex w-0 flex-1">
           <button
             className="inline-flex items-center border-t-2 border-transparent pr-1 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
-            onClick={() => setCurPage(curPage - 1)}
-            disabled={curPage == 1}
+            onClick={() => prevPage()}
+            disabled={props.curPage == 1}
           >
             <ArrowLeftIcon className="mr-3 h-5 w-5 text-gray-400" aria-hidden="true" />
             Previous
           </button>
         </div>
         <div className="hidden md:-mt-px md:flex">
-          {curPage > 2 && (
+          {props.curPage > 2 && (
             <>
               <button
                 href="#"
@@ -47,38 +71,42 @@ export default function EntryPagination(props) {
               >
                 1
               </button>
-              {curPage > 3 && (
+              {props.curPage > 3 && (
                 <span className="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-gray-500">
                   ...
                 </span>
               )}
             </>
           )}
-          {curPage > 1 && (
+          {props.curPage > 1 && (
             <button
               className="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
+              onClick={() => setCurPage(props.curPage-1)}
             >
-              {curPage-1}
+              {props.curPage-1}
+             
             </button>
           )}
           {/* Current: "border-indigo-500 text-indigo-600", Default: "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" */}
           <button
             className="inline-flex items-center border-t-2 border-primary5 px-4 pt-4 text-sm font-medium text-primary6"
             aria-current="page"
+            disabled
           >
-            {curPage}
+            {props.curPage}
           </button>
-          {curPage < totalPages && (
+          {props.curPage < totalPages && (
             <button
               href="#"
               className="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
+              onClick={() => setCurPage(props.curPage+1)}
             >
-              {curPage+1}
+              {props.curPage+1}
             </button>
           )}
-          {curPage < (totalPages - 1) && (
+          {props.curPage < (totalPages - 1) && (
             <>
-              {curPage < totalPages - 2 && (
+              {props.curPage < totalPages - 2 && (
                 <span className="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-gray-500">
                   ...
                 </span>
@@ -86,6 +114,7 @@ export default function EntryPagination(props) {
               <button
                 href="#"
                 className="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
+                onClick={() => setCurPage(totalPages)}
               >
                 {totalPages}
               </button>
@@ -95,8 +124,8 @@ export default function EntryPagination(props) {
         <div className="-mt-px flex w-0 flex-1 justify-end">
           <button
             className="inline-flex items-center border-t-2 border-transparent pl-1 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
-            onClick={() => setCurPage(curPage + 1)}
-            disabled={curPage == totalPages}
+            onClick={() => nextPage()}
+            disabled={props.curPage == totalPages}
           >
             Next
             <ArrowRightIcon className="ml-3 h-5 w-5 text-gray-400" aria-hidden="true" />
@@ -106,3 +135,25 @@ export default function EntryPagination(props) {
     </div>
   )
 }
+
+
+const mapStateToProps = ({summary}) => ({
+  totalArticles: summary.totalArticles,
+  pageLimit: summary.pageLimit,
+  curPage: summary.curPage,
+  curFeed: summary.curFeed,
+
+  articlesChanged: summary.articlesChanged,
+  queryIndex: summary.queryIndex,
+  querySize: summary.querySize,
+})
+
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  getFeed, 
+  changePage,
+}, dispatch)
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(EntryPagination)

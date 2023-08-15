@@ -21,8 +21,28 @@ import datetime
 
 router = APIRouter()
 
-@router.get("/pull/{feed_id}", summary='pull all users current websites for specified feed', status_code=status.HTTP_200_OK,response_model=List[ArticleMetaModel])
-def pull(request: Request, feed_id: str, Authorize: AuthJWT = Depends()):
+
+def packArticleWMeta(request, user_id, article):
+  meta = request.app.database["metadata"].find_one({
+    "article_id": article["_id"],
+    "user_id": user_id,
+  })
+
+  # If we have no metadata on article when we fetch, generate it now
+  if meta is None:
+    new_meta = request.app.database["metadata"].insert_one(MetadataModel.emptyMetaData(
+      article["_id"],
+      user_id
+    ))
+    meta = request.app.database["metadata"].find_one({
+      "_id": new_meta.inserted_id
+    })
+    
+  am = ArticleMetaModel(**article, metadata=meta)
+  return am
+
+@router.get("/pull/{feed_id}", summary='pull all users current websites for specified feed', status_code=status.HTTP_200_OK)
+def pull(request: Request, feed_id: str, skip: int = -1, limit: int = -1, Authorize: AuthJWT = Depends()):
   Authorize.jwt_required()
   user_id = Authorize.get_jwt_subject()
 
@@ -37,14 +57,25 @@ def pull(request: Request, feed_id: str, Authorize: AuthJWT = Depends()):
   else:
     print("Querying feed ", feed["name"], " with ", len(feed["article_ids"]), " articles")
 
-  day_window = 7
-  if feed["name"] == "inbox":
-    day_window = 30
-  time_ago = datetime.datetime.now() - datetime.timedelta(days=day_window)
+  # day_window = 7
+  # if feed["name"] == "inbox":
+  #   day_window = 30
+  # time_ago = datetime.datetime.now() - datetime.timedelta(days=day_window)
   articles = request.app.database["articles"].find({
     "_id": {"$in": feed["article_ids"]},
-    "creation_time": {"$gt": time_ago}
-  })
+    # "creation_time": {"$gt": time_ago}
+  }).sort("creation_time", -1)
+
+
+  
+  articles = list(articles)
+  total_articles = len(articles)
+
+  if skip != -1 and len(articles) > skip+limit:
+    articles = list(request.app.database["articles"].find({
+      "_id": {"$in": feed["article_ids"]},
+      # "creation_time": {"$gt": time_ago}
+    }).sort("creation_time", -1).skip(skip).limit(limit))
 
 
   article_metas = []
@@ -68,13 +99,41 @@ def pull(request: Request, feed_id: str, Authorize: AuthJWT = Depends()):
     article_metas.append(am)
 
   print(len(article_metas))
-  return article_metas
+  return {"articles": article_metas, "total_articles": total_articles}
+
+@router.get("/digest", summary='Get a users entire reading digest', status_code=status.HTTP_200_OK)
+def pull(request: Request, Authorize: AuthJWT = Depends()):
+  Authorize.jwt_required()
+  user_id = Authorize.get_jwt_subject()
+
+  feeds = request.app.database["feeds"].find({
+    "user_ids": user_id
+  })
+
+  
+  final_articles = {}
+  for feed in feeds:
+    articles = list(request.app.database["articles"].find({
+      "_id": {"$in": feed["article_ids"]},
+      # "creation_time": {"$gt": time_ago}
+    }).sort("creation_time", -1).skip(0).limit(50))
+    
+    out_articles = []
+    for article in articles:
+      am = packArticleWMeta(request, user_id, article)
+      if not am.metadata.read:
+        out_articles.append(am)
+    
+
+    final_articles[feed["_id"]] = out_articles
+  
+  return final_articles
 
 @router.get("/pull-all", summary='pull all public feeds', status_code=status.HTTP_200_OK)
 def pull_all(request: Request, Authorize: AuthJWT = Depends()):
   Authorize.jwt_required()
   user_id = Authorize.get_jwt_subject()
-  
+
   feeds = list(request.app.database["feeds"].find({
     "name": {"$ne": "inbox"}
   }))

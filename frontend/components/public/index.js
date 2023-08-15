@@ -10,7 +10,7 @@ const PublicRoute = (props) => {
   useEffect(() => {
     const loggedIn = JSON.parse(localStorage.getItem("creds")) ? true : false
     if (loggedIn) {
-      router.push("/feed")
+      router.push("/home")
     }
   },[])
 

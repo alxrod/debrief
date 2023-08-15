@@ -20,7 +20,6 @@ class TokenService {
   }
 
   setCreds(creds) {
-    console.log(JSON.stringify(creds));
     localStorage.setItem("creds", JSON.stringify(creds));
   }
 

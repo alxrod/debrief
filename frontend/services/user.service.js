@@ -10,7 +10,6 @@ class UserService {
       })
       .then(response => {
         if (response.data.access_token) {
-          console.log(response.data)
           TokenService.setCreds(response.data);
         }
         return response.data;
@@ -25,7 +24,6 @@ class UserService {
       })
       .then(response => {
         if (response.data.access_token) {
-          console.log(response.data)
           TokenService.setCreds(response.data);
         }
         return response.data;

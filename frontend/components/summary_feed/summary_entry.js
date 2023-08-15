@@ -37,9 +37,8 @@ const SummaryEntry = (props) => {
     return date.toLocaleTimeString([], {timeStyle: 'short'}) + " " + date.toLocaleDateString() 
   }
 
-  
   return (
-    <li key={props.article.id} className="flex items-start justify-between gap-x-6 py-5" reloadattr={props.articlesChanged.toString()}>
+    <div key={props.article.id} className="flex items-start justify-between" reloadattr={props.articlesChanged.toString()}>
       <div className="min-w-0">
         <div className="flex justify-between items-center gap-x-3">
             <a 
@@ -230,7 +229,7 @@ const SummaryEntry = (props) => {
           </div>
         )}
       </div>
-    </li>
+    </div>
   )
 }
 
