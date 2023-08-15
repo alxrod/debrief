@@ -37,8 +37,16 @@ const ArticleView = (props) => {
     return date.toLocaleTimeString([], {timeStyle: 'short'}) + " " + date.toLocaleDateString() 
   }
 
+  const feedNamesTable = useMemo(() => {
+    let table = {}
+    props.user.feeds.forEach(feed => {
+      table[feed.id] = feed.name
+    })
+    return table
+  }, [props.user.feeds])
+
   return (
-    <div className="flex items-start justify-between p-4" reloadattr={props.articlesChanged.toString()}>
+    <div className="flex items-start justify-between p-4 w-full grow" reloadattr={props.articlesChanged.toString()}>
       <div className="max-w-[225px] sm:max-w-[100%] sm:grow min-w-md">
         <a 
           href={props.article.raw_link} 
@@ -47,7 +55,7 @@ const ArticleView = (props) => {
         >
           {props.article.title}
         </a>
-        <div className="mt-1 flex justify-between items-center gap-x-2 text-xs leading-5 text-gray-500">
+        <div className="mt-1 flex w-full justify-between items-center gap-x-2 text-xs leading-5 text-gray-500">
           <div className={"flex grow gap-x-1 "  + (props.curAudio.id !== props.article.id ? "flex-row items-center" : "flex-col items-start")}>
             <p className="whitespace-nowrap">
               Added on{" "}
@@ -55,42 +63,41 @@ const ArticleView = (props) => {
                 {genTimeString(props.article.metadata.save_time)}
               </time>
             </p>
-            <svg viewBox="0 0 2 2" className="h-0.5 w-0.5 fill-current">
-              <circle cx={1} cy={1} r={1} />
-            </svg>
-            <a 
-              href={props.article.raw_link} 
-              target="_blank" 
-              className="truncate text-secondary4 hover:text-secondary5 font-medium flex gap-x-1 items-center"
-            >
-              Read More
-              <ExternalLinkIcon className="h-3 w-3 inline-block" aria-hidden="true" />
-            </a>
+            <div className="flex justify-between w-full">
+              <a 
+                href={props.article.raw_link} 
+                target="_blank" 
+                className="truncate text-secondary4 hover:text-secondary5 font-medium flex gap-x-1 items-center"
+              >
+                Read More
+                <ExternalLinkIcon className="h-3 w-3 inline-block" aria-hidden="true" />
+              </a>
+              <div className='flex'>
+                <p
+                  className={classNames(
+                    statuses["Unread"],
+                    'rounded-md whitespace-nowrap mt-0.5 mr-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset'
+                  )}
+                >
+                  {feedNamesTable[props.article.feed_id]}
+                </p>
+                
+                <button
+                  onClick={() => {
+                    props.article.metadata.saved = !props.article.metadata.saved
+                    props.toggleFlag(props.article.id, props.article.metadata)
+                  }}
+                >
+                  {props.article.metadata.saved ? (
+                    <StarIcon className="h-5 w-5 text-yellow-400" aria-hidden="true" />
+                  ) : (
+                    <StarOutlineIcon className="h-5 w-5 text-gray-500" aria-hidden="true" />
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
 
-          <div className="flex gap-x-3 justify-start items-center">
-            <p
-              className={classNames(
-                props.article.metadata.read ? statuses["Old"] : statuses["Unread"],
-                'rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset'
-              )}
-            >
-              {props.article.metadata.read ? "old" : "unread"}
-            </p>
-            
-            <button
-              onClick={() => {
-                props.article.metadata.saved = !props.article.metadata.saved
-                props.toggleFlag(props.article.id, props.article.metadata)
-              }}
-            >
-              {props.article.metadata.saved ? (
-                <StarIcon className="h-5 w-5 text-yellow-400" aria-hidden="true" />
-              ) : (
-                <StarOutlineIcon className="h-5 w-5 text-gray-500" aria-hidden="true" />
-              )}
-            </button>
-          </div>
         </div>
       </div>
     </div>
@@ -99,6 +106,7 @@ const ArticleView = (props) => {
 
 const mapStateToProps = ({ user, summary}) => ({
   articlesChanged: summary.articlesChanged,
+  user: user.user,
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({

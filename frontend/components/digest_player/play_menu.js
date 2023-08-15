@@ -1,7 +1,7 @@
 import { PlusIcon } from '@heroicons/react/outline'
 import { useState, useEffect, useContext } from 'react'
 
-import { FastForwardIcon, RewindIcon, PauseIcon, PlayIcon, RefreshIcon } from '@heroicons/react/solid'
+import { FastForwardIcon, RewindIcon, PauseIcon, PlayIcon, RefreshIcon, CheckIcon} from '@heroicons/react/solid'
 
 import {AudioPlayerContext} from "../summary_feed/audio_player";
 
@@ -85,17 +85,25 @@ export default function PlayMenu(props) {
             </div>
           </>
         ) : (unreadCount > 0) ? (
-         <div className="flex w-0 flex-1">
-          <button
-            type="button"
-            onClick={() => playFromStart()}
-            className="relative -mr-px inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-bl-lg border border-transparent py-2 text-sm font-semibold text-gray-900"
-          >
-            <p className="text-gray-600">Start Digest</p> <PlayIcon className="ml-1 h-8 w-8 text-gray-500" aria-hidden="true" />
-          </button>
-        </div>
+          <div className="flex w-0 flex-1">
+            <button
+              type="button"
+              onClick={() => playFromStart()}
+              className="relative -mr-px inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-bl-lg border border-transparent py-2 text-sm font-semibold text-gray-900"
+            >
+              <p className="text-gray-600">Start Digest</p> <PlayIcon className="ml-1 h-8 w-8 text-gray-500" aria-hidden="true" />
+            </button>
+          </div>
        ) : (
-         <h1 className="font-semibold text-3xl text-gray-500">You are up to date</h1>
+        <div className="flex w-0 flex-1">
+        <button
+          type="button"
+          disabled
+          className="relative -mr-px inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-bl-lg border border-transparent py-2 text-sm font-semibold text-gray-900"
+        >
+          <p className="text-gray-600">You're up to date</p> <CheckIcon className="ml-1 h-5 w-5 text-gray-500" aria-hidden="true" />
+        </button>
+      </div>
        )}
         </div>
 

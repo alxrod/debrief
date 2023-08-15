@@ -65,9 +65,9 @@ const MainView = (props) => {
         curAudioPlaying={playing} 
         curAudio={current}
       />
-    ) : (
+    ) : Object.keys(feedCountTable).length > 0 ? (
       <div className="max-w-[300px] sm:max-w-[600px] min-w-md p-3 text-sm text-gray-500 font-medium">
-        <h3>You have{" "}
+        <h3>{"You have "}
           {Object.keys(feedCountTable).map((key, index) => (
             <Fragment key={index}>
               <b className="text-gray-700">{feedCountTable[key]}</b>{" articles from "}<FeedTag bgColor="bg-green-100" textColor="text-green-700" text={key}/>
@@ -78,6 +78,8 @@ const MainView = (props) => {
           ))}
         </h3>
       </div>
+    ) : (
+      <></>
     )}
     </>
   )
