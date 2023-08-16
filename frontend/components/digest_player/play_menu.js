@@ -101,7 +101,7 @@ export default function PlayMenu(props) {
           disabled
           className="relative -mr-px inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-bl-lg border border-transparent py-2 text-sm font-semibold text-gray-900"
         >
-          <p className="text-gray-600">You're up to date</p> <CheckIcon className="ml-1 h-5 w-5 text-gray-500" aria-hidden="true" />
+          <p className="text-gray-600">You're up to date</p> <CheckIcon className="my-2 ml-1 h-5 w-5 text-gray-500" aria-hidden="true" />
         </button>
       </div>
        )}

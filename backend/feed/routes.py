@@ -129,6 +129,33 @@ def pull(request: Request, Authorize: AuthJWT = Depends()):
   
   return final_articles
 
+@router.get("/user/{user_id}", summary='Get a users saved articles', status_code=status.HTTP_200_OK)
+def pull(request: Request, user_id: str, Authorize: AuthJWT = Depends()):
+  Authorize.jwt_required()
+  querier_id = Authorize.get_jwt_subject()
+
+  feeds = request.app.database["feeds"].find({
+    "user_ids": user_id
+  })
+  
+  final_articles = {}
+  for feed in feeds:
+    articles = list(request.app.database["articles"].find({
+      "_id": {"$in": feed["article_ids"]},
+      # "creation_time": {"$gt": time_ago}
+    }).sort("creation_time", -1))
+    
+    out_articles = []
+    for article in articles:
+      am = packArticleWMeta(request, user_id, article)
+      if not am.metadata.saved:
+        out_articles.append(am)
+    
+
+    final_articles[feed["_id"]] = out_articles
+  
+  return final_articles
+
 @router.get("/pull-all", summary='pull all public feeds', status_code=status.HTTP_200_OK)
 def pull_all(request: Request, Authorize: AuthJWT = Depends()):
   Authorize.jwt_required()

@@ -10,6 +10,7 @@ import { bindActionCreators } from 'redux'
 import ArticleLinkedList, {ArticleNode} from './article_linked_list';
 
 import {WindowMonitorContext} from "./window_monitor";
+import {PlayerStatContext} from "./player_stat_tracker";
 
 export const AudioPlayerContext = createContext()
 
@@ -17,6 +18,7 @@ const AudioPlayer = (props) => {
   
   // STATE
   
+  const tracker = useContext(PlayerStatContext);
   const windowIsActive = useContext(WindowMonitorContext);
   const [readArticleCache, setReadArticleCache] = useState([])
 
@@ -25,12 +27,16 @@ const AudioPlayer = (props) => {
     upload_path: "",
   }
 
-  const onAudioEnd = (article) => {
+  const onAudioEnd = (article, skip) => {
     // if (windowIsActive) {
-      props.onAudioEnd(article)
+    props.onAudioEnd(article)
     // } else {
     //   setReadArticleCache([...readArticleCache, article])
     // }
+
+    if (tracker && !skip) {
+      tracker.completeArticle(article)
+    }
 
     if (article.next === null) {
       setPlaying(false)
@@ -105,7 +111,11 @@ const AudioPlayer = (props) => {
 
   const skipForward = () => {
     current.pause()
-    onAudioEnd(current)
+    if (tracker) {
+      console.log(tracker)
+      tracker.skipForward(current)
+    }
+    onAudioEnd(current, true)
     if (current.next != null) {
       current.next.reset()
       setPlaying(true)
@@ -121,6 +131,9 @@ const AudioPlayer = (props) => {
     pause()
     if (current.prev !== null) {
       current.prev.reset()
+      if (tracker) {
+        tracker.skipBackward(current.prev)
+      }
       props.onAudioStart(current.prev)
       setCurrent(current.prev)
       setPlaying(true)
