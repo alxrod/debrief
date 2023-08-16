@@ -7,6 +7,7 @@ from user.routes import router as user_router
 from article.routes import router as article_router
 from feed.routes import router as feed_router
 from metadata.routes import router as metadata_router
+from stats.routes import router as stats_router
 
 from fastapi.responses import JSONResponse
 from fastapi_jwt_auth import AuthJWT
@@ -34,6 +35,7 @@ app.include_router(user_router, tags=["user"], prefix="/user")
 app.include_router(article_router, tags=["article"], prefix="/article")
 app.include_router(feed_router, tags=["feed"], prefix="/feed")
 app.include_router(metadata_router, tags=["metadata"], prefix="/metadata")
+app.include_router(stats_router, tags=["stats"], prefix="/stats")
 
 @app.get("/")
 async def root():

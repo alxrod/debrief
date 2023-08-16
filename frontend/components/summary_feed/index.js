@@ -12,7 +12,7 @@ import WindowMonitor from './window_monitor';
 import { getFeed } from '../../reducers/summary/dispatchers/summary.get.dispatcher';
 import SummaryContent from './summary_content';
 import PlayMenu from './play_menu';
-
+import PlayerStatTracker from './player_stat_tracker';
 
 const SummaryFeed = (props) => {
   const onAudioEnd = (article) => {
@@ -52,14 +52,16 @@ const SummaryFeed = (props) => {
       <div className="w-full">
         {feedExists ? (
         <WindowMonitor>
-          <AudioPlayer 
-            articles={props.articles}
-            onAudioEnd={onAudioEnd}
-            onAudioStart={onAudioStart}
-          >
-            <PlayMenu/>
-            <SummaryContent />
-          </AudioPlayer>
+          <PlayerStatTracker>
+            <AudioPlayer 
+              articles={props.articles}
+              onAudioEnd={onAudioEnd}
+              onAudioStart={onAudioStart}
+            >
+              <PlayMenu/>
+              <SummaryContent />
+            </AudioPlayer>
+          </PlayerStatTracker>
         </WindowMonitor>
         ) : (
           <h1 className="text-red-800">We're sorry, either you have not added this feed or it does not exist</h1>

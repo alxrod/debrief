@@ -43,6 +43,10 @@ export class ArticleNode {
     this.cur.onended = endFunc
     this.cur.play()
   }
+
+  percComplete() {
+    return this.cur.currentTime / this.cur.duration
+  }
 }
 // linkedlist class
 export default class ArticleLinkedList {
