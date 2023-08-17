@@ -29,12 +29,14 @@ const AudioPlayer = (props) => {
 
   const onAudioEnd = (article, skip) => {
     // if (windowIsActive) {
+    console.log("Audio Ended in Player ", article)
     props.onAudioEnd(article)
     // } else {
     //   setReadArticleCache([...readArticleCache, article])
     // }
 
     if (tracker && !skip) {
+      console.log("SAVING ARTICLE TO TRACKER")
       tracker.completeArticle(article)
     }
 
@@ -42,7 +44,6 @@ const AudioPlayer = (props) => {
       setPlaying(false)
       setCurrent(new ArticleNode(emptyArticle))
       queue.empty()
-      console.log("QUEUE IS EMPTY: ", queue.isEmpty())
       setQueue(queue)
     } else {
       setCurrent(article.next)
@@ -112,7 +113,6 @@ const AudioPlayer = (props) => {
   const skipForward = () => {
     current.pause()
     if (tracker) {
-      console.log(tracker)
       tracker.skipForward(current)
     }
     onAudioEnd(current, true)
@@ -155,7 +155,6 @@ const AudioPlayer = (props) => {
         queue.add(art, 0);
       }
     }
-    queue.printList()
     if (queue.head !== null) {
       play()
     }

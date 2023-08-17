@@ -41,7 +41,6 @@ const SummaryFeed = (props) => {
 
 
   const loadNewFeed = (id, name) => {
-    console.log("ID: ", id, " NAME: ", name)
     props.getFeed(id, name)
   }
 

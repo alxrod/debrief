@@ -12,7 +12,7 @@ export const FeedCounter = (props) => {
       const article = props.articles[i]
       if (countTable[article.feed_id] && !article.metadata.read) {
         countTable[article.feed_id] += 1
-      } else {
+      } else if (!article.metadata.read) {
         countTable[article.feed_id] = 1
       }
     }

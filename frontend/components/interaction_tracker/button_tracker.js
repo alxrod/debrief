@@ -15,7 +15,6 @@ function ButtonTracker(props) {
   }, [])
 
   const addHover = () => {
-    console.log("Detected hover")
     if (buttonMap[props.btnId]) {
       buttonMap[props.btnId].hover += 1
     } else {

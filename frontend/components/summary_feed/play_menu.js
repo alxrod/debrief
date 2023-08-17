@@ -48,7 +48,10 @@ export default function PlayMenu(props) {
               <button
                 type="button"
                 className="mx-2 text-gray-500 hover:text-gray-600"
-                onClick={() => pause()}
+                onClick={() => {
+                  console.log("Pausing audio")
+                  pause()
+                }}
               >
                 <PauseIcon className="h-10 w-10" aria-hidden="true" />
               </button>

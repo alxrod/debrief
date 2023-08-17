@@ -10,7 +10,6 @@ class SummaryService {
         limit: limit,
       })
     }
-    console.log("URL: ", url)
     return api
     .get(url, {})
     .then(response => {

@@ -49,9 +49,11 @@ const MainView = (props) => {
 
   const curArticle = useMemo(() => {
     const art = articles.filter(article => article.id === current.id)[0]
-    console.log("Cur: ", art)
     return art
   }, [current.id, articlesChanged])
+
+  useEffect(() => {
+  }, [curArticle])
 
 
   return (
