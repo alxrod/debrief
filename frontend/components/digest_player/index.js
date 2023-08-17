@@ -22,7 +22,7 @@ import PlayerStatTracker from '../summary_feed/player_stat_tracker';
 const DigestPlayer = (props) => {
   const onAudioEnd = (article) => {
     markRead(article.id, article.metadata_id, true)
-    props.removeArticle(article.id)
+    // props.removeArticle(article.id)
   }
   const onAudioStart = (article) => {
     // markRead(article.id, article.metadata._id, false)
@@ -42,9 +42,7 @@ const DigestPlayer = (props) => {
 
 
   const loadDigest = (id, name) => {
-    console.log("ID: ", id, " NAME: ", name)
     props.getDigest().then((arts) => {
-      console.log("Compelte w ", arts)
     })
   }
   return (

@@ -39,11 +39,13 @@ const ArticleView = (props) => {
 
   const feedNamesTable = useMemo(() => {
     let table = {}
-    props.user.feeds.forEach(feed => {
-      table[feed.id] = feed.name
-    })
+    if (props.user?.feeds) {
+      props.user.feeds.forEach(feed => {
+        table[feed.id] = feed.name
+      })
+    }
     return table
-  }, [props.user.feeds])
+  }, [props.user?.feeds])
 
   return (
     <div className="flex items-start justify-between p-4 w-full grow" reloadattr={props.articlesChanged.toString()}>

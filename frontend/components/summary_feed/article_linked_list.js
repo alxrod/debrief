@@ -7,6 +7,7 @@ export class ArticleNode {
     this.id = article.id
     this.upload_path = article.upload_path
     this.cur = this.makeAudio(article.upload_path)
+    this.audio_url = "https://debrief-summaries.s3.amazonaws.com/" + article.upload_path
 
     // Elem ordering
     this.next = null
@@ -14,17 +15,22 @@ export class ArticleNode {
 
   }
 
-  makeAudio(upload_path) {
-    const url = "https://debrief-summaries.s3.amazonaws.com/" + upload_path
+  makeAudio(upload_path, preload) {
     if (upload_path === "") {
       return new Audio()
     }
-    var a = new Audio(url);
+    var a = new Audio();
+    if (preload) {
+      a.src = upload_path
+    }
     a.playbackRate=1.2;
     return a
   }
 
   play() {
+    if (this.cur.src === "") {
+      this.cur.src = this.audio_url
+    }
     this.cur.play()
   }
 
@@ -33,7 +39,7 @@ export class ArticleNode {
   }
 
   resume() {
-    this.cur.play()
+    this.play()
   }
   
   reset() {
@@ -41,7 +47,7 @@ export class ArticleNode {
     const endFunc = this.cur.onended
     this.cur = this.makeAudio(this.upload_path)
     this.cur.onended = endFunc
-    this.cur.play()
+    this.play()
   }
 
   percComplete() {
@@ -60,9 +66,10 @@ export default class ArticleLinkedList {
   composeOnEnd(cur, next) {
     const ended = this.endCallback
     return function () {
+      console.log("Article List end ", cur)
       ended(cur)
       if (next !== null) {
-        next.cur.play()
+        next.play()
       }
     }
   };

@@ -42,11 +42,11 @@ function PlayerStatTracker(props) {
   }
 
   const addEvent = (event) => {
-    // if (process.env.NEXT_PUBLIC_MODE === 'dev') {
-    //   console.log("Registering event: ", event)
-    // } else {
-    StatsService.addEvent(event)
-    // }
+    if (process.env.NEXT_PUBLIC_MODE === 'dev') {
+      console.log("Registering event: ", event)
+    } else {
+      StatsService.addEvent(event)
+    }
   }
 
 
