@@ -23,7 +23,7 @@ const FeedGrid = (props) => {
 
       <h2 className="text-sm font-medium text-gray-500">Your Feeds</h2>
       <ul role="list" className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
-        {props.user.feeds.map((feed) => (
+        {props.user?.feeds.map((feed) => (
           <li key={feed.id} className="col-span-1 flex rounded-md shadow-sm">
             <div
               className={classNames(
