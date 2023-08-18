@@ -30,6 +30,7 @@ export class ArticleNode {
   play() {
     if (this.cur.src === "") {
       this.cur.src = this.audio_url
+      this.cur.playbackRate=1.2;
     }
     this.cur.play()
   }
@@ -226,6 +227,7 @@ export default class ArticleLinkedList {
     while (cursor !== null) {
       cursor.cur.pause()
       cursor.cur.src = ""
+      cursor = current.prev
     }
   }
 
