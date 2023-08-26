@@ -4,6 +4,7 @@ from ai.audio_generator import AudioGenerator
 from ai.uploader import Uploader
 import uuid
 from ai.main_generator import MainGenerator
+from urllib.parse import urlparse
 
 class FeedObject(object):
   def __init__(self, feed_id=""):
@@ -20,9 +21,18 @@ class FeedObject(object):
   def fetch(self):
     return []
   
+  def remove_query_params(self, url):
+    parsed_url = urlparse(url)
+    return parsed_url.scheme + "://" + parsed_url.netloc + parsed_url.path
+  
   def ingest(self, url_cache, stats):
     new_urls = self.fetch()
+
+    new_urls = [self.remove_query_params(url) for url in new_urls]
+    new_urls = list(set(new_urls))
+    
     unentered_urls = []
+
     for url in new_urls:
       if url not in url_cache:
         if not self.check_in_feed(url):

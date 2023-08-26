@@ -19,6 +19,8 @@ from feed.models import FeedRequestScheme, FeedModel, FeedAddScheme, FeedCreateS
 
 import datetime
 
+from curator import curate
+
 router = APIRouter()
 
 
@@ -126,8 +128,10 @@ def pull(request: Request, Authorize: AuthJWT = Depends()):
     
 
     final_articles[feed["_id"]] = out_articles
+
+    # Insert sorting step
   
-  return final_articles
+  return curate(final_articles)
 
 @router.get("/user/{user_id}", summary='Get a users saved articles', status_code=status.HTTP_200_OK)
 def pull(request: Request, user_id: str, Authorize: AuthJWT = Depends()):
