@@ -131,7 +131,7 @@ def pull(request: Request, Authorize: AuthJWT = Depends()):
 
     # Insert sorting step
   
-  return curate(final_articles)
+  return curate(final_articles, request.app.database)
 
 @router.get("/user/{user_id}", summary='Get a users saved articles', status_code=status.HTTP_200_OK)
 def pull(request: Request, user_id: str, Authorize: AuthJWT = Depends()):
