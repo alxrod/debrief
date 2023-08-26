@@ -23,7 +23,6 @@ from feed.curator import curate
 
 router = APIRouter()
 
-
 def packArticleWMeta(request, user_id, article):
   meta = request.app.database["metadata"].find_one({
     "article_id": article["_id"],

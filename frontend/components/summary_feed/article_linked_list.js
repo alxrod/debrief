@@ -212,7 +212,7 @@ export default class ArticleLinkedList {
       count++;
       current = current.next;
     }
-
+3
       // not found
       return -1;
   }

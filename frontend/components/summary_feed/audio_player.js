@@ -169,7 +169,7 @@ const AudioPlayer = (props) => {
   }
   useEffect(() => {
     if (playing && windowIsActive) {
-    //   queue.haltPrior(current)
+      queue.haltPrior(current)
       setQueue(queue)
     }
 
