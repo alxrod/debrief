@@ -19,7 +19,7 @@ from feed.models import FeedRequestScheme, FeedModel, FeedAddScheme, FeedCreateS
 
 import datetime
 
-from curator import curate
+from feed.curator import curate
 
 router = APIRouter()
 
