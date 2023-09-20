@@ -24,7 +24,9 @@ class FeedObject(object):
 
   def mark_feed_updated(self):
     updated, feed = self.generator.poster.mark_feed_updated(self.feed_id)
-    self.last_updated = parse(feed["last_updated"])
+    if "last_updated" in feed:
+      self.last_updated = parse(feed["last_updated"])
+    
 
   def add_url(self, url):
     return self.generator.ingest(url, feed_id=self.feed_id, lossy=True)
