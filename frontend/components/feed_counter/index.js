@@ -20,11 +20,16 @@ export const FeedCounter = (props) => {
     for (let i = 0; i < props.user.feeds.length; i++) {
       const feed = props.user.feeds[i]
       if (countTable[feed.id]) {
-        finalTable[feed.name] = countTable[feed.id]
+        if (feed?.query_content) {
+          finalTable[feed.query_content] = countTable[feed.id]
+        } else {
+          finalTable[feed.name] = countTable[feed.id]
+        }
       }
     }
+    console.log("FINAL TABLE: ", props.user.feeds)
     return finalTable
-  }, [props.articlesChanged])
+  }, [props.articlesChanged, props.feedsChanged])
 
   return (
     <FeedCounterContext.Provider value={feedCountTable}>
@@ -35,6 +40,7 @@ export const FeedCounter = (props) => {
 
 const mapStateToProps = ({ user, summary}) => ({
   user: user.user,
+  feedsChanged: user.feedsChanged,
   articlesChanged: summary.articlesChanged,
   articles: summary.articles
 })

@@ -1,11 +1,8 @@
 export const sortArticles = (new_articles) => {
+  console.log("SOrting articles")
   const output =  [
-    ...new_articles.filter(article => article.metadata.read === false).sort((a, b) => {
-      return b.metadata.save_time - a.metadata.save_time
-    }),
-    ...new_articles.filter(article => article.metadata.read === true).sort((a, b) => {
-      return b.metadata.save_time - a.metadata.save_time
-    })
+    ...new_articles.filter(article => article.metadata.read === false),
+    ...new_articles.filter(article => article.metadata.read === true)
   ].filter(article => article.metadata.archived === false)
   return output
 }

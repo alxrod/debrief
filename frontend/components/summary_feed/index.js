@@ -29,7 +29,7 @@ const SummaryFeed = (props) => {
   useEffect(() => {
     if (props.feedName !== "" && feedExists === false) {
       for(let i = 0; i < props.user?.feeds.length; i++) {
-        if (props.user.feeds[i].name.toLowerCase() === props.feedName) {
+        if (props.user.feeds[i].name.toLowerCase() === props.feedName || props.user.feeds[i]?.unique_name === props.feedName) {
           loadNewFeed(props.user.feeds[i].id, props.user.feeds[i].name, props.pageLimit)
           setFeedExists(true)
           break

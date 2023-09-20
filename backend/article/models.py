@@ -16,6 +16,9 @@ class ArticleModel(BaseModel):
 
 class ArticleMetaModel(ArticleModel):
   metadata: MetadataModel
+  feed_id: Optional[str]
+  feed_name: Optional[str]
+  feed_is_interest: Optional[bool]
 
 class InboxAddRequest(BaseModel):
   email: str

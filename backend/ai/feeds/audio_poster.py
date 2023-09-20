@@ -5,6 +5,20 @@ class AudioPoster:
     self.token = access_token
     self.base_url = site_base
 
+  def mark_feed_updated(self, feed_id):
+    url = self.base_url + "/feed/mark-updated"
+    head = {'access_token': self.token}
+    params = {
+      "_id": feed_id
+    }
+
+    resp = requests.post(url, json=params, headers=head)
+    if resp.status_code == 200:
+      body = resp.json()
+      if "updated" in body:
+        return body["updated"], body["feed"]
+    return False, {}
+  
   def check_article_exists(self, article_link, feed_id=""):
     url = self.base_url + "/article/check-exists"
     head = {'access_token': self.token}
@@ -20,7 +34,6 @@ class AudioPoster:
       if "exists" in body:
         return body["exists"]
     return False
-
 
   def post_audio(self, email, article):
     url = self.base_url + "/article/add-to-inbox"

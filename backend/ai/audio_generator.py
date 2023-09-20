@@ -101,7 +101,7 @@ class AudioGenerator:
 
 
     def generate_summary(self, text, messages, num_chunks=1):
-        prompt = (f"Summarize the following text in {min(150, 750/num_chunks)} words or less. Do not write any sentences over 20 words.\n{text}\n\n")
+        prompt = (f"Summarize the following text in {min(150, 750/num_chunks)} words or less. Make sure to include key terms and names from the body of the article. Do not write any sentences over 20 words.\n{text}\n\n")
         messages.append({"role": "user", "content": prompt})
         try:
             response = openai.ChatCompletion.create(

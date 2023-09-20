@@ -13,7 +13,9 @@ class UserService {
           TokenService.setCreds(response.data);
         }
         return response.data;
-      });
+      }).catch(error => {
+        return error;
+      })
     }   
 
 
@@ -27,7 +29,9 @@ class UserService {
           TokenService.setCreds(response.data);
         }
         return response.data;
-      });
+      }).catch(error => {
+        return error;
+      })
     }
 
     logout() {
@@ -42,7 +46,21 @@ class UserService {
       .get("/user/cur", {})
       .then(response => {
         return response.data;
-      });
+      }).catch(error => {
+        return error;
+      })
+    }
+
+    changePlaybackSpeed(speed) {
+      return api
+      .post("/user/change-playback", {
+        playback_speed: speed,
+      })
+      .then(response => {
+        return response.data;
+      }).catch(error => {
+        return error;
+      })
     }
 
 
