@@ -121,7 +121,6 @@ def pull(request: Request, feed_id: str, skip: int = -1, limit: int = -1, timest
   if feed["name"] == "interest":
     name = feed["unique_name"]
 
-  print("for feed ", name, ": ", len(article_metas))
   return {"articles": article_metas, "total_articles": total_articles}
 
 @router.get("/digest", summary='Get a users entire reading digest', status_code=status.HTTP_200_OK)
