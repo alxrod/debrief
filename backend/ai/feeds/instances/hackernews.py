@@ -45,7 +45,8 @@ class HackerNewsFeed(FeedObject):
                 if url and "Show HN" not in titl.text and "Ask HN" not in titl.text:
                     links.append(url)
 
-        return links
+        # Patch for now!
+        return links[:10]
     
 
 
