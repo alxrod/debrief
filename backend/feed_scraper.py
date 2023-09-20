@@ -13,6 +13,7 @@ from dateutil.parser import parse
 REFRESH_TIME = 1
 
 INTEREST_REFRESH_RATE = 60 * 60 * 4
+FEED_REFRESH_RATE = 60 * 30
 
 class FeedPoster:
   def __init__(self, access_token, site_base):
@@ -87,20 +88,28 @@ if __name__ == "__main__":
       "failed_articles_list": []
     }
 
-
   while True:
 
-    for name, obj in feeds.items():
-      obj.ingest(url_cache, stats)
-    print("Checking for new interests: ")
-    interest_manager.get_new_feeds()
+    try:
+
+      for name, obj in feeds.items():
+        now = datetime.datetime.now()
+        if (now - obj.last_updated).total_seconds() > FEED_REFRESH_RATE:
+          obj.ingest(url_cache, stats)
     
-    for interest in interest_manager.interest_feeds:
-      now = datetime.datetime.now()
-      if (now - interest.last_updated).total_seconds() > INTEREST_REFRESH_RATE:      
-        interest.ingest(url_cache, stats)
+      interest_manager.get_new_feeds()
     
-    with open("stats.json", "w") as file:
+      for interest in interest_manager.interest_feeds:
+        now = datetime.datetime.now()
+        if (now - interest.last_updated).total_seconds() > INTEREST_REFRESH_RATE:      
+          interest.ingest(url_cache, stats)
+    
+      with open("stats.json", "w") as file:
         json.dump(stats, file)
 
-    time.sleep(REFRESH_TIME)
+      time.sleep(REFRESH_TIME)
+    
+    except Exception as error:
+        print("Scraper failed for reason: ", error)
+        time.sleep(10)
+

@@ -4,6 +4,7 @@ frontend/debrief_proto/*.js
 backend/api
 backend/debrief-388320-a7fc8b358c01.json
 backend/stats.json
+backend/stats*.json
 backend/tmp/
 
 frontend/.next
@@ -14,6 +15,11 @@ ai/debrief_proto
 ai/*.json
 ai/*.mp3
 ai/__pycache__/
+
+ca_bundle.crt
+certificate.crt
+new_certs.zip
+private.key
 
 *.pyc
 
