@@ -14,13 +14,13 @@ const parseArticle = (article, feed_id) => {
 }
 
 
-export const getFeed = (feed_id, feed_name) => {
+export const getFeed = (feed_id, feed_name, timestamp) => {
   return dispatch => {
     return new Promise((resolve, reject) => {
       (async () => {
         let articles = []
 
-        const resp = await SummaryService.pullFeed(feed_id, 0, QUERY_SIZE)
+        const resp = await SummaryService.pullFeed(feed_id, 0, QUERY_SIZE, timestamp)
         const feed_articles = resp.articles
         for (const article of feed_articles) {
           articles.push(parseArticle(article, feed_id))
@@ -50,20 +50,45 @@ export const getFeed = (feed_id, feed_name) => {
   }
 };
 
+export const updateFeed = (feed_id, timestamp) => {
+  return dispatch => {
+    return new Promise((resolve, reject) => {
+      (async () => {
+        let articles = []
+        
+        const resp = await SummaryService.pullFeed(feed_id, 0, QUERY_SIZE, timestamp)
+        if (!resp?.articles) {
+          reject()
+          return
+        }
+        const feed_articles = resp.articles
+        for (const article of feed_articles) {
+          articles.push(parseArticle(article, feed_id))
+        }
+
+        dispatch({
+          type: summaryActions.ADD_ARTICLES_TO_FEED,
+          payload: {
+            articles: articles,
+          }
+        });
+        resolve(articles);
+      })()
+    })
+  }
+};
+
 export const getDigest = () => {
   return dispatch => {
     return new Promise((resolve, reject) => {
       (async () => {
 
         const raw_digest = await SummaryService.pullDigest()
-
+        // console.log("raw_digest: ", raw_digest)
         let articles = []
-        for (const id in raw_digest) {
-          if (raw_digest.hasOwnProperty(id)) {
-            for (const article of raw_digest[id]) {
-              articles.push(parseArticle(article, id))
-            }
-          }
+        for (const raw_art of raw_digest) {
+          // console.log(raw_art)
+          articles.push(parseArticle(raw_art, raw_art.feed_id))
         }
 
         dispatch({

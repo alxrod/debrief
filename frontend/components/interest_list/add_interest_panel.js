@@ -1,53 +1,61 @@
 import { Fragment, useState, useEffect, useMemo } from 'react'
-import { SearchIcon } from '@heroicons/react/outline'
+import { PencilIcon } from '@heroicons/react/outline'
 import { Combobox, Dialog, Transition } from '@headlessui/react'
 
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux'
 
 import {getAllFeeds, getFeed} from '../../reducers/summary/dispatchers/summary.get.dispatcher'
-import {addUserToFeed} from '../../reducers/summary/dispatchers/summary.edit.dispatcher'
+import {createInterest} from '../../reducers/summary/dispatchers/summary.interest.dispatcher'
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-const AddFeedPanel = (props) => {
+const AddInterestPanel = (props) => {
   const [query, setQuery] = useState('')
-  const [feeds, setFeeds] = useState([])
+  // const [feeds, setFeeds] = useState([])
 
-  const filteredFeeds = useMemo(() => {
-    return query === ''
-      ? feeds
-      : feeds.filter((feed) => {
-          return feed.name.toLowerCase().includes(query.toLowerCase())
-        })
+  // const filteredFeeds = useMemo(() => {
+  //   return query === ''
+  //     ? feeds
+  //     : feeds.filter((feed) => {
+  //         return feed.name.toLowerCase().includes(query.toLowerCase())
+  //       })
 
-  })
+  // })
 
-  const addFeed = (feed) => {
-    props.addUserToFeed(feed["_id"], props.user["_id"]).then(() => {
-      props.getFeed(feed["_id"], feed["name"])
-      props.setOpen(false)
-    })
-  }
+  // const addFeed = (feed) => {
+  //   props.addUserToFeed(feed["_id"], props.user["_id"]).then(() => {
+  //     props.getFeed(feed["_id"], feed["name"])
+  //     props.setOpen(false)
+  //   })
+  // }
 
-  useEffect(() => {
-    if (props.open) {
-      props.getAllFeeds().then((new_feeds) => {
-        setFeeds(new_feeds.filter((feed) => {
-          let exists = false
-          for (let feed_id in props.user.feeds) {
-            if (props.user.feeds[feed_id].id === feed["_id"]) {
-              exists = true
-              break
-            }
-          } 
-          return !exists
-        }))
+  // useEffect(() => {
+  //   if (props.open) {
+  //     props.getAllFeeds().then((new_feeds) => {
+  //       setFeeds(new_feeds.filter((feed) => {
+  //         let exists = false
+  //         for (let feed_id in props.user.feeds) {
+  //           if (props.user.feeds[feed_id].id === feed["_id"]) {
+  //             exists = true
+  //             break
+  //           }
+  //         }
+  //         return !exists
+  //       }))
+  //     })
+  //   }
+  // }, [props.open])
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      props.createInterest(query).then((new_interest) => {
+        props.setOpen(false)
       })
     }
-  }, [props.open])
+  }
 
   return (
     <Transition.Root show={props.open} as={Fragment} afterLeave={() => setQuery('')} appear>
@@ -77,18 +85,19 @@ const AddFeedPanel = (props) => {
             <Dialog.Panel className="mx-auto max-w-xl transform divide-y divide-gray-100 overflow-hidden rounded-xl bg-white shadow-2xl ring-1 ring-black ring-opacity-5 transition-all">
               <Combobox onChange={(feed) => (addFeed(feed))}>
                 <div className="relative">
-                  <SearchIcon
+                  <PencilIcon
                     className="pointer-events-none absolute left-4 top-3.5 h-5 w-5 text-gray-400"
                     aria-hidden="true"
                   />
                   <Combobox.Input
                     className="h-12 w-full border-0 bg-transparent pl-11 pr-4 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
-                    placeholder="Search..."
+                    placeholder="Describe an interest or choose from existing ones..."
                     onChange={(event) => setQuery(event.target.value)}
+                    onKeyDown={handleKeyDown}
                   />
                 </div>
 
-                {filteredFeeds.length > 0 && (
+                {/* {filteredFeeds.length > 0 && (
                   <Combobox.Options static className="max-h-72 scroll-py-2 overflow-y-auto py-2 text-sm text-gray-800">
                     {filteredFeeds.map((feed) => (
                       <Combobox.Option
@@ -102,11 +111,11 @@ const AddFeedPanel = (props) => {
                       </Combobox.Option>
                     ))}
                   </Combobox.Options>
-                )}
+                )} */}
 
-                {query !== '' && filteredFeeds.length === 0 && (
-                  <p className="p-4 text-sm text-gray-500">No public feeds.</p>
-                )}
+                {/* {query !== '' && filteredFeeds.length === 0 && (
+                  <p className="p-4 text-sm text-gray-500">No existing interests.</p>
+                )} */}
               </Combobox>
             </Dialog.Panel>
           </Transition.Child>
@@ -122,11 +131,11 @@ const mapStateToProps = ({ user, summary}) => ({
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   getAllFeeds,
-  addUserToFeed,
+  createInterest,
   getFeed,
 }, dispatch)
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(AddFeedPanel)
+)(AddInterestPanel)

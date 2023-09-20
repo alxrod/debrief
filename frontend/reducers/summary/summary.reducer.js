@@ -31,7 +31,7 @@ export default (state = initialState, action) => {
                 articlesChanged: !state.articlesChanged,
                 totalArticles: action.payload.total_articles
             }
-
+            
         case summaryActions.CLEAR:
             return {
                 ...state,
@@ -71,6 +71,13 @@ export default (state = initialState, action) => {
                 articles: action.payload.articles,
                 articlesChanged:  action.payload.noRefresh ? state.articlesChanged : !state.articlesChanged
 
+            }
+        
+        case summaryActions.ADD_ARTICLES_TO_FEED:
+            return {
+                ...state,
+                articles: [...state.articles, ...action.payload.articles],
+                articlesChanged: !state.articlesChanged
             }
         default:
             return state

@@ -2,9 +2,10 @@ import { PlusIcon } from '@heroicons/react/outline'
 import { useState, useEffect, useContext } from 'react'
 
 import { FastForwardIcon, RewindIcon, PauseIcon, PlayIcon, RefreshIcon, CheckIcon} from '@heroicons/react/solid'
+import { ClockIcon} from '@heroicons/react/outline'
 
 import {AudioPlayerContext} from "../summary_feed/audio_player";
-
+import PlaybackButton from "./playback_button"
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
@@ -72,6 +73,10 @@ export default function PlayMenu(props) {
                 <PlayIcon className="h-8 w-8 text-gray-500" aria-hidden="true" />
               </button>
             )}
+            </div>
+
+            <div className="flex w-0 flex-1 justify-center">
+              <PlaybackButton/>
             </div>
             
             <div className="flex w-0 flex-1">

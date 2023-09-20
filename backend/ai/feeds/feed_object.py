@@ -5,15 +5,27 @@ from ai.uploader import Uploader
 import uuid
 from ai.main_generator import MainGenerator
 from urllib.parse import urlparse
+from datetime import datetime
+from dateutil.parser import parse
 
 class FeedObject(object):
   def __init__(self, feed_id=""):
     self.generator = MainGenerator()
     self.feed_id = feed_id
+    self.last_updated = None
+
+    self.blacklist = [
+      "nytimes.com"
+    ]
   
   def check_in_feed(self, url):
     exists = self.generator.poster.check_article_exists(url, self.feed_id)
     return exists
+
+  def mark_feed_updated(self):
+    updated, feed = self.generator.poster.mark_feed_updated(self.feed_id)
+    print("FEED IS: ", feed)
+    self.last_updated = parse(feed["last_updated"])
 
   def add_url(self, url):
     return self.generator.ingest(url, feed_id=self.feed_id, lossy=True)
@@ -26,12 +38,20 @@ class FeedObject(object):
     return parsed_url.scheme + "://" + parsed_url.netloc + parsed_url.path
   
   def ingest(self, url_cache, stats):
-    new_urls = self.fetch()
+    self.mark_feed_updated()
 
+    new_urls = self.fetch()
     new_urls = [self.remove_query_params(url) for url in new_urls]
     new_urls = list(set(new_urls))
     
+    cleaned_urls = []
+    for url in new_urls:
+      if not any([blacklist in url for blacklist in self.blacklist]):
+        cleaned_urls.append(url)
+    new_urls = cleaned_urls
+    
     unentered_urls = []
+
 
     for url in new_urls:
       if url not in url_cache:

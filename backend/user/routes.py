@@ -13,7 +13,7 @@ from user.utils import get_hashed_password
 
 from uuid import uuid4
 
-from user.models import UserModel,TokenSchema
+from user.models import UserModel,TokenSchema, PlaybackSpeedChange
 
 from user.utils import (
     get_hashed_password,
@@ -42,6 +42,7 @@ def register(request: Request, user: UserModel = Body(...), Authorize: AuthJWT =
     )
   new_user["creation_time"] = datetime.datetime.now()
   new_user["password"] = get_hashed_password(new_user["password"])
+  new_user["playback_speed"] = 1.0
 
   new_user = request.app.database["users"].insert_one(new_user)
   created_user = request.app.database["users"].find_one({
@@ -83,6 +84,27 @@ def refresh(Authorize: AuthJWT = Depends()):
     new_access_token = Authorize.create_access_token(subject=user_id)
     return {"access_token": new_access_token}
 
+@router.post('/change-playback')
+def changePlayback(request: Request, speed_req: PlaybackSpeedChange = Body(...), Authorize: AuthJWT = Depends()):
+    Authorize.jwt_required()
+    user_id = Authorize.get_jwt_subject()
+  
+    user = request.app.database["users"].find_one({
+      "_id": user_id
+    })
+
+    if user is None:
+      raise HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail="No user"
+      )
+  
+    user["playback_speed"] = speed_req.playback_speed
+
+    request.app.database["users"].update_one({"_id": user_id}, {"$set": user})
+
+    return "success"
+
 @router.get('/cur', summary='get details of currently logged in user')
 def get_me(request: Request, Authorize: AuthJWT = Depends()):
   Authorize.jwt_required()
@@ -102,10 +124,16 @@ def get_me(request: Request, Authorize: AuthJWT = Depends()):
 
   feed_metas = []
   for feed in feeds:
-    feed_metas.append({
+    snip = {
       "id": feed["_id"],
       "name": feed["name"]
-    })
+    } 
+    if "interest_feed" in feed and feed["interest_feed"]:
+      snip["interest_feed"] = True
+      snip["query_content"] = feed["query_content"]
+      snip["unique_name"] = feed["unique_name"]
+
+    feed_metas.append(snip)
   
   del user['password']
 

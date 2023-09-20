@@ -62,6 +62,9 @@ const AudioPlayer = (props) => {
   const [current, setCurrent] = useState(new ArticleNode(emptyArticle))
   const [playing, setPlaying] = useState(false)
 
+  // HELPER FUNCTIONS
+
+
   const findArticle = (id) => {
     const art = props.articles.find((article) => {
       return article._id === id
@@ -69,7 +72,19 @@ const AudioPlayer = (props) => {
     return art
   }
 
+  useEffect(() => {
+    if (props.user?.playback_speed) {
+      queue.setPlaybackSpeed(props.user?.playback_speed)
+      current.setPlaybackSpeed(props.user?.playback_speed)
+      setCurrent(current)
+      setQueue(queue)
+    } else {
+      console.log("User: ", props.user)
+    }
+  }, [props.user?.playback_speed])
+
   // PLAY FUNCTIONS
+  
   const play = (provided) => {
     if (provided !== undefined) {
       const cur = queue.insertAt(provided, 0);
@@ -210,6 +225,7 @@ const AudioPlayer = (props) => {
 
 const mapStateToProps = ({ user, summary}) => ({
   articlesChanged: summary.articlesChanged,
+  user: user.user
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({

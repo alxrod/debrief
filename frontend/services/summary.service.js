@@ -2,21 +2,25 @@
 import api from './api';
 class SummaryService {
   
-  pullFeed(feed_id, skip, limit) {
+  pullFeed(feed_id, skip, limit, timestamp) {
     let url = "/feed/pull/"+feed_id
+    let time = timestamp
+    if (!time) {
+      time = 0
+    }
     if (skip >= 0 && limit >= 0) {
       url += "?" + new URLSearchParams({
         skip: skip,
         limit: limit,
+        timestamp: time,
       })
     }
     return api
-    .get(url, {})
+    .get(url)
     .then(response => {
       return response.data;
     }).catch(error => {
-      console.log("ERROR: " + error.data.message);
-      return error.data.message;
+      return error;
     });
   }
 
@@ -26,7 +30,7 @@ class SummaryService {
     .then(response => {
       return response.data;
     }).catch(error => {
-      return error.data.message;
+      return error;
     });
   }
 
@@ -36,7 +40,7 @@ class SummaryService {
     .then(response => {
       return response.data;
     }).catch(error => {
-      return error.data.message;
+      return error;
     });
   }
 
@@ -51,8 +55,7 @@ class SummaryService {
     .then(response => {
       return response.data;
     }).catch(error => {
-      console.log("ERROR: " + error.data.message);
-      return error.data.message;
+      return error;
     });
   }
 
@@ -62,10 +65,49 @@ class SummaryService {
     .then(response => {
       return response.data;
     }).catch(error => {
-      console.log("METADATA UPDATE ERROR: " + error.data.message);
-      return error.data.message;
+      return error;
     });
   }   
+
+  createInterest(interest) {
+    console.log("SUBMITTING ", interest)
+    return api
+    .post("/feed/create-interest", interest)
+    .then(response => {
+      return response.data;
+    }).catch(error => {
+      return error;
+    });
+  }   
+
+  updateInterest(interest) {
+    return api
+    .post("/feed/update-interest/"+interest._id, {
+      "_id": interest._id,
+      "query_content": interest.query_content,
+      "unique_name": interest.unique_name,
+    })
+    .then(response => {
+      return response.data;
+    }).catch(error => {
+      return error;
+    });
+  }
+
+  deleteInterest(id) {
+    console.log('Deleting ', id)
+    return api
+    .post("/feed/delete-interest/"+id, {
+      "_id": id,
+    })
+    .then(response => {
+      return response.data;
+    }).catch(error => {
+      console.log("ERROR: " + error);
+      return error;
+    });
+  }
+  
 }
 
 export default new SummaryService();

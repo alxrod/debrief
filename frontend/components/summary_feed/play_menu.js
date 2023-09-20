@@ -4,6 +4,7 @@ import { useState, useEffect, useContext } from 'react'
 import { FastForwardIcon, RewindIcon, PauseIcon, PlayIcon, RefreshIcon } from '@heroicons/react/solid'
 
 import {AudioPlayerContext} from "./audio_player";
+import PlaybackButton from '../digest_player/playback_button';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -65,6 +66,7 @@ export default function PlayMenu(props) {
               </button>
             )}
             
+            <PlaybackButton size={"10"}/>
             <button
               type="button"
               className="mx-2 text-gray-500 hover:text-gray-600"

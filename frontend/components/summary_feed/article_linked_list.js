@@ -1,11 +1,13 @@
 export class ArticleNode {
   // constructor
-  constructor(article) {
+  constructor(article, playback_speed) {
     if (article.metadata) {
       this.metadata_id = article.metadata._id
     }
     this.id = article.id
     this.upload_path = article.upload_path
+    this.playback_speed = playback_speed
+
     this.cur = this.makeAudio(article.upload_path)
     this.audio_url = "https://debrief-summaries.s3.amazonaws.com/" + article.upload_path
 
@@ -23,16 +25,24 @@ export class ArticleNode {
     if (preload) {
       a.src = upload_path
     }
-    a.playbackRate=1.2;
+    a.playbackRate= this.playback_speed;
     return a
   }
 
   play() {
     if (this.cur.src === "") {
       this.cur.src = this.audio_url
-      this.cur.playbackRate=1.2;
+      this.cur.playbackRate=this.playback_speed;
     }
     this.cur.play()
+  }
+
+  setPlaybackSpeed(speed) {
+    console.log("SETTING PLAYBACK SPEED ", speed)
+    this.playback_speed = speed
+    if (this.cur) {
+      this.cur.playbackRate = speed
+    }
   }
 
   pause() {
@@ -62,6 +72,16 @@ export default class ArticleLinkedList {
     this.tail = null;
     this.size = 0;
     this.endCallback = endCallback;
+    this.playback_speed = 1.0;
+  }
+
+  setPlaybackSpeed(speed) {
+    this.playback_speed = speed
+    let cursor = this.head
+    while (cursor !== null) {
+      cursor.setPlaybackSpeed(speed)
+      cursor = cursor.next
+    }
   }
 
   composeOnEnd(cur, next) {
@@ -85,7 +105,7 @@ export default class ArticleLinkedList {
 
   add(article) {
     // creates a new node
-    var node = new ArticleNode(article);
+    var node = new ArticleNode(article, this.playback_speed);
 
     // list is empty
     if (this.tail === null) {
@@ -111,7 +131,7 @@ export default class ArticleLinkedList {
       return console.log("Please enter a valid index.");
     else {
       // creates a new node
-      var node = new ArticleNode(element);
+      var node = new ArticleNode(element, this.playback_speed);
       var curr, prev, next;
 
       
@@ -227,7 +247,7 @@ export default class ArticleLinkedList {
     while (cursor !== null) {
       cursor.cur.pause()
       cursor.cur.src = ""
-      cursor = current.prev
+      cursor = cursor.prev
     }
   }
 

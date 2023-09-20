@@ -9,6 +9,7 @@ class UserModel(BaseModel):
   email: str
   password: str
   creation_time: Optional[datetime]
+  playback_speed: Optional[float] = Field(default=1.0)
 
 class TokenSchema(BaseModel):
   access_token: str
@@ -25,6 +26,8 @@ class UserOut(BaseModel):
   id: str = Field(default_factory=uuid.uuid4, alias="_id")
   email: str
 
+class PlaybackSpeedChange(BaseModel):
+  playback_speed: float
 
 class SystemUser(UserOut):
   password: str

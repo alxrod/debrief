@@ -42,6 +42,9 @@ const ArticleView = (props) => {
     if (props.user?.feeds) {
       props.user.feeds.forEach(feed => {
         table[feed.id] = feed.name
+        if (feed?.query_content) {
+          table[feed.id] = feed.query_content
+        }
       })
     }
     return table
@@ -65,7 +68,7 @@ const ArticleView = (props) => {
                 {genTimeString(props.article.metadata.save_time)}
               </time>
             </p>
-            <div className="flex justify-between w-full">
+            <div className="flex justify-between w-full flex-wrap-reverse">
               <a 
                 href={props.article.raw_link} 
                 target="_blank" 
