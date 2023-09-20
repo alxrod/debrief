@@ -34,7 +34,7 @@ class TheGuardianFeed(FeedObject):
         current_year = str(datetime.now().year)
         links = [link for link in links if current_year in link.split("/")]
         # Remove cateogries I personally dont care about
-        links = [link for link in links if link.split("/")[1] in ['business', 'technology', 'politics', 'news', 'world', 'us-news']]
+        links = [link for link in links if link.split("/")[1] in ['business', 'politics', 'news', 'us-news']]
         # links = [link for link in links if "food" not in link.split("/")]
         # links = [link for link in links if "film" not in link.split("/")]
         # links = [link for link in links if "lifeandstyle" not in link.split("/")]
@@ -47,7 +47,7 @@ class TheGuardianFeed(FeedObject):
         links = list(set(links))
         # links = [(self.root_url+link) for link in links if self.is_number(link.split("/")[1])]
         links = [("https://www.theguardian.com"+link) for link in links]
-        return links
+        return links[:10]
      
     def fetch(self):
         return self.get_links()

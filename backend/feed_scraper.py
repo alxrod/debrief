@@ -90,8 +90,8 @@ if __name__ == "__main__":
 
   while True:
 
-    # for name, obj in feeds.items():
-    #   obj.ingest(url_cache, stats)
+    for name, obj in feeds.items():
+      obj.ingest(url_cache, stats)
     print("Checking for new interests: ")
     interest_manager.get_new_feeds()
     

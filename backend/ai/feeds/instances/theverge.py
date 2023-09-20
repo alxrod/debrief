@@ -36,6 +36,6 @@ class TheVergeFeed(FeedObject):
         return links
      
     def fetch(self):
-        return self.get_links()
+        return self.get_links()[:10]
     
 

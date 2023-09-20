@@ -4,6 +4,7 @@ frontend/debrief_proto/*.js
 backend/api
 backend/debrief-388320-a7fc8b358c01.json
 backend/stats.json
+backend/tmp/
 
 frontend/.next
 frontend/node_modules
