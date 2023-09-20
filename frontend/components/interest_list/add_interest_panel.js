@@ -89,14 +89,15 @@ const AddInterestPanel = (props) => {
                     className="pointer-events-none absolute left-4 top-3.5 h-5 w-5 text-gray-400"
                     aria-hidden="true"
                   />
-                  <form>
                     <Combobox.Input
                       className="h-12 w-full border-0 bg-transparent pl-11 pr-4 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
                       placeholder="Tell me something you're interested in"
                       onChange={(event) => setQuery(event.target.value)}
                       onKeyDown={handleKeyDown}
+                      enterKeyHint="done"
+                      enterkeyhint="done"
                     />
-                  </form>
+          
                 </div>
 
                 {/* {filteredFeeds.length > 0 && (

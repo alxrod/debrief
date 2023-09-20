@@ -60,7 +60,7 @@ const InterestEntry = (props) => {
           name="comment"
           id="comment"
           disabled={!editMode}
-          className="block w-full resize-none border-0 bg-transparent px-6 py-8 text-primary7 text-center placeholder:text-gray-400 focus:ring-0 sm:text-2xl font-semibold sm:leading-6"
+          className="block w-full resize-none border-0 bg-transparent px-6 py-8 text-primary7 disabled:text-primary7 text-center placeholder:text-gray-400 focus:ring-0 sm:text-2xl font-semibold sm:leading-6"
           placeholder="Describe an interest you want to hear about..."
           ref={textAreaRef}
           value={newText}
