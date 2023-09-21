@@ -69,7 +69,7 @@ const NavBar = (props) => {
                       href="#"
                       onClick={() => {
                         props.logout()
-                        router.push("/")
+                        // router.push("/")
                       }}
                       className='text-sm text-gray-700 hover:text-gray-900'
                     >
@@ -160,7 +160,7 @@ const NavBar = (props) => {
                     href="#"
                     onClick={() => {
                       props.logout()
-                      router.push("/")
+                      // router.push("/")
                     }}
                     className={classNames(active ? 'bg-gray-100' : '', 'text-sm text-gray-700')}
                   >

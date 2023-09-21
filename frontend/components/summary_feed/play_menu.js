@@ -28,7 +28,7 @@ export default function PlayMenu(props) {
   } = useContext(AudioPlayerContext);
 
   return (
-    <div className="flex items-center w-full justify-center pt-5">
+    <div className="flex items-center w-full justify-center">
         {!queueEmpty ? (
           <div className='flex items-center'>
             <button
@@ -82,6 +82,7 @@ export default function PlayMenu(props) {
             onClick={() => playFromStart()}
           >
             Play New Articles
+
             <PlayIcon className="ml-2 -mr-0.5 h-10 w-10 text-gray-500 group-hover:text-white" aria-hidden="true" />
           </button>
         ) : (

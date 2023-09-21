@@ -263,7 +263,7 @@ class AudioGenerator:
             f.write(text)
         
     def output_summary(self, url, lossy=False):
-        print("\nGenerating summary and audio for ", url)
+        # print("Generating summary and audio for ", url)
         html = self.get_html(url, lossy=lossy)
         if html == "" and lossy:
             return "", "", "", True

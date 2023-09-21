@@ -8,7 +8,6 @@ import { connect } from "react-redux";
 import { bindActionCreators } from 'redux'
 
 import {AudioPlayerContext} from "../summary_feed/audio_player";
-import { FeedCounterContext } from '../feed_counter';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -45,8 +44,6 @@ const MainView = (props) => {
     current
   } = useContext(AudioPlayerContext);
 
-  const feedCountTable = useContext(FeedCounterContext)
-
   const curArticle = useMemo(() => {
     const art = articles.filter(article => article.id === current.id)[0]
     return art
@@ -67,15 +64,15 @@ const MainView = (props) => {
         curAudioPlaying={playing} 
         curAudio={current}
       />
-    ) : Object.keys(feedCountTable).length > 0 ? (
+    ) : Object.keys(props.digestCountTable).length > 0 ? (
       <div className="max-w-[300px] sm:max-w-[600px] min-w-md p-3 text-sm text-gray-500 font-medium">
         <h3>{"You have "}
-          {Object.keys(feedCountTable).map((key, index) => (
+          {Object.keys(props.digestCountTable).map((key, index) => (
             <Fragment key={index}>
-              <b className="text-gray-700">{feedCountTable[key]}</b>{" articles from "}<FeedTag bgColor="bg-green-100" textColor="text-green-700" text={key}/>
-              {Object.keys(feedCountTable).length == 2 && index === 0 ? ", " :
-                Object.keys(feedCountTable).length > 2 && index < Object.keys(feedCountTable).length - 2 ? ", " :
-                Object.keys(feedCountTable).length > 1 && index === Object.keys(feedCountTable).length - 2 ? ", and " : "."}
+              <b className="text-gray-700">{props.digestCountTable[key]}</b>{" articles from "}<FeedTag bgColor="bg-green-100" textColor="text-green-700" text={key}/>
+              {Object.keys(props.digestCountTable).length == 2 && index === 0 ? ", " :
+                Object.keys(props.digestCountTable).length > 2 && index < Object.keys(props.digestCountTable).length - 2 ? ", " :
+                Object.keys(props.digestCountTable).length > 1 && index === Object.keys(props.digestCountTable).length - 2 ? ", and " : "."}
             </Fragment>
           ))}
         </h3>

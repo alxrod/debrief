@@ -1,7 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import Image from 'next/image'
 
-import { MailIcon, VolumeUpIcon, CloudIcon } from '@heroicons/react/solid'
+import { MailIcon, BookOpenIcon, CloudIcon, VolumeUpIcon } from '@heroicons/react/solid'
+import SummaryFeed from "../components/summary_feed"
 
 
 import MainImage from '../public/landing_page/main_image.png';
@@ -11,24 +12,36 @@ import { useRouter } from 'next/router'
 import InteractTracker from '../components/interaction_tracker';
 import WindowMonitor from '../components/summary_feed/window_monitor';
 import ButtonTracker from '../components/interaction_tracker/button_tracker'
+
+
+import InterestPicker from "../components/landing_page/interest_picker";
+
 const timeline = [
   {
     id: 1,
-    content: 'Email articles to debrief.later@gmail.com',
-    href: '#',
-    icon: MailIcon,
-    iconBackground: 'bg-primary4',
-  },
-  {
-    id: 2,
-    content: 'Debrief scrapes articles and generates summaries',
+    content: "You tell us what you're interested in and we generate articles",
     href: '#',
     icon: CloudIcon,
     iconBackground: 'bg-primary5',
   },
   {
+    id: 2,
+    content: 'You can subscribe to your favorite news sources',
+    href: '#',
+    icon: BookOpenIcon,
+    iconBackground: 'bg-primary5',
+  },
+  {
     id: 3,
-    content: 'Listen to articles and save the ones you want to read for later',
+    content: 'You can save an article for later by emailing it to debrief.later@gmail.com',
+    href: '#',
+    icon: MailIcon,
+    iconBackground: 'bg-primary5',
+  },
+
+  {
+    id: 4,
+    content: 'Then we summarize it all and read it to you anywhere and anytime',
     href: '#',
     icon: VolumeUpIcon,
     iconBackground: 'bg-primary6',
@@ -42,6 +55,8 @@ function classNames(...classes) {
 
 
 const LandingPage = (props) => {
+
+  const [feedName, setFeedName] = useState("")
 
   const router = useRouter()
   useEffect(() => {
@@ -105,6 +120,9 @@ const LandingPage = (props) => {
             <h1 className="text-4xl font-bree-serif tracking-tight text-left sm:text-6xl text-white">
               How's it work?
             </h1>
+            <p className="text-sm text-white text-xl font-medium py-2 max-w-sm">
+              We pull together your favorite articles on the internet in three main ways
+            </p>
             <br/>
             <div className="flow-root">
               <ul role="list" className="-mb-8">
@@ -140,6 +158,43 @@ const LandingPage = (props) => {
             </div>
           </div>
         </div>
+
+
+
+
+        <div className="relative flex justify-center ">
+          <div className=" flex flex-col items-start pt-10 sm:pt-20 pb-32 sm:pb-40 px-8">
+            <div className="grid lg:grid-cols-2 gap-x-24">
+              <div className="lg:mt-24">
+                <h1 className="text-4xl font-bree-serif tracking-tight text-left sm:text-6xl text-primary7">
+                  Let's try it out!
+                </h1>
+                <p className="text-sm text-gray-700 text-xl py-2 max-w-sm">
+                  The best way to use debrief is generating your own areas of interest. Check out a couple users have already come up with.
+                </p>
+                <br/>
+                <InterestPicker setFeedName={setFeedName}/>
+                <br/>
+                <ButtonTracker btnId={"landing-page-try-yourself"}>
+                  <a
+                    href="/register"
+                    className="inline-block rounded-lg bg-primary5 px-4 py-1.5 text-base font-semibold leading-7 text-white shadow-sm ring-1 ring-primary5 hover:bg-primary6 hover:ring-primary6"
+                  >
+                    Try it yourself!{' '}
+                    <span className="text-indigo-200" aria-hidden="true">
+                      &rarr;
+                    </span>
+                  </a>
+                </ButtonTracker>
+              </div>
+              <div className="">
+                <SummaryFeed feedName={feedName} previewMode={true}/>
+              </div>
+            </div>
+          </div>
+        </div>
+
+       
       </InteractTracker>
     </WindowMonitor>
   )

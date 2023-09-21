@@ -24,24 +24,30 @@ const PlaybackButton = (props) => {
   const [hasChanged, setHasChanged] = useState(false)
 
   useEffect(() => {
-    console.log("Setting val for speed ", props.user.playback_speed)
-    for (let i = 0; i < speeds.length; i++) {
-      if (parseFloat(speeds[i].name) == props.user.playback_speed) {
-        setSelected(speeds[i])
-        console.log("found and setting: ", speeds[i])
+    if (props.user?.playback_speed) {
+      for (let i = 0; i < speeds.length; i++) {
+        if (parseFloat(speeds[i].name) == props.user.playback_speed) {
+          setSelected(speeds[i])
+          console.log("found and setting: ", speeds[i])
+        }
       }
     }
-  }, [props.user.playback_speed])
+  }, [props.user?.playback_speed])
 
   useEffect(() => {
     if (selected.name != "1.00x") {
       setHasChanged(true)
     }
-    if (hasChanged || selected.name != "1.00x") {
-      if (parseFloat(selected.name) !== props.user.playback_speed && props.user.playback_speed) {
-        props.changePlaybackSpeed(parseFloat(selected.name))
+    if (props.user?.playback_speed) {
+      if (hasChanged || selected.name != "1.00x") {
+        if (parseFloat(selected.name) !== props.user.playback_speed && props.user.playback_speed) {
+          props.changePlaybackSpeed(parseFloat(selected.name), true)
+        }
       }
+    } else {
+      props.changePlaybackSpeed(parseFloat(selected.name), false)
     }
+   
   }, [selected])
 
   return (

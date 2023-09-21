@@ -32,6 +32,30 @@ export const createInterest = (query_content) => {
   }
 };
 
+export const joinInterest = (unique_name) => {
+  return dispatch => {
+    return SummaryService.joinInterest(unique_name).then(
+      (new_interest) => {
+        new_interest.id = new_interest._id
+        dispatch({
+          type: userActions.ADD_FEED_TO_USER,
+          payload: new_interest
+        });
+        return Promise.resolve();
+      },
+      (error) => {
+        const message = 
+            (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+            error.messsage ||
+            error.toString();
+        return Promise.reject(message);
+      }
+    );
+  }
+};
+
 
 // export const addUserToFeed = (feed_id, user_id) => {
 //   return dispatch => {

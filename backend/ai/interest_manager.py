@@ -34,7 +34,7 @@ class InterestManager:
         interest = CustomSearchFeed(interest_json["_id"], interest_json["query_content"], interest_json["query"])
         interest.last_updated = parse(interest_json["last_updated"])
         
-        print("Ingesting: ", interest.query)
+        print("Adding ", interest.query_content, " to interest feeds")
         # if interest.query != interest_json["query"]:
         #   self.update_interest_query(interest)
 

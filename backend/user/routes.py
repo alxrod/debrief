@@ -132,6 +132,7 @@ def get_me(request: Request, Authorize: AuthJWT = Depends()):
       snip["interest_feed"] = True
       snip["query_content"] = feed["query_content"]
       snip["unique_name"] = feed["unique_name"]
+      snip["author_id"] = feed["author_id"]
 
     feed_metas.append(snip)
   

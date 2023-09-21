@@ -27,6 +27,7 @@ class FeedModel(BaseModel):
 
 class InterestFeedModel(FeedModel):
   interest_feed: bool = Field(default_factory=False)
+  author_id: str
   query_content: str
   query: str
 
@@ -35,6 +36,7 @@ class InterestFeedModel(FeedModel):
     obj = {
       "_id": str(uuid.uuid4()),
       "name": feed_name,
+      "author_id": "",
       "user_ids": [],
       "article_ids": [],
       "creation_time": datetime.datetime.now(),
@@ -45,6 +47,7 @@ class InterestFeedModel(FeedModel):
       "unique_name": unique_name,
       "last_updated": datetime.datetime.now() - datetime.timedelta(days=365),
       "dormant": False
+      
     }
 
     if user_id != "":
@@ -59,6 +62,10 @@ class FeedCreateScheme(BaseModel):
 
 class InterestFeedCreateScheme(BaseModel):
   query_content: str
+
+class InterestFeedJoinScheme(BaseModel):
+  unique_name: str
+
 
 class FeedUpdateScheme(BaseModel):
   id: str = Field(default_factory=uuid.uuid4, alias="_id")  

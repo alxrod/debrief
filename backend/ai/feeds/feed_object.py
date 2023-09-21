@@ -26,6 +26,9 @@ class FeedObject(object):
     updated, feed = self.generator.poster.mark_feed_updated(self.feed_id)
     if "last_updated" in feed:
       self.last_updated = parse(feed["last_updated"])
+      if self.last_updated == None:
+        print("error marking feed updated, setting it current locally")
+        self.last_updated = datetime.now()
     
 
   def add_url(self, url):
@@ -60,7 +63,7 @@ class FeedObject(object):
           unentered_urls.append(url)
         url_cache.append(url)
       
-    print("Ingesting ", len(unentered_urls), " new articles")
+    print(self.feed_id, ": ingesting ", len(unentered_urls), " new articles")
     for url in unentered_urls:
       if not self.add_url(url):
         print("Failed to ingest ", len(url))

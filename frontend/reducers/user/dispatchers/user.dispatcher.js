@@ -66,20 +66,27 @@ export const setUser = (user) => {
     }
 }
 
-export const changePlaybackSpeed = (speed) => {
+export const changePlaybackSpeed = (speed, authed) => {
     return dispatch => {
-        UserService.changePlaybackSpeed(speed).then(
-            (data) => {
-                dispatch({
-                    type: userActions.CHANGE_PLAYBACK_SPEED,
-                    payload: {speed: speed},
-                });
-                return Promise.resolve();
-            },
-            (error) => {
-                return Promise.reject(error);
-            }
-        );
+        if (authed) {
+            UserService.changePlaybackSpeed(speed).then(
+                (data) => {
+                    dispatch({
+                        type: userActions.CHANGE_PLAYBACK_SPEED,
+                        payload: {speed: speed},
+                    });
+                    return Promise.resolve();
+                },
+                (error) => {
+                    return Promise.reject(error);
+                }
+            );
+        } else {
+            dispatch({
+                type: userActions.CHANGE_PLAYBACK_SPEED,
+                payload: {speed: speed},
+            });
+        }
         return Promise.resolve();
     }
 }
@@ -87,6 +94,9 @@ export const changePlaybackSpeed = (speed) => {
 
 export const pullUser = () => {
     return dispatch => {
+        dispatch({
+            type: userActions.GETTING_USER,
+        });
         return UserService.pullUser().then(
             (data) => {
                 const user = data.user;
@@ -110,6 +120,14 @@ export const pullUser = () => {
                 return Promise.reject(message);
             }
         );
+    }
+};
+
+export const setUnauthed = () => {
+    return dispatch => {
+        dispatch({
+            type: userActions.SET_UNAUTHED,
+        });
     }
 };
 

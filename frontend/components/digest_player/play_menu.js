@@ -6,9 +6,15 @@ import { ClockIcon} from '@heroicons/react/outline'
 
 import {AudioPlayerContext} from "../summary_feed/audio_player";
 import PlaybackButton from "./playback_button"
+import DigestSlider from "./digest_slider"
+import {Oval} from 'react-loading-icons'
+
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
+
+
 
 export default function PlayMenu(props) {
   const {
@@ -28,8 +34,16 @@ export default function PlayMenu(props) {
     clearQueue,
   } = useContext(AudioPlayerContext);
 
+  const [hearMore, setHearMore] = useState(false)
+  useEffect(() => {
+    if (queueEmpty && props.moreLeft) {
+      setHearMore(true)
+    }
+  })
+
   return (
-     
+
+        
 
 
         <div className="-mt-px flex divide-x divide-gray-200 text-gray-500">
@@ -90,25 +104,48 @@ export default function PlayMenu(props) {
             </div>
           </>
         ) : (unreadCount > 0) ? (
-          <div className="flex w-0 flex-1">
-            <button
-              type="button"
-              onClick={() => playFromStart()}
-              className="relative -mr-px inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-bl-lg border border-transparent py-2 text-sm font-semibold text-gray-900"
-            >
-              <p className="text-gray-600">Start Digest</p> <PlayIcon className="ml-1 h-8 w-8 text-gray-500" aria-hidden="true" />
-            </button>
+          <div className="flex flex-col items-center flex-1">
+            <DigestSlider digestSize={props.digestSize} setDigestSize={props.setDigestSize} maxSize={props.maxSize}/>
+            <div className="flex w-full">
+              <button
+                type="button"
+                onClick={() => playFromStart()}
+                className="relative -mr-px inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-bl-lg border border-transparent pb-3 text-sm font-semibold text-gray-900"
+              >
+                <p className="text-gray-600">Start Digest</p> <PlayIcon className="ml-1 h-8 w-8 text-gray-500" aria-hidden="true" />
+              </button>
+            </div>
           </div>
-       ) : (
+       ) : hearMore ? (
         <div className="flex w-0 flex-1">
         <button
           type="button"
-          disabled
+          onClick={props.nextDigest}
           className="relative -mr-px inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-bl-lg border border-transparent py-2 text-sm font-semibold text-gray-900"
         >
-          <p className="text-gray-600">You're up to date</p> <CheckIcon className="my-2 ml-1 h-5 w-5 text-gray-500" aria-hidden="true" />
+          <p className="text-gray-600">Want to hear more?</p> <PlayIcon className="my-2 ml-1 h-5 w-5 text-gray-500" aria-hidden="true" />
         </button>
       </div>
+      ) : !props.generating ? (
+        <div className="flex w-0 flex-1">
+          <button
+            type="button"
+            disabled
+            className="relative -mr-px inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-bl-lg border border-transparent py-2 text-sm font-semibold text-gray-900"
+          >
+            <p className="text-gray-600">You're up to date</p> <CheckIcon className="my-2 ml-1 h-5 w-5 text-gray-500" aria-hidden="true" />
+          </button>
+        </div>
+       ) : (
+        <div className="flex w-0 flex-1 py-8">
+          <button
+            type="button"
+            disabled
+            className="relative -mr-px inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-bl-lg border border-transparent py-2 text-sm font-semibold text-gray-900"
+          >
+            <p className="text-gray-600">Generating your digest...</p> <Oval className="w-4 h-4" stroke={"#7993A0"} fill={"#7993A0"} strokeWidth={4}/>
+          </button>
+        </div>
        )}
         </div>
 

@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux'
 
-import { pullUser } from "../../reducers/user/dispatchers/user.dispatcher";
+import { pullUser, setUnauthed } from "../../reducers/user/dispatchers/user.dispatcher";
 
 const AppWrapper = (props) => {
   
@@ -13,6 +13,8 @@ const AppWrapper = (props) => {
       props.pullUser().catch(() => {
         localStorage.removeItem("creds")
       })
+    } else {
+      props.setUnauthed()
     }
   },[])
   
@@ -30,6 +32,7 @@ const mapStateToProps = ({ user }) => ({
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   pullUser,
+  setUnauthed,
 }, dispatch)
 
 export default connect(

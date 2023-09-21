@@ -10,15 +10,16 @@ import { sortArticles } from '../../reducers/summary/summary.helpers';
 
 function EntryPagination(props) {
 
+  const preview_pageLimit = 3 
 
   const curArticles = useMemo(() => {
-    const start = (props.curPage - 1) * props.pageLimit
-    const end = Math.min(start + props.pageLimit, props.articles.length)
+    const start = (props.curPage - 1) * (props.previewMode ? preview_pageLimit : props.pageLimit)
+    const end = Math.min(start + (props.previewMode ? preview_pageLimit : props.pageLimit), props.articles.length)
     return props.articles.slice(start, end)
   }, [props.curPage, props.articles.length, props.articlesChanged])
 
   const totalPages = useMemo(() => {
-    return Math.ceil(props.articles.length / props.pageLimit)
+    return Math.ceil(props.articles.length / (props.previewMode ? preview_pageLimit : props.pageLimit))
   }, [props.articles])
 
   const nextPage = () => {
@@ -37,7 +38,7 @@ function EntryPagination(props) {
     <div refresh-attr={props.articlesChanged.toString()}>
       <ul role="list" className="divide-y divide-gray-100">
         {curArticles.map((article) => (
-          <li key={article.id} className="flex items-start justify-between gap-x-6 py-5">
+          <li key={article.id} className="flex items-start justify-between py-5">
             <SummaryEntry 
               article={article} 
               key={article.id} 

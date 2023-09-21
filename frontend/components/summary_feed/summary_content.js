@@ -36,9 +36,10 @@ function SummaryContent(props) {
             resumeAudio={resume}
             curAudioPlaying={playing} 
             curAudio={current}
+            previewMode={props.previewMode}
           />
         ) : (
-          <div key={"no-articles"} className="flex items-start justify-between gap-x-6 py-5">
+          <div key={"no-articles"} className="flex items-start justify-between py-5">
             <div className="min-w-0">
               <div className="flex justify-between items-center gap-x-3">
                   <p 
