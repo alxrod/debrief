@@ -93,7 +93,6 @@ if __name__ == "__main__":
       for name, obj in feeds.items():
         now = datetime.datetime.now()
         if (now - obj.last_updated).total_seconds() > FEED_REFRESH_RATE:
-          # obj.ingest(url_cache, stats)
           need_to_ingest.append(obj)
 
     
@@ -109,8 +108,8 @@ if __name__ == "__main__":
           if exists:
             need_to_ingest.append(interest)
           else:
-            print("Feed no longer exists, removing interest feed")
-            interest_manager.remove_interest(interest)
+            print("Feed ", interest.query, " longer exists, removing interest feed")
+            interest_manager.interest_feeds.remove(interest)
 
       while need_to_ingest:
         if len(threads) < THREAD_CAP:
