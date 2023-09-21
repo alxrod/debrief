@@ -36,7 +36,8 @@ export default (state = initialState, action) => {
             return {
                 ...state,
                 articles: [],
-                articlesChanged: !state.articlesChanged
+                articlesChanged: !state.articlesChanged,
+                totalArticles: 0
             };
         
         case summaryActions.CHANGE_PAGE:

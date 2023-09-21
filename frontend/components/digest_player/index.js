@@ -15,16 +15,26 @@ import WindowMonitor from '../summary_feed/window_monitor';
 
 import MainView from './main_view';
 import PlayMenu from './play_menu';
-import { getDigest, updateFeed } from '../../reducers/summary/dispatchers/summary.get.dispatcher';
+import { getDigest, updateFeed, clearArticles} from '../../reducers/summary/dispatchers/summary.get.dispatcher';
 import PlayerStatTracker from '../summary_feed/player_stat_tracker';
 // import { sortArticles } from '../../reducers/summary/summary.helpers';
 import {FeedUpdaterContext} from '../summary_feed/feed_updater';
 
-import { Slider } from "@material-tailwind/react";
-
-
 const DigestPlayer = (props) => {
   const setFeedIds = useContext(FeedUpdaterContext);
+  const [digestArticles, setDigestArticles] = useState([])
+  const [digestPointer, setDigestPointer] = useState(0)
+  const [digestCountTable, setDigestCountTable] = useState({})
+
+  const [digestSize, setDigestSize] = useState(10)
+  const [generating, setGenerating] = useState(true)
+
+  useEffect(() => {
+    if (props.articles.length > 0) {
+      console.log("NEED TO CLEAR")
+      props.clearArticles()
+    }
+  }, [])
 
   const onAudioEnd = (article) => {
     markRead(article.id, article.metadata_id, true)
@@ -41,35 +51,90 @@ const DigestPlayer = (props) => {
   useEffect(() => {
     if (props.articles.length == 0 && props.user) {
       loadDigest()
-
     }
-  }, [props.user, props.feedName])
+  }, [props.user, props.feedName, props.articlesChanged])
 
   useEffect(() => {
     setFeedIds(props.user.feeds.map((feed) => feed.id))
   }, [props.feedsChanged])
   
 
+  const nextDigest = () => {
+    const newPointer = digestPointer + digestSize
+    if (newPointer < props.articles.length) {
+      const arts = props.articles.slice(newPointer, Math.min(props.articles.length, newPointer + digestSize))
+      fillTable(arts)
+      setDigestPointer(newPointer)
+      setDigestArticles(arts)
+    }
+  }
 
   const loadDigest = (id, name) => {
     props.getDigest().then((arts) => {
+      arts = arts.slice(digestPointer, Math.min(arts.length, digestPointer + digestSize))
+      setDigestArticles(arts)
+      fillTable(arts)
+      setGenerating(false)
+      setDigestSize(Math.min(digestSize, arts.length))
     })
   }
+
+  const fillTable = (arts) => {
+    let countTable = {}
+    for (let i = 0; i < arts.length; i++) {
+      const article = arts[i]
+      if (countTable[article.feed_id] && !article.metadata.read) {
+        countTable[article.feed_id] += 1
+      } else if (!article.metadata.read) {
+        countTable[article.feed_id] = 1
+      }
+    }
+    let finalTable = {}
+    for (let i = 0; i < props.user.feeds.length; i++) {
+      const feed = props.user.feeds[i]
+      if (countTable[feed.id]) {
+        if (feed?.query_content) {
+          finalTable[feed.query_content] = countTable[feed.id]
+        } else {
+          finalTable[feed.name] = countTable[feed.id]
+        }
+      }
+    }
+    setDigestCountTable(finalTable)
+  }
+
+  useEffect(() => {
+    if (digestPointer < props.articles.length) {
+      const arts = props.articles.slice(digestPointer, Math.min(props.articles.length, digestPointer + digestSize))
+      fillTable(arts)
+      setDigestPointer(digestPointer)
+      setDigestArticles(arts)
+    }
+  }, [digestSize])
+
   return (
     <WindowMonitor>
       <PlayerStatTracker>
         <AudioPlayer 
-          articles={props.articles}
+          articles={digestArticles}
           onAudioEnd={onAudioEnd}
           onAudioStart={onAudioStart}
         >
           <div className="col-span-1 divide-y divide-gray-200 rounded-lg bg-white shadow">
-            <MainView/>
+            <MainView digestCountTable={digestCountTable}/>
             <div>
-              <PlayMenu/>
+              <PlayMenu 
+                moreLeft={digestPointer < props.articles.length} 
+                nextDigest={nextDigest}
+                digestSize={digestSize}
+                maxSize={props.articles.length}
+                generating={generating}
+                setDigestSize={setDigestSize}
+              />
             </div>
           </div>
         </AudioPlayer>
+        {/* <DigestSlider/> */}
       </PlayerStatTracker>
     </WindowMonitor>
   )
@@ -91,6 +156,7 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   toggleFlag,
   getDigest,
   updateFeed,
+  clearArticles,
   updateFeed,
 }, dispatch)
 

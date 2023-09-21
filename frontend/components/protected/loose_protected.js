@@ -5,24 +5,10 @@ import { bindActionCreators } from 'redux'
 import { useRouter } from 'next/router';
 import { pullUser } from '../../reducers/user/dispatchers/user.dispatcher';
 
-const ProtectedRoute = (props) => {
-  const router = useRouter()
-  useEffect(() => {
-    const loggedIn = JSON.parse(localStorage.getItem("creds")) ? true : false
-    if (!loggedIn) {
-      router.push("/login")
-    }
-  },[])
-
-  useEffect(() => {
-    if (!props.isLoggedIn && props.anonymousUser) {
-      router.push("/")
-    }
-  }, [props.isLoggedIn, props.anonymousUser])
-
+const LooseProtectedRoute = (props) => {
   return (
     <>
-      {props.user !== null && (
+      {( (props.user === null && !props.gettingUser) || props.user !== null) && (
         <>{props.children}</>
       )}
     </>
@@ -30,9 +16,8 @@ const ProtectedRoute = (props) => {
 }
 
 const mapStateToProps = ({ user }) => ({
+  gettingUser: user.gettingUser,
   user: user.user,
-  isLoggedIn: user.isLoggedIn,
-  anonymousUser: user.anonymousUser
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
@@ -42,4 +27,4 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(ProtectedRoute)
+)(LooseProtectedRoute)

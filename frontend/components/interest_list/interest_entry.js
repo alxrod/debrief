@@ -19,6 +19,7 @@ function classNames(...classes) {
 const InterestEntry = (props) => {
   useEffect(() => {
     console.log("Reseting link")
+    console.log(props.feed)
     setLink("/feed/"+props.feed.unique_name)
     setNewText(props.feed.query_content)
     setOrigText(props.feed.query_content)
@@ -68,12 +69,14 @@ const InterestEntry = (props) => {
         />
         {!editMode ? (
           <div className="absolute right-2 bottom-1.5 flex mt-1">
-            <button className="mr-2" onClick={() => setEditMode(true)}>
-              <PencilIcon
-                className="h-4 w-4 text-gray-400 hover:text-primary5"
-                aria-hidden="true"
-              />
-            </button>
+            {props.feed.author_id === props.user._id && (
+              <button className="mr-2" onClick={() => setEditMode(true)}>
+                <PencilIcon
+                  className="h-4 w-4 text-gray-400 hover:text-primary5"
+                  aria-hidden="true"
+                />
+              </button>
+            )}
             <button onClick={() => props.deleteInterest(props.feed.id)}>
               <TrashIcon
                 className="h-4 w-4 text-gray-400 hover:text-primary5"
@@ -113,9 +116,10 @@ const InterestEntry = (props) => {
 }
 
 const mapStateToProps = ({ user, summary}) => ({
-  feeds: user.user.feeds,
+  feeds: user.user?.feeds ? user.user.feeds : [],
   feedsChanged: user.feedsChanged,
   articles: summary.articles,
+  user: user.user
 
 })
 

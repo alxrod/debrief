@@ -79,7 +79,7 @@ const AudioPlayer = (props) => {
       setCurrent(current)
       setQueue(queue)
     } else {
-      console.log("User: ", props.user)
+      // console.log("User: ", props.user)
     }
   }, [props.user?.playback_speed])
 

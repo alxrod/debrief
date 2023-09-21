@@ -78,7 +78,17 @@ class SummaryService {
     }).catch(error => {
       return error;
     });
-  }   
+  }  
+  
+  joinInterest(unique_name) {
+    return api
+    .post("/feed/join-interest", {"unique_name": unique_name})
+    .then(response => {
+      return response.data;
+    }).catch(error => {
+      return error;
+    });
+  }  
 
   updateInterest(interest) {
     return api

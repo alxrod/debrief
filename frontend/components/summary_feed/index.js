@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect } from 'react'
+import { Fragment, useState, useEffect, useMemo} from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import { DotsVerticalIcon } from '@heroicons/react/outline'
 
@@ -14,34 +14,52 @@ import SummaryContent from './summary_content';
 import PlayMenu from './play_menu';
 import PlayerStatTracker from './player_stat_tracker';
 
+import ShareButton from './share_button';
+import SaveButton from './save_button';
+
 const SummaryFeed = (props) => {
+
+
+
   const onAudioEnd = (article) => {
-    markRead(article.id, article.metadata_id, true)
+    if (!props.anonymous) {
+      markRead(article.id, article.metadata_id, true)
+    }
   }
   const onAudioStart = (article) => {
     // markRead(article.id, article.metadata._id, false)
   }
 
   const markRead = (website_id, metadata_id, read) => {
-    props.toggleFlag(website_id, {_id: metadata_id, read: read})
+    if (!props.anonymous) {
+      props.toggleFlag(website_id, {_id: metadata_id, read: read})
+    }
   }
 
   useEffect(() => {
-    if (props.feedName !== "" && feedExists === false) {
-      for(let i = 0; i < props.user?.feeds.length; i++) {
-        if (props.user.feeds[i].name.toLowerCase() === props.feedName || props.user.feeds[i]?.unique_name === props.feedName) {
-          loadNewFeed(props.user.feeds[i].id, props.user.feeds[i].name, props.pageLimit)
-          setFeedExists(true)
-          break
+    if ((props.feedName !== "" && feedExists === false) || props.feedName !== "" && props.previewMode) {
+      if (!props.anonymous) {
+        for(let i = 0; i < props.user?.feeds.length; i++) {
+          if (props.user.feeds[i].name.toLowerCase() === props.feedName || props.user.feeds[i]?.unique_name === props.feedName) {
+            loadNewFeed(props.user.feeds[i].id, props.user.feeds[i].name, props.pageLimit)
+            setFeedExists(true)
+            return
+          }
         }
       }
-    }
 
-  }, [props.user, props.feedName])
+      loadNewFeed(props.feedName, props.feedName, props.pageLimit).then(
+        () => {
+          setFeedExists(true)
+        }
+      )
+      
+    }
+  }, [props.user, props.feedName, props.anonymous])
 
 
   const loadNewFeed = (id, name) => {
-    props.getFeed(id, name)
+    return props.getFeed(id, name)
   }
 
   const [feedExists, setFeedExists] = useState(false)
@@ -57,8 +75,16 @@ const SummaryFeed = (props) => {
               onAudioEnd={onAudioEnd}
               onAudioStart={onAudioStart}
             >
-              <PlayMenu/>
-              <SummaryContent />
+              <div className="w-full flex-col justify-center pt-8">
+                <PlayMenu/>
+                {!props.previewMode && (
+                <div className="w-full px-3 flex flex-wrap justify-center gap-x-6 pt-3">
+                  <ShareButton/>
+                  <SaveButton/>
+                </div>
+                )}
+              </div>
+              <SummaryContent previewMode={props.previewMode}/>
             </AudioPlayer>
           </PlayerStatTracker>
         </WindowMonitor>
@@ -74,6 +100,7 @@ const mapStateToProps = ({ user, summary}) => ({
   articles: summary.articles,
   articlesChanged: summary.articlesChanged,
   user: user.user,
+  anonymous: user.anonymousUser,
   curFeedId: summary.curFeed.id,
   pageLimit: summary.pageLimit,
 

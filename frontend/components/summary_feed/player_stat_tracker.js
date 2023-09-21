@@ -9,7 +9,8 @@ export const PlayerStatContext = createContext()
 
 function PlayerStatTracker(props) {
   const [sessionStartTime, setSessionStartTime] = useState(Date.now())
-
+  const [unauthID, setUnauthID] = useState("unknown-user-"+Math.random().toString(36).substring(2, 14))
+  
   const completeArticle = (article) => {
     const event = constructEvent(article, "complete")
     addEvent(event)
@@ -26,7 +27,7 @@ function PlayerStatTracker(props) {
 
   const constructEvent = (article, type, percComplete) => {
     const event = {
-      user_id: props.user._id,
+      user_id: props.user?._id ? props.user._id : unauthID,
       article_id: article.id,
 
       session_start_time: sessionStartTime,

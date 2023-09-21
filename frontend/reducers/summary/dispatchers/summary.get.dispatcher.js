@@ -26,13 +26,16 @@ export const getFeed = (feed_id, feed_name, timestamp) => {
           articles.push(parseArticle(article, feed_id))
         }
 
-        dispatch({
-          type: userActions.ADD_FEED_TO_USER,
-          payload: {
-            id: feed_id,
-            name: feed_name
-          }
-        });
+        // indiciated not authed
+        if (feed_id !== feed_name) {
+          dispatch({
+            type: userActions.ADD_FEED_TO_USER,
+            payload: {
+              id: feed_id,
+              name: feed_name
+            }
+          });
+        }
         dispatch({
           type: summaryActions.LOAD_FEED,
           payload: {
@@ -132,12 +135,11 @@ export const changePage = (page) => {
   }
 };
 
-export const clearWebsites = () => {
+export const clearArticles = () => {
   return dispatch => {
     dispatch({
-      type: summaryActions.LOAD,
-      payload: sites,
+      type: summaryActions.CLEAR,
     });
-    return Promise.resolve(sites);
+    return Promise.resolve();
   }       
 };

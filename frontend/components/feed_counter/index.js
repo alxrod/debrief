@@ -27,7 +27,6 @@ export const FeedCounter = (props) => {
         }
       }
     }
-    console.log("FINAL TABLE: ", props.user.feeds)
     return finalTable
   }, [props.articlesChanged, props.feedsChanged])
 

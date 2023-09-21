@@ -16,7 +16,7 @@ from user.models import UserModel
 from article.models import ArticleModel, ArticleMetaModel 
 from metadata.models import MetadataModel
 from feed.models import FeedRequestScheme, FeedModel, FeedAddScheme, FeedUpdateScheme, FeedCreateScheme
-from feed.models import FeedExistsRequest, InterestFeedCreateScheme, InterestFeedModel, InterestFeedUpdateScheme
+from feed.models import FeedExistsRequest, InterestFeedCreateScheme, InterestFeedModel, InterestFeedUpdateScheme, InterestFeedJoinScheme
 
 import datetime
 from dateutil.parser import parse
@@ -46,18 +46,43 @@ def packArticleWMeta(request, user_id, article):
 
 @router.get("/pull/{feed_id}", summary='pull all users current websites for specified feed', status_code=status.HTTP_200_OK)
 def pull(request: Request, feed_id: str, skip: int = -1, limit: int = -1, timestamp: int = -1, Authorize: AuthJWT = Depends()):
-  Authorize.jwt_required()
   user_id = Authorize.get_jwt_subject()
   # pull_request = jsonable_encoder(pull_request)
-
+  
   if timestamp > 0:
     time_ago = datetime.datetime.fromtimestamp(timestamp)
   else:
     time_ago = None
 
-  feed = request.app.database["feeds"].find_one({
-    "_id": feed_id
-  })
+  if user_id:
+    feed = request.app.database["feeds"].find_one({
+      "_id": feed_id
+    })
+
+    if feed is None:
+      feed = request.app.database["feeds"].find_one({
+        "name": feed_id
+      })
+    if feed is None:
+      feed = request.app.database["feeds"].find_one({
+        "unique_name": feed_id
+      })
+
+  else:
+    if feed_id == "inbox":
+      raise HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail="inboxes are not public"
+      )
+    
+    feed = request.app.database["feeds"].find_one({
+      "name": feed_id
+    })
+    if feed is None:
+      feed = request.app.database["feeds"].find_one({
+        "unique_name": feed_id
+      })
+
   if feed is None:
     raise HTTPException(
       status_code=status.HTTP_400_BAD_REQUEST,
@@ -77,8 +102,6 @@ def pull(request: Request, feed_id: str, skip: int = -1, limit: int = -1, timest
 
   articles = request.app.database["articles"].find(details).sort("creation_time", -1)
 
-
-  
   articles = list(articles)
   total_articles = len(articles)
 
@@ -90,37 +113,52 @@ def pull(request: Request, feed_id: str, skip: int = -1, limit: int = -1, timest
 
 
   article_metas = []
-  for article in articles:
-    meta = request.app.database["metadata"].find_one({
-      "article_id": article["_id"],
-      "user_id": user_id,
-    })
-
-    # If we have no metadata on article when we fetch, generate it now
-    if meta is None:
-      new_meta = request.app.database["metadata"].insert_one(MetadataModel.emptyMetaData(
-        article["_id"],
-        user_id
-      ))
+  if user_id:
+    for article in articles:
       meta = request.app.database["metadata"].find_one({
-        "_id": new_meta.inserted_id
+        "article_id": article["_id"],
+        "user_id": user_id,
       })
+
+      # If we have no metadata on article when we fetch, generate it now
+      if meta is None:
+        new_meta = request.app.database["metadata"].insert_one(MetadataModel.emptyMetaData(
+          article["_id"],
+          user_id
+        ))
+        meta = request.app.database["metadata"].find_one({
+          "_id": new_meta.inserted_id
+        })
+        
+      am = ArticleMetaModel(**article, metadata=meta)
+
+      am.feed_id = feed["_id"]
+      am.feed_name = feed["name"]
+      if "interest_feed" in feed and feed["interest_feed"]:
+        am.feed_is_interest = True
+      else: 
+        am.feed_is_interest = False
+        
+      article_metas.append(am)
+
+    # name = feed["name"]
+    # if feed["name"] == "interest":
+    #   name = feed["unique_name"]
+  else:
+    for article in articles:
+      meta = MetadataModel.emptyMetaData(
+          article["_id"],
+          ""
+        )
+      am = ArticleMetaModel(**article, metadata=meta)
+      am.feed_id = feed["_id"]
+      am.feed_name = feed["name"]
+      if "interest_feed" in feed and feed["interest_feed"]:
+        am.feed_is_interest = True
+      else: 
+        am.feed_is_interest = False
+      article_metas.append(am)
       
-    am = ArticleMetaModel(**article, metadata=meta)
-
-    am.feed_id = feed["_id"]
-    am.feed_name = feed["name"]
-    if "interest_feed" in feed and feed["interest_feed"]:
-      am.feed_is_interest = True
-    else: 
-      am.feed_is_interest = False
-      
-    article_metas.append(am)
-
-  name = feed["name"]
-  if feed["name"] == "interest":
-    name = feed["unique_name"]
-
   return {"articles": article_metas, "total_articles": total_articles}
 
 @router.get("/digest", summary='Get a users entire reading digest', status_code=status.HTTP_200_OK)
@@ -138,7 +176,7 @@ def pull(request: Request, Authorize: AuthJWT = Depends()):
     articles = list(request.app.database["articles"].find({
       "_id": {"$in": feed["article_ids"]},
       # "creation_time": {"$gt": time_ago}
-    }).sort("creation_time", -1).skip(0).limit(50))
+    }).sort("creation_time", -1).skip(0).limit(25))
     
     out_articles = []
 
@@ -158,9 +196,9 @@ def pull(request: Request, Authorize: AuthJWT = Depends()):
 
     final_articles += out_articles
 
-    # Insert sorting step
-  
-  return curate(final_articles, request.app.database)
+  # Terrible solution for request time, need to optimize
+  curated = curate(final_articles, request.app.database)
+  return curated
 
 @router.get("/user/{user_id}", summary='Get a users saved articles', status_code=status.HTTP_200_OK)
 def pull(request: Request, user_id: str, Authorize: AuthJWT = Depends()):
@@ -230,13 +268,46 @@ def create_interest(request: Request, feed_request: InterestFeedCreateScheme = B
   Authorize.jwt_required()
   user_id = Authorize.get_jwt_subject()
   feed_request = jsonable_encoder(feed_request)
+
   unique_name = re.sub(r'\W+', '', feed_request["query_content"]).replace(" ", "-")
+  orig_unique = unique_name
+  existing_feed = request.app.database["feeds"].find_one({
+    "unique_name": unique_name
+  })
+  while existing_feed is not None:
+    unique_name = orig_unique + str(uuid4()) [:6]
+    existing_feed = request.app.database["feeds"].find_one({
+      "unique_name": unique_name
+    })
+
   new_feed = request.app.database["feeds"].insert_one(InterestFeedModel.emptyFeed("interest", feed_request["query_content"], unique_name, user_id))
 
-  
   feed = request.app.database["feeds"].find_one({
     "_id": new_feed.inserted_id
   })
+  return feed
+
+@router.post("/join-interest", summary='join an existing interest', status_code=status.HTTP_200_OK)
+def create_interest(request: Request, feed_request: InterestFeedJoinScheme = Body(...), Authorize: AuthJWT = Depends()):
+  Authorize.jwt_required()
+  user_id = Authorize.get_jwt_subject()
+  feed_request = jsonable_encoder(feed_request)
+  unique_name = feed_request["unique_name"]
+  feed = request.app.database["feeds"].find_one({
+    "unique_name": unique_name
+  })
+  if feed is None:
+    raise HTTPException(
+      status_code=status.HTTP_400_BAD_REQUEST,
+      detail="There is no interest with the provided id"
+    )
+  
+  if "user_ids" not in feed:
+    feed["user_ids"] = []
+  if user_id not in feed["user_ids"]:
+    feed["user_ids"].append(user_id)
+  request.app.database["feeds"].update_one({"_id": feed["_id"]}, {"$set": feed})
+  
   return feed
 
 @router.post("/update-interest/{feed_id}", summary='update an interest', status_code=status.HTTP_200_OK)
@@ -248,6 +319,12 @@ def create_interest(request: Request, update_req: InterestFeedUpdateScheme = Bod
   interest = request.app.database["feeds"].find_one({
     "_id": update_info["_id"]
   })
+
+  if interest["author_id"] != user_id:
+    raise HTTPException(
+      status_code=status.HTTP_400_BAD_REQUEST,
+      detail="You are not the author of this interest"
+    )
 
   for key, value in update_info.items():
     if key != "_id" and value != None:
@@ -270,6 +347,9 @@ def delete_interest(request: Request, update_req: InterestFeedUpdateScheme = Bod
     interest["user_ids"].remove(user_id)
 
   if len(interest["user_ids"]) > 0:
+
+    if user_id == interest["author_id"] and len(interest["user_ids"]) > 0:
+        interest["author_id"] = interest["user_ids"][0]
     request.app.database["feeds"].update_one({"_id": interest["_id"]}, {"$set": interest})
   else: 
     request.app.database["feeds"].delete_one({"_id": interest["_id"]})

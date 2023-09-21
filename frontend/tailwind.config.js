@@ -25,6 +25,10 @@ module.exports = {
 
   theme: {
     extend: {
+
+      backgroundImage: {
+        'preview-bg': "url('/landing_page/preview_bg.png')",
+      },
       
       screens: {
         sm: '640px',
@@ -45,6 +49,7 @@ module.exports = {
         neutral: colors.neutral,
         stone: colors.stone,
 
+        primary0: "#ceecd7",
         primary1: "#9ED0B0",
         primary2: "#5AA475",
         primary3: "#499866",
