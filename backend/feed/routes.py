@@ -375,7 +375,7 @@ def create_interest(request: Request, update_req: InterestFeedUpdateScheme = Bod
 def add_to_inbox(request: Request, exists_req: FeedExistsRequest = Body(...), api_key: APIKey = Depends(auth.get_api_key)):
   req = jsonable_encoder(exists_req)
   
-  if "feed_name" in req:
+  if req["feed_name"]:
     feed = request.app.database["feeds"].find_one({
       "name": req["feed_name"]
     })

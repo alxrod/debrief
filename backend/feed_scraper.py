@@ -109,7 +109,7 @@ if __name__ == "__main__":
           if exists:
             need_to_ingest.append(interest)
           else:
-            print("Feed no longer exists, removing interest feed")
+            print("Feed (", interest.query_content, ") no longer exists, removing interest feed")
             interest_manager.remove_interest(interest)
 
       while need_to_ingest:
