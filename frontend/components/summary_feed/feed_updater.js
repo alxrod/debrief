@@ -47,7 +47,6 @@ const FeedUpdater = (props) => {
           )
         }
         if (arts_found == 0) {
-          console.log("Changing delay: ", delay)
           setIntDelay(delay => Math.min(delay * 1.5, 120000))
         } else {
           setIntDelay(5000)

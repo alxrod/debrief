@@ -18,8 +18,6 @@ function classNames(...classes) {
 
 const InterestEntry = (props) => {
   useEffect(() => {
-    console.log("Reseting link")
-    console.log(props.feed)
     setLink("/feed/"+props.feed.unique_name)
     setNewText(props.feed.query_content)
     setOrigText(props.feed.query_content)

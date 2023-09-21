@@ -43,11 +43,13 @@ const DigestPlayer = (props) => {
 
   useEffect(() => {
     if (props.user) {
-      props.clearArticles().then(
-        loadDigest()
-      )
+      if (props.feed?.name !== "digest") {
+        props.clearArticles().then(
+          loadDigest()
+        )
+      }
     }
-  }, [props.user])
+  }, [props.user, props.feed?.name])
 
   useEffect(() => {
     setFeedIds(props.user.feeds.map((feed) => feed.id))
@@ -140,6 +142,7 @@ const mapStateToProps = ({ user, summary}) => ({
   articlesChanged: summary.articlesChanged,
   feedsChanged: user.feedsChanged,
   user: user.user,
+  feed: summary.curFeed,
   curFeedId: summary.curFeed.id,
   pageLimit: summary.pageLimit,
 

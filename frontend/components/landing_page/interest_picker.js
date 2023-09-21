@@ -5,25 +5,35 @@ import { CheckIcon, SearchIcon, ChevronDownIcon } from '@heroicons/react/solid'
 const queries = [
   {
     id: 1,
-    query: 'Joe Jonas and Sophia Turner Divorce',
-    name: "JoeJonasandSophiaTurnerDivorce"
+    query: 'LLM Carbon footprint',
+    name: "LLM-Carbon-footprint"
   },
   {
     id: 2,
-    query: 'Libya Natural Disasters',
-    name: "LibyaNaturalDisasters"
+    query: 'Sag Aftra Strike',
+    name: "Sag-Aftra-Strike"
 
   },
   {
     id: 3,
-    query: 'Efforts to curb inflation in American economy',
-    name: "EffortstocurbinflationinAmericaneconomy"
+    query: 'Sophie Turner and Joe Jonas divorce',
+    name: "SophieTurnerandJoeJonasdivorce"
   },
   {
     id: 4,
     query: "The Guardian",
     name: "theguardian"
-  }
+  },
+  {
+    id: 5,
+    query: 'The Guardian',
+    name: "theguardian"
+  },
+  {
+    id: 6,
+    query: 'The Verge',
+    name: "theverge"
+  },
 ]
 
 function classNames(...classes) {

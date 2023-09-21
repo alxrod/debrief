@@ -56,7 +56,7 @@ const ArticleView = (props) => {
         <a 
           href={props.article.raw_link} 
           target="_blank" 
-          className="text-sm font-semibold leading-6 text-gray-900 flex flex-wrap"
+          className="text-sm font-semibold leading-6 text-gray-900 flex flex-wrap max-w-lg"
         >
           {props.article.title}
         </a>
@@ -81,7 +81,7 @@ const ArticleView = (props) => {
                 <p
                   className={classNames(
                     statuses["Unread"],
-                    'rounded-md whitespace-nowrap mt-0.5 mr-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset'
+                    'rounded-md mt-0.5 mr-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset'
                   )}
                 >
                   {feedNamesTable[props.article.feed_id]}
