@@ -57,6 +57,7 @@ if __name__ == "__main__":
   poster = FeedPoster(config["API_KEY"], config["API_URL"])
 
   # Setup feeds:
+  print("Configuring Main Feeds")
   for name, obj in feeds.items():
     exists, existing_feed = poster.feed_exists(name)
     if not exists:
@@ -73,6 +74,7 @@ if __name__ == "__main__":
       obj.last_updated = parse(existing_feed["last_updated"])
 
   # # Setup interests 
+  print("Pulling all active feeds")
   interest_manager = InterestManager(config["API_KEY"], config["API_URL"])
   interest_manager.get_feeds()
 
@@ -87,7 +89,7 @@ if __name__ == "__main__":
       "failed_count": 0,
       "failed_articles_list": []
     }
-
+  print("\n")
   while True:
 
     try:
