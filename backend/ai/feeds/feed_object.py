@@ -7,6 +7,7 @@ from ai.main_generator import MainGenerator
 from urllib.parse import urlparse
 from datetime import datetime
 from dateutil.parser import parse
+import threading
 
 class FeedObject(object):
   def __init__(self, feed_id=""):
@@ -41,7 +42,9 @@ class FeedObject(object):
     parsed_url = urlparse(url)
     return parsed_url.scheme + "://" + parsed_url.netloc + parsed_url.path
   
-  def ingest(self, url_cache, stats):
+  def ingest(self):
+    print("Starting thread ", threading.get_native_id(), " to handle feed ", self.feed_id)
+    
     self.mark_feed_updated()
 
     new_urls = self.fetch()
@@ -58,18 +61,9 @@ class FeedObject(object):
 
 
     for url in new_urls:
-      if url not in url_cache:
-        if not self.check_in_feed(url):
-          unentered_urls.append(url)
-        url_cache.append(url)
+      if not self.check_in_feed(url):
+        unentered_urls.append(url)
       
     print(self.feed_id, ": ingesting ", len(unentered_urls), " new articles")
     for url in unentered_urls:
-      if not self.add_url(url):
-        print("Failed to ingest ", len(url))
-        stats["failed_count"] += 1
-        stats["failed_articles_list"].append(url)
-      else:
-        stats["success_count"] += 1
-    
-    # return url_cache
+      self.add_url(url)

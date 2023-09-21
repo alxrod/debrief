@@ -2,6 +2,7 @@ from ai.feeds.instances.hackernews import HackerNewsFeed
 from ai.feeds.instances.theverge import TheVergeFeed
 from ai.feeds.instances.theguardian import TheGuardianFeed
 from ai.interest_manager import InterestManager
+import threading
 
 from dotenv import dotenv_values
 import requests
@@ -78,40 +79,54 @@ if __name__ == "__main__":
   interest_manager = InterestManager(config["API_KEY"], config["API_URL"])
   interest_manager.get_feeds()
 
-  url_cache = []
-  stats = {}
 
-  with open("stats.json", "r") as file:
-    stats = json.load(file)
-  if stats == {}:
-    stats = {
-      "success_count": 0,
-      "failed_count": 0,
-      "failed_articles_list": []
-    }
   print("\n")
+
+  threads = []
+  THREAD_CAP = 10
+
   while True:
 
     try:
 
+      need_to_ingest = []
+
       for name, obj in feeds.items():
         now = datetime.datetime.now()
         if (now - obj.last_updated).total_seconds() > FEED_REFRESH_RATE:
-          obj.ingest(url_cache, stats)
+          # obj.ingest(url_cache, stats)
+          need_to_ingest.append(obj)
+
     
       interest_manager.get_new_feeds()
     
+
       for interest in interest_manager.interest_feeds:
         now = datetime.datetime.now()
         if (now - interest.last_updated).total_seconds() > INTEREST_REFRESH_RATE:      
-          interest.ingest(url_cache, stats)
-    
-      with open("stats.json", "w") as file:
-        json.dump(stats, file)
+          # interest.ingest(url_cache, stats)
+          need_to_ingest.append(interest)
+
+      while need_to_ingest:
+        if len(threads) < THREAD_CAP:
+      #     print("Spawning thread")
+          obj = need_to_ingest.pop(0)
+
+          thread = threading.Thread(target=obj.ingest)
+          threads.append(thread)
+          thread.start()
+
+
+        if len(threads) > 1:
+          for thread in threads:
+            if not (thread.is_alive()):
+              print("Thread has completed running")
+              thread.join()
+              threads.remove(thread) 
+        time.sleep(0.1)         
 
       time.sleep(REFRESH_TIME)
     
     except Exception as error:
         print("Scraper failed for reason: ", error)
         time.sleep(10)
-
