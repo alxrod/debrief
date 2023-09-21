@@ -80,6 +80,12 @@ export default (state = initialState, action) => {
                 articles: [...state.articles, ...action.payload.articles],
                 articlesChanged: !state.articlesChanged
             }
+        case summaryActions.CLEAR_FEED_ARTICLES:
+            return {
+                ...state,
+                articles: state.articles.filter(article => article.feed_id !== action.payload.feed_id),
+                articlesChanged: !state.articlesChanged
+            }
         default:
             return state
     }

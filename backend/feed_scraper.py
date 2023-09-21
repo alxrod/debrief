@@ -33,13 +33,10 @@ class FeedPoster:
       return True, body
     return False, {}
 
-  def feed_exists(self, name):
+  def feed_exists(self, identifier):
       url = self.base_url + "/feed/check-exists"
       head = {'access_token': self.token}
-      params = {
-        "feed_name": name
-      }
-      resp = requests.post(url, json=params, headers=head)
+      resp = requests.post(url, json=identifier, headers=head)
       if resp.status_code == 200:
         body = resp.json()
         if "exists" in body:
@@ -60,7 +57,9 @@ if __name__ == "__main__":
   # Setup feeds:
   print("Configuring Main Feeds")
   for name, obj in feeds.items():
-    exists, existing_feed = poster.feed_exists(name)
+    exists, existing_feed = poster.feed_exists({
+      "feed_name": name
+    })
     if not exists:
       success, new_feed = poster.create_feed(name)
       if success:
@@ -104,8 +103,14 @@ if __name__ == "__main__":
       for interest in interest_manager.interest_feeds:
         now = datetime.datetime.now()
         if (now - interest.last_updated).total_seconds() > INTEREST_REFRESH_RATE:      
-          # interest.ingest(url_cache, stats)
-          need_to_ingest.append(interest)
+          exists, existing_feed = poster.feed_exists({
+            "feed_id": interest.feed_id
+          })
+          if exists:
+            need_to_ingest.append(interest)
+          else:
+            print("Feed (", interest.query_content, ") no longer exists, removing interest feed")
+            interest_manager.remove_interest(interest)
 
       while need_to_ingest:
         if len(threads) < THREAD_CAP:

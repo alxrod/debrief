@@ -27,7 +27,7 @@ const AddFeedPanel = (props) => {
 
   const addFeed = (feed) => {
     props.addUserToFeed(feed["_id"], props.user["_id"]).then(() => {
-      props.getFeed(feed["_id"], feed["name"])
+      props.getFeed(feed["_id"], feed["name"], 0, true)
       props.setOpen(false)
     })
   }

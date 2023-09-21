@@ -202,10 +202,7 @@ const AudioPlayer = (props) => {
   }, [windowIsActive])
 
   useEffect(() => {
-    if (props.articlesChanged) {
-      queue.empty()
-      setQueue(queue)
-    }
+    clearQueue()
   }, [props.feedName])
 
   return (

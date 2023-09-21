@@ -4,13 +4,16 @@ import { connect } from "react-redux";
 import { bindActionCreators } from 'redux'
 
 import AddInterestPanel from "./add_interest_panel"
-import {changeInterestQueryContent, deleteInterest} from "../../reducers/user/dispatchers/user.dispatcher"
+import {changeInterestQueryContent, deleteFeed} from "../../reducers/user/dispatchers/user.dispatcher"
 
 import {useState, useContext, useEffect, useRef} from "react";
 import { FeedCounterContext } from '../feed_counter';
 import { Check } from 'heroicons-react';
 import {Oval} from 'react-loading-icons'
 import useAutosizeTextArea from "../use_resizeable"
+import {useRouter} from "next/router"
+
+import { Tooltip } from 'flowbite-react';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -23,11 +26,20 @@ const InterestEntry = (props) => {
     setOrigText(props.feed.query_content)
   }, [props.feed.unique_name, props.feedsChanged])
 
+  const router = useRouter()
+
   const [link, setLink] = useState()
 
   const [editMode, setEditMode] = useState(false)
   const [origText, setOrigText] = useState(props.feed.query_content)
   const [newText, setNewText] = useState(props.feed.query_content)
+  
+
+  useEffect(() => {
+    if (editMode) {
+      textAreaRef.current.focus()
+    }
+  }, [editMode])
 
   const textAreaRef = useRef(null);
   useAutosizeTextArea(textAreaRef.current, newText);
@@ -54,30 +66,49 @@ const InterestEntry = (props) => {
         )}
       </div>
       <div className="relative">
-        <textarea
-          rows={1}
-          name="comment"
-          id="comment"
-          disabled={!editMode}
-          className="block w-full resize-none border-0 bg-transparent px-6 py-8 text-primary7 disabled:text-primary7 text-center placeholder:text-gray-400 focus:ring-0 sm:text-2xl font-semibold sm:leading-6"
-          placeholder="Describe an interest you want to hear about..."
-          ref={textAreaRef}
-          value={newText}
-          onChange={(event) => setNewText(event.target.value)}
-        />
+        <button 
+          onClick={() => {router.push(link)}}
+          className="w-full "
+          disabled={editMode}
+          // className={editMode ? "pointer-events-none cursor-default" : ""}
+        >
+          <textarea
+            rows={1}
+            name="comment"
+            id="comment"
+            // disabled={!editMode}
+            className={"block w-full resize-none border-0 bg-transparent px-6 py-8 text-primary7 disabled:text-primary7 text-center placeholder:text-gray-400 focus:ring-0 sm:text-2xl font-semibold sm:leading-6 " + (editMode ? "cursor-text" : "cursor-pointer pointer-events-none")}
+            placeholder="Describe an interest you want to hear about..."
+            ref={textAreaRef}
+            value={newText}
+            onChange={(event) => {if (editMode) {setNewText(event.target.value)}}}
+
+            onFocus={(e)=>e.currentTarget.setSelectionRange(e.currentTarget.value.length, e.currentTarget.value.length)}
+          />
+        </button>
+
+
         {!editMode ? (
           <div className="absolute right-2 bottom-1.5 flex mt-1">
             {props.feed.author_id === props.user._id && (
-              <button className="mr-2" onClick={() => setEditMode(true)}>
-                <PencilIcon
-                  className="h-4 w-4 text-gray-400 hover:text-primary5"
-                  aria-hidden="true"
-                />
-              </button>
+              
+                <button className="mr-2 pt-8 pl-5" onClick={() => {setEditMode(true)}}>
+                  <Tooltip
+                    content="Edit Interest"
+                    style="light"
+                    placement="top"
+                    trigger="hover"
+                  >
+                    <PencilIcon
+                      className="h-4 w-4 text-gray-400 hover:text-primary5"
+                      aria-hidden="true"
+                    />
+                  </Tooltip>
+                </button>
             )}
-            <button onClick={() => props.deleteInterest(props.feed.id)}>
+            <button onClick={() => props.deleteFeed(props.feed.id)} className={"group pt-8 " + (props.feed.author_id === props.user._id ? "" : "pl-5")}>
               <TrashIcon
-                className="h-4 w-4 text-gray-400 hover:text-primary5"
+                className="h-4 w-4 text-gray-400 group-hover:text-primary5"
                 aria-hidden="true"
               />
             </button>
@@ -123,7 +154,7 @@ const mapStateToProps = ({ user, summary}) => ({
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   changeInterestQueryContent,
-  deleteInterest
+  deleteFeed
 }, dispatch)
 
 export default connect(

@@ -60,10 +60,11 @@ class CustomSearchFeed(FeedObject):
         
         days_since_init = math.ceil((datetime.now() - self.count_init).total_seconds() / 86400)
 
+      
 
         # For cost recents capped at one a day
         if (self.query_count / days_since_init) <= MAX_COUNT_DAY:
-          print("Metaphor request for ", self.query)
+          print(datetime.now(),": Metaphor request for ", self.query)
           search_response = self.metaphor.search(
             self.query, use_autoprompt=True, start_published_date="2023-01-01"
           )
