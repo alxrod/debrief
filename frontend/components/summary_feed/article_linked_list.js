@@ -38,7 +38,6 @@ export class ArticleNode {
   }
 
   setPlaybackSpeed(speed) {
-    console.log("SETTING PLAYBACK SPEED ", speed)
     this.playback_speed = speed
     if (this.cur) {
       this.cur.playbackRate = speed

@@ -1,5 +1,4 @@
 export const sortArticles = (new_articles) => {
-  console.log("SOrting articles")
   const output =  [
     ...new_articles.filter(article => article.metadata.read === false),
     ...new_articles.filter(article => article.metadata.read === true)

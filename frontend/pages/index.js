@@ -188,7 +188,9 @@ const LandingPage = (props) => {
                 </ButtonTracker>
               </div>
               <div className="">
-                <SummaryFeed feedName={feedName} previewMode={true}/>
+                {process.env.NEXT_PUBLIC_MODE !== 'dev' && (
+                  <SummaryFeed feedName={feedName} previewMode={true}/>
+                )}
               </div>
             </div>
           </div>

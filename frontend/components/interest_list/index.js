@@ -19,14 +19,9 @@ const InterestList = (props) => {
   const feedCountTable = useContext(FeedCounterContext)
 
   const interests = useMemo(() => {
-    console.log(props.user?.feeds.filter(feed => feed.name === 'interest'))
     return props.user?.feeds.filter(feed => feed.name === 'interest')
   }, [props.feedsChanged])
 
-  useEffect(() => {
-    console.log("Feed count table: ")
-    console.log(props.user?.feeds)
-  }, [props.feedsChanged])
 
   return (
     <div>

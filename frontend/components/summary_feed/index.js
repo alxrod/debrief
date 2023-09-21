@@ -19,7 +19,7 @@ import SaveButton from './save_button';
 
 const SummaryFeed = (props) => {
 
-
+  const [feedError, setFeedError] = useState(false)
 
   const onAudioEnd = (article) => {
     if (!props.anonymous) {
@@ -41,18 +41,21 @@ const SummaryFeed = (props) => {
       if (!props.anonymous) {
         for(let i = 0; i < props.user?.feeds.length; i++) {
           if (props.user.feeds[i].name.toLowerCase() === props.feedName || props.user.feeds[i]?.unique_name === props.feedName) {
-            loadNewFeed(props.user.feeds[i].id, props.user.feeds[i].name, props.pageLimit)
-            setFeedExists(true)
+            loadNewFeed(props.user.feeds[i].id, props.user.feeds[i].name, props.pageLimit).then(() => {
+              setFeedExists(true)
+            }).catch(() => {
+              setFeedError(true)
+            })
             return
           }
         }
       }
 
-      loadNewFeed(props.feedName, props.feedName, props.pageLimit).then(
-        () => {
-          setFeedExists(true)
-        }
-      )
+      loadNewFeed(props.feedName, props.feedName, props.pageLimit).then(() => {
+        setFeedExists(true)
+      }).catch(() => {
+        setFeedError(true)
+      })
       
     }
   }, [props.user, props.feedName, props.anonymous])
@@ -88,8 +91,10 @@ const SummaryFeed = (props) => {
             </AudioPlayer>
           </PlayerStatTracker>
         </WindowMonitor>
-        ) : (
+        ) : feedError ? (
           <h1 className="text-red-800">We're sorry, either you have not added this feed or it does not exist</h1>
+        ) : (
+          <></>
         )}
       </div>
     </div>

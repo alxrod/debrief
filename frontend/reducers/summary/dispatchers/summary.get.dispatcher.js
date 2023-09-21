@@ -22,6 +22,10 @@ export const getFeed = (feed_id, feed_name, timestamp) => {
 
         const resp = await SummaryService.pullFeed(feed_id, 0, QUERY_SIZE, timestamp)
         const feed_articles = resp.articles
+        if (!feed_articles) {
+          reject()
+          return
+        }
         for (const article of feed_articles) {
           articles.push(parseArticle(article, feed_id))
         }

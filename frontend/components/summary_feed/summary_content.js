@@ -26,7 +26,7 @@ function SummaryContent(props) {
   } = useContext(AudioPlayerContext);
 
   return (
-    <div className="min-w-md max-w-md">
+    <div className="max-w-sm sm:max-w-md">
         {articles.length > 0 ? (
           <EntryPagination 
             articles={articles}
