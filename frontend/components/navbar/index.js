@@ -1,7 +1,7 @@
 /* This example requires Tailwind CSS v2.0+ */
 import { Fragment, useState, useEffect } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
-import { MenuIcon, XIcon, ArrowLeftIcon } from '@heroicons/react/outline'
+import { MenuIcon, XIcon, ArrowLeftIcon, ExclamationCircle } from '@heroicons/react/outline'
 
 import { bindActionCreators } from 'redux'
 import { logout } from "../../reducers/user/dispatchers/user.dispatcher";
@@ -75,6 +75,13 @@ const NavBar = (props) => {
                     >
                       Log out
                     </button>
+                    <a
+                      href="https://docs.google.com/forms/d/e/1FAIpQLScoGRICJR18nk2CmdaCIP61iO5DYlS_H-eOrHCc8xEDSbTDOQ/viewform?usp=sf_link"
+                      target="_blank"
+                      className='text-sm text-gray-700 hover:text-gray-900'
+                    >
+                      Report bug
+                    </a>
                  </div>
                 ) : (
                   <div className="flex px-1 pt-1 font-medium space-x-4">
@@ -91,11 +98,26 @@ const NavBar = (props) => {
                       >
                         Sign up
                       </Link>
+
+                      <a
+                        href="https://docs.google.com/forms/d/e/1FAIpQLScoGRICJR18nk2CmdaCIP61iO5DYlS_H-eOrHCc8xEDSbTDOQ/viewform?usp=sf_link"
+                        target="_blank"
+                        className={classNames('text-gray-700 hover:text-gray-900 inline-flex items-center')}
+                      >
+                        Report bug
+                      </a>
                   </div>
                 )}
               </div>
               <div className="-mr-2 flex items-center sm:hidden">
                 {/* Mobile menu button */}
+                <a
+                  href="https://docs.google.com/forms/d/e/1FAIpQLScoGRICJR18nk2CmdaCIP61iO5DYlS_H-eOrHCc8xEDSbTDOQ/viewform?usp=sf_link"
+                  target="_blank"
+                  className={classNames('text-gray-700 hover:text-gray-900 text-sm font-medium mr-3 inline-flex items-center')}
+                >
+                  Report bug
+                </a>
                 <Disclosure.Button className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary4">
                   <span className="sr-only">Open main menu</span>
                   {open ? (
