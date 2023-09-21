@@ -79,6 +79,7 @@ const SummaryFeed = (props) => {
         <WindowMonitor>
           <PlayerStatTracker>
             <AudioPlayer 
+              feedName={props.feedName}
               articles={props.articles}
               onAudioEnd={onAudioEnd}
               onAudioStart={onAudioStart}
