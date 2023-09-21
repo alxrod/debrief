@@ -85,6 +85,7 @@ export const getDigest = () => {
   return dispatch => {
     return new Promise((resolve, reject) => {
       (async () => {
+        // console.log("GETTING")
 
         const raw_digest = await SummaryService.pullDigest()
         // console.log("raw_digest: ", raw_digest)

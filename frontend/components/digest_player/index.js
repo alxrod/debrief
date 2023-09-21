@@ -29,13 +29,6 @@ const DigestPlayer = (props) => {
   const [digestSize, setDigestSize] = useState(10)
   const [generating, setGenerating] = useState(true)
 
-  useEffect(() => {
-    if (props.articles.length > 0) {
-      console.log("NEED TO CLEAR")
-      props.clearArticles()
-    }
-  }, [])
-
   const onAudioEnd = (article) => {
     markRead(article.id, article.metadata_id, true)
     // props.removeArticle(article.id)
@@ -49,10 +42,12 @@ const DigestPlayer = (props) => {
   }
 
   useEffect(() => {
-    if (props.articles.length == 0 && props.user) {
-      loadDigest()
+    if (props.user) {
+      props.clearArticles().then(
+        loadDigest()
+      )
     }
-  }, [props.user, props.feedName, props.articlesChanged])
+  }, [props.user])
 
   useEffect(() => {
     setFeedIds(props.user.feeds.map((feed) => feed.id))
