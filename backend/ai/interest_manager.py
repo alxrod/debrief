@@ -35,8 +35,8 @@ class InterestManager:
         interest.last_updated = parse(interest_json["last_updated"])
         
         print("Adding ", interest.query_content, " to interest feeds")
-        # if interest.query != interest_json["query"]:
-        #   self.update_interest_query(interest)
+        if interest.query != interest_json["query"]:
+          self.update_interest_query(interest)
 
         # TAKE OUT FOR PROD
         # if len(interest_json["article_ids"]) == 0:
