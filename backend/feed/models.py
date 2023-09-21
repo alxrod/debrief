@@ -76,7 +76,9 @@ class InterestFeedUpdateScheme(FeedUpdateScheme):
   unique_name: Optional[str]
 
 class FeedExistsRequest(BaseModel):
-  feed_name: str
+  feed_name: Optional[str]
+  feed_id: Optional[str]
+  
   
 class FeedRequestScheme(BaseModel):
   feed_id: str
