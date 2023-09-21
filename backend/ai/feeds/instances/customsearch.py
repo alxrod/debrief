@@ -30,7 +30,8 @@ class CustomSearchFeed(FeedObject):
 
       self.query_content = query_content
       if query == None or query == "":
-        self.query = self.generate_query(query_content)
+        # self.query = 
+        self.query = self.query_content
       else:
         self.query = query
 
@@ -66,8 +67,12 @@ class CustomSearchFeed(FeedObject):
           search_response = self.metaphor.search(
             self.query, use_autoprompt=True, start_published_date="2023-01-01"
           )
+          self.query_count += 1
 
-          links = [result.url for result in search_response.results]
+          contents_response = search_response.get_contents()
+
+          links = [content.url for content in contents_response.contents]
+            
         else:
           print("Query ", self.query," has exceeded its daily limit")
           links = []

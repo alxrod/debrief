@@ -48,7 +48,7 @@ class AudioGenerator:
     def get_title(self, raw_html):
         try:
             soup = BeautifulSoup(raw_html, 'html.parser')
-            return soup.find("title").text
+            return soup.find("title").text.replace("_", " ")
         except:
             return "Untitled"
         

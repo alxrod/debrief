@@ -41,6 +41,11 @@ const SummaryFeed = (props) => {
       if (!props.anonymous) {
         for(let i = 0; i < props.user?.feeds.length; i++) {
           if (props.user.feeds[i].name.toLowerCase() === props.feedName || props.user.feeds[i]?.unique_name === props.feedName) {
+            document.title = 'Debrief: ' + props.user.feeds[i].name;
+            if (props.user.feeds[i].interest_feed) {
+              document.title = 'Debrief: ' + props.user.feeds[i].unique_name;
+            }
+            
             loadNewFeed(props.user.feeds[i].id, props.user.feeds[i].name, props.pageLimit).then(() => {
               setFeedExists(true)
             }).catch(() => {
@@ -74,6 +79,7 @@ const SummaryFeed = (props) => {
         <WindowMonitor>
           <PlayerStatTracker>
             <AudioPlayer 
+              feedName={props.feedName}
               articles={props.articles}
               onAudioEnd={onAudioEnd}
               onAudioStart={onAudioStart}

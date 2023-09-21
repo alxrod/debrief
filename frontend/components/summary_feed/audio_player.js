@@ -201,6 +201,13 @@ const AudioPlayer = (props) => {
     // }
   }, [windowIsActive])
 
+  useEffect(() => {
+    if (props.articlesChanged) {
+      queue.empty()
+      setQueue(queue)
+    }
+  }, [props.feedName])
+
   return (
     <AudioPlayerContext.Provider value={{
       queueEmpty: queue.size === 0,
