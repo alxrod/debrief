@@ -36,7 +36,7 @@ class InterestFeedModel(FeedModel):
     obj = {
       "_id": str(uuid.uuid4()),
       "name": feed_name,
-      "author_id": "",
+      "author_id": user_id,
       "user_ids": [],
       "article_ids": [],
       "creation_time": datetime.datetime.now(),
