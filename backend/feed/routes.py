@@ -374,10 +374,15 @@ def create_interest(request: Request, update_req: InterestFeedUpdateScheme = Bod
 @router.post("/check-exists", summary='check if an feed exists', status_code=status.HTTP_200_OK)
 def add_to_inbox(request: Request, exists_req: FeedExistsRequest = Body(...), api_key: APIKey = Depends(auth.get_api_key)):
   req = jsonable_encoder(exists_req)
-  name = req["feed_name"]
-  feed = request.app.database["feeds"].find_one({
-    "name": name
-  })
+  
+  if "feed_name" in req:
+    feed = request.app.database["feeds"].find_one({
+      "name": req["feed_name"]
+    })
+  else:
+    feed = request.app.database["feeds"].find_one({
+      "_id": req["feed_id"]
+    })
 
   if feed is None:
     return {"exists": False, "feed": {}}
