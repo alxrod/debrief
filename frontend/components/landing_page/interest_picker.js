@@ -4,15 +4,19 @@ import { CheckIcon, SearchIcon, ChevronDownIcon } from '@heroicons/react/solid'
 
 const queries = [
   {
+    id: 4,
+    query: "The Guardian",
+    name: "theguardian"
+  },
+  {
     id: 1,
-    query: 'LLM Carbon footprint',
-    name: "LLM-Carbon-footprint"
+    query: 'Harvard Affirmative Action',
+    name: "HarvardAffirmativeAction"
   },
   {
     id: 2,
-    query: 'Sag Aftra Strike',
-    name: "Sag-Aftra-Strike"
-
+    query: "Latest Apple Vision Pro Rumors",
+    name: "Latest-Apple-Vision-Pro-Rumors"
   },
   {
     id: 3,
@@ -20,20 +24,15 @@ const queries = [
     name: "SophieTurnerandJoeJonasdivorce"
   },
   {
-    id: 4,
-    query: "The Guardian",
-    name: "theguardian"
-  },
-  {
     id: 5,
-    query: 'The Guardian',
-    name: "theguardian"
-  },
-  {
-    id: 6,
     query: 'The Verge',
     name: "theverge"
   },
+  {
+    id: 6,
+    query: "Biden Impeachment",
+    name: "Biden-Impeachment"
+  }
 ]
 
 function classNames(...classes) {
