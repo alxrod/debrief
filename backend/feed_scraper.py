@@ -12,8 +12,8 @@ from dateutil.parser import parse
 # REFRESH_TIME = 60 * 30
 REFRESH_TIME = 1
 
-INTEREST_REFRESH_RATE = 60 * 60 * 4
-FEED_REFRESH_RATE = 60 * 30
+INTEREST_REFRESH_RATE = 60 * 60 * 6
+FEED_REFRESH_RATE = 60 * 60 * 6
 
 class FeedPoster:
   def __init__(self, access_token, site_base):
