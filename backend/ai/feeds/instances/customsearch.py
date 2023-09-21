@@ -13,9 +13,12 @@ from datetime import datetime
 
 import openai
 
+import math
+
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_KEY")
 
+MAX_COUNT_DAY = 3
 
 class CustomSearchFeed(FeedObject):
     
@@ -30,8 +33,10 @@ class CustomSearchFeed(FeedObject):
         self.query = self.generate_query(query_content)
       else:
         self.query = query
-      
-      
+
+      #  THIS IS A MAJOR STOP GAP I SHOUDL REMOVE THIS LATER BUT JUST AS A BACKUP
+      self.query_count = 0
+      self.count_init = datetime.now()    
     
     def generate_query(self, query_content):
       prompt = (f"Generate a google search query that gets the latest news and updates on the following subject: \n{query_content}")
@@ -48,15 +53,26 @@ class CustomSearchFeed(FeedObject):
       return search
 
     def get_links(self):
-        print("Searching for ", self.query)
+        
         # results = self.duck_client.search(self.query)
         # time.sleep(1)
         
-        search_response = self.metaphor.search(
-          self.query, use_autoprompt=True, start_published_date="2023-01-01"
-        )
+        days_since_init = math.ceil((datetime.now() - self.count_init).total_seconds() / 86400)
 
-        links = [result.url for result in search_response.results]
+
+        # For cost recents capped at one a day
+        if (self.query_count / days_since_init) <= MAX_COUNT_DAY:
+          print("Metaphor request for ", self.query)
+          search_response = self.metaphor.search(
+            self.query, use_autoprompt=True, start_published_date="2023-01-01"
+          )
+
+          links = [result.url for result in search_response.results]
+        else:
+          print("Query ", self.query," has exceeded its daily limit")
+          links = []
+
+
         return links
 
      
