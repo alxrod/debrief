@@ -1,5 +1,5 @@
-import { PlayIcon } from '@heroicons/react/solid'
-import { MailIcon, PlusIcon } from '@heroicons/react/outline'
+import { PlayIcon  } from '@heroicons/react/solid'
+import { MailIcon, PlusIcon, TrashIcon } from '@heroicons/react/outline'
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux'
 
@@ -7,6 +7,8 @@ import AddFeedPanel from "../add_feed_panel"
 
 import {useState, useContext} from "react";
 import { FeedCounterContext } from '../feed_counter';
+
+import { deleteFeed } from '../../reducers/user/dispatchers/user.dispatcher';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -33,22 +35,30 @@ const FeedGrid = (props) => {
             >
               <MailIcon className="h-6 w-6"/>
             </div>
-            <a href={"/feed/"+feed.name} className="flex flex-1 items-center justify-between truncate rounded-r-md border-b border-r border-t border-gray-200 bg-white min-w-[225px]">
+            <div className="flex flex-1 items-center justify-between truncate rounded-r-md border-b border-r border-t border-gray-200 bg-white min-w-[225px]">
               <div className="flex-1 truncate px-4 py-2 text-sm">
-                <p href={"/feed/"+feed.name} className="font-medium text-gray-900 hover:text-gray-600">
+                <a href={"/feed/"+feed.name} className="font-medium text-gray-900 hover:text-gray-600">
                   {feed.name}
-                </p>
+                </a>
                 <p className="text-gray-500">{feedCountTable[feed.name] ? feedCountTable[feed.name].toString() : "0"} Unread</p>
               </div>
               <div className="flex-shrink-0 pr-2">
                 <div
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-transparent bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                  className="inline-flex items-center justify-center rounded-full bg-transparent bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >
-                  <span className="sr-only">Open options</span>
-                  <PlayIcon className="h-6 w-6" aria-hidden="true" />
+                  <div className="flex gap-x-3 mt-1">
+                    <a href={"/feed/"+feed.name}>
+                      <PlayIcon className="h-6 w-6" aria-hidden="true" />
+                    </a>
+                    {feed.name !== "inbox" && (
+                      <button onClick={() => props.deleteFeed(feed.id)}>
+                        <TrashIcon className="h-6 w-6" aria-hidden="true" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
-            </a>
+            </div>
           </li>
         ))}
 
@@ -79,6 +89,7 @@ const mapStateToProps = ({ user, summary}) => ({
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
+  deleteFeed
 }, dispatch)
 
 export default connect(

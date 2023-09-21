@@ -64,7 +64,7 @@ const MainView = (props) => {
         curAudioPlaying={playing} 
         curAudio={current}
       />
-    ) : Object.keys(props.digestCountTable).length > 0 ? (
+    ) : (Object.keys(props.digestCountTable).length > 0) ? (
       <div className="max-w-[300px] sm:max-w-[600px] min-w-md p-3 text-sm text-gray-500 font-medium">
         <h3>{"You have "}
           {Object.keys(props.digestCountTable).map((key, index) => (

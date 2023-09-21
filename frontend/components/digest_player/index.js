@@ -28,6 +28,9 @@ const DigestPlayer = (props) => {
 
   const [digestSize, setDigestSize] = useState(10)
   const [generating, setGenerating] = useState(true)
+  const [waitingForNext, setWaitingForNext] = useState(false)
+
+  const [autostart, setAutostart] = useState(false)
 
   const onAudioEnd = (article) => {
     markRead(article.id, article.metadata_id, true)
@@ -44,6 +47,7 @@ const DigestPlayer = (props) => {
   useEffect(() => {
     if (props.user) {
       if (props.feed?.name !== "digest") {
+        console.log("NUKING ARTICLES")
         props.clearArticles().then(
           loadDigest()
         )
@@ -63,6 +67,8 @@ const DigestPlayer = (props) => {
       fillTable(arts)
       setDigestPointer(newPointer)
       setDigestArticles(arts)
+      setWaitingForNext(false)
+      setAutostart(true)
     }
   }
 
@@ -102,12 +108,22 @@ const DigestPlayer = (props) => {
 
   useEffect(() => {
     if (digestPointer < props.articles.length) {
-      const arts = props.articles.slice(digestPointer, Math.min(props.articles.length, digestPointer + digestSize))
+      let size = digestSize
+      if (size == 0) {
+        size = props.articles.length/2
+        setDigestSize(size)
+      }
+      const arts = props.articles.slice(digestPointer, Math.min(props.articles.length, digestPointer + size))
       fillTable(arts)
-      setDigestPointer(digestPointer)
       setDigestArticles(arts)
+    } else if (props.articles.length === 0) {
+      console.log("ZERO case")
+      setDigestArticles([])
+      setDigestPointer(0)
+      setDigestCountTable({})
+      
     }
-  }, [digestSize])
+  }, [digestSize, props.articlesChanged, props.feedsChanged])
 
   return (
     <WindowMonitor>
@@ -118,15 +134,21 @@ const DigestPlayer = (props) => {
           onAudioStart={onAudioStart}
         >
           <div className="col-span-1 divide-y divide-gray-200 rounded-lg bg-white shadow">
-            <MainView digestCountTable={digestCountTable}/>
+            <MainView digestCountTable={digestCountTable} moreLeft={digestPointer + digestSize < props.articles.length} />
             <div>
               <PlayMenu 
-                moreLeft={digestPointer < props.articles.length} 
                 nextDigest={nextDigest}
                 digestSize={digestSize}
+                moreLeft={digestPointer + digestSize < props.articles.length}
                 maxSize={props.articles.length}
                 generating={generating}
                 setDigestSize={setDigestSize}
+
+                waitingForNext={waitingForNext}
+                setWaitingForNext={setWaitingForNext}
+
+                autostart={autostart}
+                setAutostart={setAutostart}
               />
             </div>
           </div>

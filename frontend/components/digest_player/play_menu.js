@@ -34,17 +34,15 @@ export default function PlayMenu(props) {
     clearQueue,
   } = useContext(AudioPlayerContext);
 
-  const [hearMore, setHearMore] = useState(false)
   useEffect(() => {
-    if (queueEmpty && props.moreLeft) {
-      setHearMore(true)
+    if (props.autostart) {
+      playFromStart()
+      props.setAutostart(false)
     }
-  })
+    
+  }, [props.autostart])
 
   return (
-
-        
-
 
         <div className="-mt-px flex divide-x divide-gray-200 text-gray-500">
         {!queueEmpty ? (
@@ -103,29 +101,38 @@ export default function PlayMenu(props) {
               </button>
             </div>
           </>
-        ) : (unreadCount > 0) ? (
+        ) : (unreadCount > 0 && !props.waitingForNext) ? (
           <div className="flex flex-col items-center flex-1">
             <DigestSlider digestSize={props.digestSize} setDigestSize={props.setDigestSize} maxSize={props.maxSize}/>
             <div className="flex w-full">
               <button
                 type="button"
-                onClick={() => playFromStart()}
+                onClick={() => {
+                  if (props.moreLeft) {
+                    // console.log("GOT SOME IN THE TANK")
+                    props.setWaitingForNext(true)
+                  }
+                  playFromStart()
+                }}
                 className="relative -mr-px inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-bl-lg border border-transparent pb-3 text-sm font-semibold text-gray-900"
               >
                 <p className="text-gray-600">Start Digest</p> <PlayIcon className="ml-1 h-8 w-8 text-gray-500" aria-hidden="true" />
               </button>
             </div>
           </div>
-       ) : hearMore ? (
-        <div className="flex w-0 flex-1">
-        <button
-          type="button"
-          onClick={props.nextDigest}
-          className="relative -mr-px inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-bl-lg border border-transparent py-2 text-sm font-semibold text-gray-900"
-        >
-          <p className="text-gray-600">Want to hear more?</p> <PlayIcon className="my-2 ml-1 h-5 w-5 text-gray-500" aria-hidden="true" />
-        </button>
-      </div>
+       ) : props.waitingForNext ? (
+        <div className="flex flex-col items-center flex-1">
+          <DigestSlider digestSize={props.digestSize} setDigestSize={props.setDigestSize} maxSize={props.maxSize}/>
+          <div className="flex w-full">
+            <button
+              type="button"
+              onClick={props.nextDigest}
+              className="relative -mr-px inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-bl-lg border border-transparent py-2 text-sm font-semibold text-gray-900"
+            >
+              <p className="text-gray-600">Want to hear more?</p> <PlayIcon className="my-2 ml-1 h-5 w-5 text-gray-500" aria-hidden="true" />
+            </button>
+          </div>
+        </div>
       ) : !props.generating ? (
         <div className="flex w-0 flex-1">
           <button

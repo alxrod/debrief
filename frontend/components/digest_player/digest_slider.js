@@ -8,7 +8,7 @@ import { slider } from '@material-tailwind/react';
 
 
 function valuetext(value) {
-  return `${value}min`;
+  return `${value} articles`;
 }
 
 const DebriefSlider = styled(Slider)({
@@ -31,8 +31,10 @@ const DebriefSlider = styled(Slider)({
     },
   },
   '& .MuiSlider-valueLabel': {
-    borderRadius: '15% 15% 15% 15%',
+    borderRadius: '10% 10% 10% 10%',
     backgroundColor: '#1C6D3A',
+    width:"80px",
+    padding: 4
   },
 });
 
@@ -45,9 +47,9 @@ const SliderWrapper = (props) => {
   return (
     <div className="px-6 w-full mb-[-10px]">
       <DebriefSlider
-        defaultValue={Math.min(10,props.maxSize)}
+        defaultValue={props.digestSize}
         onChange={(e, v, t) => props.setDigestSize(v)}
-        getAriaValueText={valuetext}
+        valueLabelFormat={valuetext}
         step={1}
         marks
         min={1}
