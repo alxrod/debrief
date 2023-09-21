@@ -14,7 +14,7 @@ const parseArticle = (article, feed_id) => {
 }
 
 
-export const getFeed = (feed_id, feed_name, timestamp) => {
+export const getFeed = (feed_id, feed_name, timestamp, leave_cur_feed) => {
   return dispatch => {
     return new Promise((resolve, reject) => {
       (async () => {
@@ -40,17 +40,31 @@ export const getFeed = (feed_id, feed_name, timestamp) => {
             }
           });
         }
-        dispatch({
-          type: summaryActions.LOAD_FEED,
-          payload: {
-            articles: articles,
-            total_articles: resp.total_articles,
-            feed: {
-              id: feed_id,
-              name: feed_name,
+        if (leave_cur_feed) {
+          dispatch({
+            type: summaryActions.LOAD_FEED,
+            payload: {
+              articles: articles,
+              total_articles: resp.total_articles,
+              feed: {
+                id: "",
+                name: "digest",
+              }
             }
-          }
-        });
+          });
+        } else {
+          dispatch({
+            type: summaryActions.LOAD_FEED,
+            payload: {
+              articles: articles,
+              total_articles: resp.total_articles,
+              feed: {
+                id: feed_id,
+                name: feed_name,
+              }
+            }
+          });
+        }
         resolve(articles);
       })()
     })
@@ -128,6 +142,18 @@ export const getAllFeeds = () => {
     })
   }
 };
+
+export const getAllInterests = () => {
+  return dispatch => {
+    return new Promise((resolve, reject) => {
+      (async () => {
+        const feeds = await SummaryService.pullAllInterests()
+        resolve(feeds);
+      })()
+    })
+  }
+};
+
 
 export const changePage = (page) => {
   return dispatch => {

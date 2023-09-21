@@ -263,6 +263,31 @@ def pull_all(request: Request, api_key: APIKey = Depends(auth.get_api_key)):
 
   return {"interests": interests}
 
+@router.get("/pull-new-interests", summary='pull all new feeds for you', status_code=status.HTTP_200_OK)
+def pull_all(request: Request, Authorize: AuthJWT = Depends()):
+  Authorize.jwt_required()
+  user_id = Authorize.get_jwt_subject()
+
+  feeds = list(request.app.database["feeds"].find({
+    "name": {"$ne": "inbox"},
+    "interest_feed": True,
+    "user_ids": {"$ne": user_id}
+  }).limit(50))
+
+  feed_infos = []
+  for feed in feeds:
+    snip = {
+      "_id": feed["_id"],
+      "name": feed["name"],
+      "interest_feed": True,
+      "query_content": feed["query_content"],
+      "unique_name": feed["unique_name"],
+      "author_id": feed["author_id"],
+    }
+    feed_infos.append(snip)
+
+  return feed_infos
+
 @router.post("/create-interest", summary='create a new interest', status_code=status.HTTP_200_OK)
 def create_interest(request: Request, feed_request: InterestFeedCreateScheme = Body(...), Authorize: AuthJWT = Depends()):
   Authorize.jwt_required()
@@ -333,28 +358,32 @@ def create_interest(request: Request, update_req: InterestFeedUpdateScheme = Bod
   request.app.database["feeds"].update_one({"_id": interest["_id"]}, {"$set": interest})
   return interest
 
-@router.post("/delete-interest/{feed_id}", summary='delete an interest', status_code=status.HTTP_200_OK)
-def delete_interest(request: Request, update_req: InterestFeedUpdateScheme = Body(...), Authorize: AuthJWT = Depends()):
+@router.post("/delete-feed/{feed_id}", summary='delete a feed', status_code=status.HTTP_200_OK)
+def delete_interest(request: Request, update_req: FeedUpdateScheme = Body(...), Authorize: AuthJWT = Depends()):
   update_info = jsonable_encoder(update_req)
   Authorize.jwt_required()
   user_id = Authorize.get_jwt_subject()
-  print("Info: ", update_info)
-  interest = request.app.database["feeds"].find_one({
+
+  feed = request.app.database["feeds"].find_one({
     "_id": update_info["_id"]
   })
    
-  if user_id in interest["user_ids"]:
-    interest["user_ids"].remove(user_id)
+  if user_id in feed["user_ids"]:
+    feed["user_ids"].remove(user_id)
 
-  if len(interest["user_ids"]) > 0:
+  if len(feed["user_ids"]) > 0:
 
-    if user_id == interest["author_id"] and len(interest["user_ids"]) > 0:
-        interest["author_id"] = interest["user_ids"][0]
-    request.app.database["feeds"].update_one({"_id": interest["_id"]}, {"$set": interest})
+    if feed["interest_feed"] and user_id == feed["author_id"] and len(feed["user_ids"]) > 0:
+        feed["author_id"] = feed["user_ids"][0]
+
+    request.app.database["feeds"].update_one({"_id": feed["_id"]}, {"$set": feed})
   else: 
-    request.app.database["feeds"].delete_one({"_id": interest["_id"]})
+    if feed["interest_feed"]:
+      request.app.database["feeds"].delete_one({"_id": feed["_id"]})
+    else:
+      request.app.database["feeds"].update_one({"_id": feed["_id"]}, {"$set": feed})
 
-  return interest
+  return feed
 
 @router.post("/server-update-interest/{feed_id}", summary='update an interest', status_code=status.HTTP_200_OK)
 def create_interest(request: Request, update_req: InterestFeedUpdateScheme = Body(...), api_key: APIKey = Depends(auth.get_api_key)):

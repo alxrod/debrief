@@ -44,6 +44,16 @@ class SummaryService {
     });
   }
 
+  pullAllInterests() {
+    return api
+    .get(("/feed/pull-new-interests"), {})
+    .then(response => {
+      return response.data;
+    }).catch(error => {
+      return error;
+    });
+  }
+
   addUserToFeed(feed_id, user_id) {
     const params = {
       feed_id,
@@ -104,10 +114,9 @@ class SummaryService {
     });
   }
 
-  deleteInterest(id) {
-    console.log('Deleting ', id)
+  deleteFeed(id) {
     return api
-    .post("/feed/delete-interest/"+id, {
+    .post("/feed/delete-feed/"+id, {
       "_id": id,
     })
     .then(response => {

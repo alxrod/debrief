@@ -2,38 +2,75 @@ import { Fragment, useEffect, useState } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 import { CheckIcon, SearchIcon, ChevronDownIcon } from '@heroicons/react/solid'
 
-const queries = [
-  {
-    id: 4,
-    query: "The Guardian",
-    name: "theguardian"
-  },
-  {
-    id: 1,
-    query: 'Harvard Affirmative Action',
-    name: "HarvardAffirmativeAction"
-  },
-  {
-    id: 2,
-    query: "Latest Apple Vision Pro Rumors",
-    name: "Latest-Apple-Vision-Pro-Rumors"
-  },
-  {
-    id: 3,
-    query: 'Sophie Turner and Joe Jonas divorce',
-    name: "SophieTurnerandJoeJonasdivorce"
-  },
-  {
-    id: 5,
-    query: 'The Verge',
-    name: "theverge"
-  },
-  {
-    id: 6,
-    query: "Biden Impeachment",
-    name: "Biden-Impeachment"
-  }
-]
+let queries = []
+if (process.env.NEXT_PUBLIC_MODE === 'dev') {
+  queries = [
+    {
+      id: 4,
+      query: "The Guardian",
+      name: "theguardian"
+    },
+    {
+      id: 1,
+      query: 'LLMs on Embedded Devices',
+      name: "LLMs-on-Embedded-Devices"
+    },
+    {
+      id: 2,
+      query: "China Taiwan Politics in South China Sea",
+      name: "ChinaTaiwanPoliticsinSouthChinaSea"
+    },
+    {
+      id: 3,
+      query: 'Efforts to curb inflation in American economy',
+      name: "EffortstocurbinflationinAmericaneconomy"
+    },
+    {
+      id: 5,
+      query: 'The Verge',
+      name: "theverge"
+    },
+    {
+      id: 6,
+      query: "AI use cases with drones",
+      name: "AIusecaseswithdrones"
+    }
+  ]
+
+} else {
+  queries = [
+    {
+      id: 4,
+      query: "The Guardian",
+      name: "theguardian"
+    },
+    {
+      id: 1,
+      query: 'Harvard Affirmative Action',
+      name: "HarvardAffirmativeAction"
+    },
+    {
+      id: 2,
+      query: "Latest Apple Vision Pro Rumors",
+      name: "Latest-Apple-Vision-Pro-Rumors"
+    },
+    {
+      id: 3,
+      query: 'Sophie Turner and Joe Jonas divorce',
+      name: "SophieTurnerandJoeJonasdivorce"
+    },
+    {
+      id: 5,
+      query: 'The Verge',
+      name: "theverge"
+    },
+    {
+      id: 6,
+      query: "Biden Impeachment",
+      name: "Biden-Impeachment"
+    }
+  ]
+}
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')

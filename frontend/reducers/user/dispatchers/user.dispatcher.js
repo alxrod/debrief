@@ -2,6 +2,7 @@ import UserService from "../../../services/user.service";
 import SummaryService from "../../../services/summary.service";
 
 import * as userActions from "../user.actions";
+import * as summaryActions from "../../summary/summary.actions";
 
 export const register = (email,password) => {
     return dispatch => {
@@ -155,11 +156,17 @@ export const changeInterestQueryContent = (feed_id, query_content) => {
     }
 }
 
-export const deleteInterest = (feed_id) => {
+export const deleteFeed = (feed_id) => {
     return dispatch => {
-        return SummaryService.deleteInterest(feed_id).then(() => {
+        return SummaryService.deleteFeed(feed_id).then(() => {
             dispatch({
                 type: userActions.DELETE_FEED,
+                payload: {
+                    feed_id: feed_id,
+                }
+            })
+            dispatch({
+                type: summaryActions.CLEAR_FEED_ARTICLES,
                 payload: {
                     feed_id: feed_id,
                 }
