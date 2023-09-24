@@ -57,6 +57,16 @@ export default (state = initialState, action) => {
                 },
                 feedsChanged: !state.feedsChanged
             }
+
+        case userActions.CHANGE_INTEREST_PRIVATE_STATUS:
+            return {
+                ...state,
+                user: {
+                    ...state.user,
+                    feeds: userHelpers.changeInterestPrivateStatus(state.user.feeds, action.payload)
+                },
+                feedsChanged: !state.feedsChanged
+            }
         
         case userActions.DELETE_FEED:
             return {

@@ -114,6 +114,19 @@ class SummaryService {
     });
   }
 
+  changeInterestPrivate(id, private_status) {
+    return api
+    .post("/feed/change-interest-private", {
+      "feed_id": id,
+      "private": private_status
+    })
+    .then(response => {
+      return response.data;
+    }).catch(error => {
+      return error;
+    })
+  }
+
   deleteFeed(id) {
     return api
     .post("/feed/delete-feed/"+id, {

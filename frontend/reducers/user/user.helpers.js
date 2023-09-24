@@ -31,3 +31,12 @@ export const changeInterestQueryContent = (feeds, change) => {
   }
   return feeds
 }
+
+export const changeInterestPrivateStatus = (feeds, change) => {
+  for (let i = 0; i < feeds.length; i++) {
+    if (feeds[i].id === change.feed_id) {
+      feeds[i].private = change.private
+    }
+  }
+  return feeds
+}

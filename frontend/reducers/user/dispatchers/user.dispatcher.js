@@ -42,6 +42,7 @@ export const login = (email, password, remember) => {
                 dispatch({
                     type: userActions.CLEAR_USER,
                 });
+                console.log("ERROR: ", error)
                 return Promise.reject(error);
             }
         );
@@ -153,6 +154,21 @@ export const changeInterestQueryContent = (feed_id, query_content) => {
         return Promise.resolve();
      })
       
+    }
+}
+
+export const changeInterestPrivate = (id, private_status) => {
+    return dispatch => {
+        return SummaryService.changeInterestPrivate(id, private_status).then(() => {
+            dispatch({
+                type: userActions.CHANGE_INTEREST_PRIVATE_STATUS,
+                payload: {
+                    feed_id: id,
+                    private: private_status,
+                }
+            })
+            return Promise.resolve();
+        })
     }
 }
 

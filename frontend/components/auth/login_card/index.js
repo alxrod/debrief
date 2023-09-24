@@ -44,13 +44,17 @@ const LoginCard = (props) => {
       if (email !== "" && password !== "") {
           props.login(email, password, remember)
           .then(() => {
+            console.log("SOMEHOW WORKED")
             if (props.redirectLink) {
               props.pullUser().then(() => {
                 router.push(props.redirectLink)
+              }).catch(() => {
+                console.log("DIND work")
               })
             }
           })
           .catch((error) => {
+            console.log("CLEAR ERROR: ", error)
             setGenError(error)
           })
       }
@@ -59,7 +63,7 @@ const LoginCard = (props) => {
   return (
     <Form ref={form}>
       {!(genError === "") && (
-        <p className="text-red-400">{genError}</p>
+        <p className="text-red-700 w-full text-center">{genError}</p>
       )}
       <div>
         <label htmlFor="email" className="block text-sm font-medium text-gray-700">
