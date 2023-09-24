@@ -20,7 +20,6 @@ const PrivateToggle = (props) => {
   }
 
   useEffect(() => {
-    console.log("FEED: ", props.feed)
     setEnabled(props.feed.private)
   }, [props.feed.private])
 
