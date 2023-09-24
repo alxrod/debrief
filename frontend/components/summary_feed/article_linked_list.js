@@ -66,11 +66,11 @@ export class ArticleNode {
 }
 // linkedlist class
 export default class ArticleLinkedList {
-  constructor() {
+  constructor(callback) {
     this.head = null;
     this.tail = null;
     this.size = 0;
-    this.endCallback = () => {};
+    this.endCallback = callback;
     this.playback_speed = 1.0;
   }
 

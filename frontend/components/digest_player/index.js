@@ -47,7 +47,6 @@ const DigestPlayer = (props) => {
   useEffect(() => {
     if (props.user) {
       if (props.feed?.name !== "digest") {
-        console.log("NUKING ARTICLES")
         props.clearArticles().then(
           loadDigest()
         )
