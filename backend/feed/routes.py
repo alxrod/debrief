@@ -263,7 +263,6 @@ def pull_all(request: Request, Authorize: AuthJWT = Depends()):
 def pull_all(request: Request, api_key: APIKey = Depends(auth.get_api_key)):
   interests = list(request.app.database["feeds"].find({
     "interest_feed": True,
-    "private": {"$ne": True}
   }))
 
   return {"interests": interests}
@@ -276,7 +275,8 @@ def pull_all(request: Request, Authorize: AuthJWT = Depends()):
   feeds = list(request.app.database["feeds"].find({
     "name": {"$ne": "inbox"},
     "interest_feed": True,
-    "user_ids": {"$ne": user_id}
+    "user_ids": {"$ne": user_id},
+    "private": {"$ne": True}
   }).limit(50))
 
   feed_infos = []
