@@ -12,9 +12,16 @@ class UserService {
         if (response.data.access_token) {
           TokenService.setCreds(response.data);
         }
-        return response.data;
+        
+        return Promise.resolve(response.data);
       }).catch(error => {
-        return error;
+        if (error.response.status === 400) {
+          if (error.response.data?.detail) {
+            return Promise.reject(error.response.data?.detail);
+          }
+          return Promise.reject("Server Error, Check back soon");
+        }
+        return Promise.reject(error?.message);
       })
     }   
 

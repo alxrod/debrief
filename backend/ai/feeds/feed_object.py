@@ -24,12 +24,14 @@ class FeedObject(object):
     return exists
 
   def mark_feed_updated(self):
-    updated, feed = self.generator.poster.mark_feed_updated(self.feed_id)
+    should_update, feed = self.generator.poster.mark_feed_updated(self.feed_id)
     if "last_updated" in feed:
       self.last_updated = parse(feed["last_updated"])
       if self.last_updated == None:
         print("error marking feed updated, setting it current locally")
         self.last_updated = datetime.now()
+
+    return should_update
     
 
   def add_url(self, url):
@@ -45,7 +47,9 @@ class FeedObject(object):
   def ingest(self):
     print("Starting thread ", threading.get_native_id(), " to handle feed ", self.feed_id)
     
-    self.mark_feed_updated()
+    should_update = self.mark_feed_updated()
+    if should_update == False:
+      print("Skipping ingestion for feed ", self.feed_id, " since no user has read since last update")
 
     new_urls = self.fetch()
     new_urls = [self.remove_query_params(url) for url in new_urls]

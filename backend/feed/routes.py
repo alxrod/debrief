@@ -15,7 +15,7 @@ from uuid import uuid4
 from user.models import UserModel
 from article.models import ArticleModel, ArticleMetaModel 
 from metadata.models import MetadataModel
-from feed.models import FeedRequestScheme, FeedModel, FeedAddScheme, FeedUpdateScheme, FeedCreateScheme
+from feed.models import FeedRequestScheme, FeedModel, FeedAddScheme, FeedUpdateScheme, FeedCreateScheme, InterestPrivateChangeScheme
 from feed.models import FeedExistsRequest, InterestFeedCreateScheme, InterestFeedModel, InterestFeedUpdateScheme, InterestFeedJoinScheme
 
 import datetime
@@ -61,11 +61,13 @@ def pull(request: Request, feed_id: str, skip: int = -1, limit: int = -1, timest
 
     if feed is None:
       feed = request.app.database["feeds"].find_one({
-        "name": feed_id
+        "name": feed_id,
+        "private": {"$ne": True}
       })
     if feed is None:
       feed = request.app.database["feeds"].find_one({
-        "unique_name": feed_id
+        "unique_name": feed_id,
+        "private": {"$ne": True}
       })
 
   else:
@@ -76,11 +78,13 @@ def pull(request: Request, feed_id: str, skip: int = -1, limit: int = -1, timest
       )
     
     feed = request.app.database["feeds"].find_one({
-      "name": feed_id
+      "name": feed_id,
+      "private": {"$ne": True}
     })
     if feed is None:
       feed = request.app.database["feeds"].find_one({
-        "unique_name": feed_id
+        "unique_name": feed_id,
+        "private": {"$ne": True}
       })
 
   if feed is None:
@@ -258,7 +262,8 @@ def pull_all(request: Request, Authorize: AuthJWT = Depends()):
 @router.get("/pull-all-interests", summary='pull all interest feeds', status_code=status.HTTP_200_OK)
 def pull_all(request: Request, api_key: APIKey = Depends(auth.get_api_key)):
   interests = list(request.app.database["feeds"].find({
-    "interest_feed": True
+    "interest_feed": True,
+    "private": {"$ne": True}
   }))
 
   return {"interests": interests}
@@ -283,6 +288,7 @@ def pull_all(request: Request, Authorize: AuthJWT = Depends()):
       "query_content": feed["query_content"],
       "unique_name": feed["unique_name"],
       "author_id": feed["author_id"],
+      "private": feed["private"],
     }
     feed_infos.append(snip)
 
@@ -358,6 +364,27 @@ def create_interest(request: Request, update_req: InterestFeedUpdateScheme = Bod
   request.app.database["feeds"].update_one({"_id": interest["_id"]}, {"$set": interest})
   return interest
 
+@router.post("/change-interest-private", summary='update an interest', status_code=status.HTTP_200_OK)
+def create_interest(request: Request, update_req: InterestPrivateChangeScheme = Body(...), Authorize: AuthJWT = Depends()):
+  update_info = jsonable_encoder(update_req)
+  Authorize.jwt_required()
+  user_id = Authorize.get_jwt_subject()
+
+  interest = request.app.database["feeds"].find_one({
+    "_id": update_info["feed_id"]
+  })
+
+  if interest["author_id"] != user_id:
+    raise HTTPException(
+      status_code=status.HTTP_400_BAD_REQUEST,
+      detail="You are not the author of this interest"
+    )
+
+  interest["private"] = update_info["private"]
+  
+  request.app.database["feeds"].update_one({"_id": interest["_id"]}, {"$set": interest})
+  return interest
+
 @router.post("/delete-feed/{feed_id}", summary='delete a feed', status_code=status.HTTP_200_OK)
 def delete_interest(request: Request, update_req: FeedUpdateScheme = Body(...), Authorize: AuthJWT = Depends()):
   update_info = jsonable_encoder(update_req)
@@ -428,12 +455,30 @@ def add_to_inbox(request: Request, exists_req: FeedUpdateScheme = Body(...), api
     "_id": id
   })
   if feed is None:
-    return {"updated": False, "feed": {}}
+    return {"should_update": False, "feed": {}}
   
   feed["last_updated"] = datetime.datetime.now()
   request.app.database["feeds"].update_one({"_id": feed["_id"]}, {"$set": feed})
 
-  return {"updated": True, "feed": feed}
+  last_ten_articles = list(request.app.database["articles"].find({
+    "_id": {"$in": feed["article_ids"]}
+  }).sort("creation_time", -1).limit(5))
+
+  last_ten_articles_metadata = []
+  for article in last_ten_articles:
+    metas_per_art = request.app.database["metadata"].find({
+      "article_id": article["_id"],
+    })
+    for meta in metas_per_art:
+      last_ten_articles_metadata.append(meta)
+
+  shouldUpdate = False
+  for meta in last_ten_articles_metadata:
+    if meta["read"] == True:
+      shouldUpdate = True
+      break
+
+  return {"should_update": shouldUpdate, "feed": feed}
 
 @router.post("/create", summary='creating feed', status_code=status.HTTP_201_CREATED,response_model=FeedModel)
 def add(request: Request, feed_request: FeedCreateScheme = Body(...), api_key: APIKey = Depends(auth.get_api_key)):

@@ -46,7 +46,8 @@ class InterestFeedModel(FeedModel):
       "query": "",
       "unique_name": unique_name,
       "last_updated": datetime.datetime.now() - datetime.timedelta(days=365),
-      "dormant": False
+      "dormant": False,
+      "private": False,
       
     }
 
@@ -54,6 +55,7 @@ class InterestFeedModel(FeedModel):
       obj["user_ids"].append(user_id)
     
     return obj
+
 
 class FeedCreateScheme(BaseModel):
   feed_name: str
@@ -65,6 +67,10 @@ class InterestFeedCreateScheme(BaseModel):
 
 class InterestFeedJoinScheme(BaseModel):
   unique_name: str
+
+class InterestPrivateChangeScheme(BaseModel):
+  feed_id: str
+  private: bool
 
 
 class FeedUpdateScheme(BaseModel):

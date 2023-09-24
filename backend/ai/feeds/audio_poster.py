@@ -15,8 +15,8 @@ class AudioPoster:
     resp = requests.post(url, json=params, headers=head)
     if resp.status_code == 200:
       body = resp.json()
-      if "updated" in body:
-        return body["updated"], body["feed"]
+      if "should_update" in body:
+        return body["should_update"], body["feed"]
     return False, {}
   
   def check_article_exists(self, article_link, feed_id=""):

@@ -7,11 +7,9 @@ import { toggleFlag } from '../../reducers/summary/dispatchers/summary.edit.disp
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux'
 
-import ArticleLinkedList, {ArticleNode} from './article_linked_list';
-
 import {WindowMonitorContext} from "./window_monitor";
 import {PlayerStatContext} from "./player_stat_tracker";
-
+import ArticleLinkedList, {ArticleNode} from './article_linked_list';
 export const AudioPlayerContext = createContext()
 
 const AudioPlayer = (props) => {
@@ -20,7 +18,6 @@ const AudioPlayer = (props) => {
   
   const tracker = useContext(PlayerStatContext);
   const windowIsActive = useContext(WindowMonitorContext);
-  const [readArticleCache, setReadArticleCache] = useState([])
 
   const emptyArticle = {
     id: "",

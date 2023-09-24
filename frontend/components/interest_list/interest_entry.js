@@ -15,6 +15,8 @@ import {useRouter} from "next/router"
 
 import { Tooltip } from 'flowbite-react';
 
+import PrivateToggle from "./private_toggle"
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
@@ -65,7 +67,7 @@ const InterestEntry = (props) => {
           </a>
         )}
       </div>
-      <div className="relative">
+      <div>
         <button 
           onClick={() => {router.push(link)}}
           className="w-full "
@@ -87,58 +89,63 @@ const InterestEntry = (props) => {
           />
         </button>
 
+        <div className="flex justify-between items-center w-full py-2 px-3">
+          <div>
+            <PrivateToggle feed={props.feed}/>
+          </div>
 
-        {!editMode ? (
-          <div className="absolute right-2 bottom-1.5 flex mt-1">
-            {props.feed.author_id === props.user._id && (
-              
-                <button className="mr-2 pt-8 pl-5" onClick={() => {setEditMode(true)}}>
-                  <Tooltip
-                    content="Edit Interest"
-                    style="light"
-                    placement="top"
-                    trigger="hover"
-                  >
-                    <PencilIcon
-                      className="h-4 w-4 text-gray-400 hover:text-primary5"
-                      aria-hidden="true"
-                    />
-                  </Tooltip>
-                </button>
-            )}
-            <button onClick={() => props.deleteFeed(props.feed.id)} className={"group pt-8 " + (props.feed.author_id === props.user._id ? "" : "pl-5")}>
-              <TrashIcon
-                className="h-4 w-4 text-gray-400 group-hover:text-primary5"
-                aria-hidden="true"
-              />
-            </button>
-          </div>
-        ) : (
-          <div className="absolute right-2 bottom-1.5 flex mt-1">
-            <button>
-              <XIcon
-                className="h-5 w-5 text-gray-400 hover:text-primary5"
-                aria-hidden="true"
-                onClick={() => {
-                  setEditMode(false)
-                  setNewText(origText)
-                }}
-              />
-            </button>
-            <button className="mr-2">
-              <CheckIcon
-                className="h-6 w-6 text-gray-400 hover:text-primary5"
-                aria-hidden="true"
-                onClick={() => {
-                  props.changeInterestQueryContent(props.feed.id, newText).then(() => {
+          {!editMode ? (
+            <div className='flex items-center'>
+              {props.feed.author_id === props.user._id && (
+                
+                  <button className="mr-2" onClick={() => {setEditMode(true)}}>
+                    <Tooltip
+                      content="Edit Interest"
+                      style="light"
+                      placement="top"
+                      trigger="hover"
+                    >
+                      <PencilIcon
+                        className="h-4 w-4 text-gray-400 hover:text-primary5"
+                        aria-hidden="true"
+                      />
+                    </Tooltip>
+                  </button>
+              )}
+              <button onClick={() => props.deleteFeed(props.feed.id)} className={"group"}>
+                <TrashIcon
+                  className="h-4 w-4 text-gray-400 group-hover:text-primary5"
+                  aria-hidden="true"
+                />
+              </button>
+            </div>
+          ) : (
+            <div className="absolute right-2 bottom-1.5 flex mt-1">
+              <button>
+                <XIcon
+                  className="h-5 w-5 text-gray-400 hover:text-primary5"
+                  aria-hidden="true"
+                  onClick={() => {
                     setEditMode(false)
-                    setOrigText(newText)
-                  })
-                }}
-              />
-            </button>
-          </div>
-        )}
+                    setNewText(origText)
+                  }}
+                />
+              </button>
+              <button className="mr-2">
+                <CheckIcon
+                  className="h-6 w-6 text-gray-400 hover:text-primary5"
+                  aria-hidden="true"
+                  onClick={() => {
+                    props.changeInterestQueryContent(props.feed.id, newText).then(() => {
+                      setEditMode(false)
+                      setOrigText(newText)
+                    })
+                  }}
+                />
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </li>
   )

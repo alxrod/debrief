@@ -133,6 +133,7 @@ def get_me(request: Request, Authorize: AuthJWT = Depends()):
       snip["query_content"] = feed["query_content"]
       snip["unique_name"] = feed["unique_name"]
       snip["author_id"] = feed["author_id"]
+      snip["private"] = feed["private"]
 
     feed_metas.append(snip)
   
